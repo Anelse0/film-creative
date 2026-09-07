@@ -1,0 +1,210 @@
+[
+  {
+    "id": 1,
+    "record": {
+      "version": 1,
+      "source": "写一个关于搬家的短片，一次跑完",
+      "request": {
+        "entry": "S3a",
+        "target": "S3c",
+        "autonomy": "autonomous",
+        "save": "unspecified",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3a",
+        "S3b",
+        "S3c"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 2,
+    "record": {
+      "version": 1,
+      "source": "写一个关于搬家的短片，不用问我，不要保存",
+      "request": {
+        "entry": "S3a",
+        "target": "S3c",
+        "autonomy": "autonomous",
+        "save": "no",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3a",
+        "S3b",
+        "S3c"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 3,
+    "record": {
+      "version": 1,
+      "source": "写一个关于生存的短片",
+      "request": {
+        "entry": "S3a",
+        "target": "S3c",
+        "autonomy": "guided",
+        "save": "unspecified",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3a",
+        "S3b",
+        "S3c"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 4,
+    "record": {
+      "version": 1,
+      "source": "这是故事原文，帮我写成剧本",
+      "request": {
+        "entry": "S3c",
+        "target": "S3c",
+        "autonomy": "guided",
+        "save": "unspecified",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3c"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 5,
+    "record": {
+      "version": 1,
+      "source": "帮我构思一个短片",
+      "request": {
+        "entry": "S3a",
+        "target": "S3a",
+        "autonomy": "guided",
+        "save": "unspecified",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3a"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 6,
+    "record": {
+      "version": 1,
+      "source": "帮我想三个短片方向",
+      "request": {
+        "entry": "S3a",
+        "target": "S3a",
+        "autonomy": "guided",
+        "save": "unspecified",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [
+        "S3a"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 7,
+    "record": {
+      "version": 1,
+      "source": "只把已定剧本拆分镜，不要生成 Prompt",
+      "request": {
+        "entry": "S4",
+        "target": "S5",
+        "autonomy": "guided",
+        "save": "unspecified",
+        "excluded": [
+          "S6",
+          "S7"
+        ],
+        "units": {}
+      },
+      "planned_stages": [
+        "S4",
+        "S5"
+      ],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": false,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  },
+  {
+    "id": 8,
+    "record": {
+      "version": 1,
+      "source": "只保存已有故事，不用继续写剧本",
+      "request": {
+        "entry": "save_only",
+        "target": "save_only",
+        "autonomy": "guided",
+        "save": "yes",
+        "excluded": [],
+        "units": {}
+      },
+      "planned_stages": [],
+      "hard_locks": [],
+      "confirmation": {
+        "confirmed": false,
+        "evidence": ""
+      }
+    },
+    "expected_write": true,
+    "interpretation_origin": "maintainer interpreted fixture; not NLP accuracy evidence"
+  }
+]

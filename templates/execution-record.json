@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "source": "只把已定剧本拆分镜，不要生成 Prompt",
+  "request": {
+    "target": "S5",
+    "entry": "S4",
+    "excluded": [
+      "S6",
+      "S7"
+    ],
+    "autonomy": "unspecified",
+    "save": "unspecified",
+    "units": {
+      "scenes": null,
+      "shots": null,
+      "clips": null
+    }
+  },
+  "history": {
+    "save_policy": "on_request",
+    "autonomy": "guided"
+  },
+  "confirmation": {
+    "confirmed": false,
+    "evidence": ""
+  },
+  "hard_locks": [
+    "已有剧本台词"
+  ],
+  "planned_stages": [
+    "S4",
+    "S5"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "target": "S3c",
+  "excluded": ["S6"],
+  "save_policy": "on_request",
+  "hard_locks": [],
+  "artifacts": {},
+  "pending": []
+}
