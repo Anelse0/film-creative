@@ -1,10 +1,13 @@
 {
   "version": 1,
-  "source": "只把已定剧本拆分镜，不要生成 Prompt",
+  "source": "把现有故事写成完整剧本，不做分镜和 Prompt",
   "request": {
-    "target": "S5",
-    "entry": "S4",
+    "target": "S3c",
+    "entry": "S3c",
     "excluded": [
+      "S4",
+      "S5",
+      "S5b",
       "S6",
       "S7"
     ],
@@ -25,10 +28,9 @@
     "evidence": ""
   },
   "hard_locks": [
-    "已有剧本台词"
+    "故事已定结尾"
   ],
   "planned_stages": [
-    "S4",
-    "S5"
+    "S3c"
   ]
 }

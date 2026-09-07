@@ -7,8 +7,11 @@ import argparse
 import json
 from pathlib import Path
 
-STAGES = ['S3a', 'S3b', 'S3c', 'S4', 'S5', 'S5b', 'S6', 'S7']
-TARGETS = STAGES + ['performance', 'raw', 'save_only']
+STAGES = ['S3a', 'S3b', 'S3c']
+EXTERNAL_STAGES = ['S4', 'S5', 'S5b', 'S6', 'S7', 'performance', 'raw']
+TARGETS = STAGES + ['save_only']
+# Production constraints may be retained for handoff, never executed here.
+EXCLUSIONS = TARGETS + EXTERNAL_STAGES
 
 
 def validate(record):
@@ -24,9 +27,9 @@ def validate(record):
         errors.append('R01 original source required')
     target, entry = req.get('target'), req.get('entry')
     if target not in TARGETS or entry not in TARGETS:
-        errors.append('R02 unknown target/entry')
+        errors.append('R02 target/entry must be S3a/S3b/S3c/save_only; production belongs to film-director')
     excluded, plan = req.get('excluded', []), record.get('planned_stages')
-    if not isinstance(excluded, list) or any(s not in TARGETS for s in excluded):
+    if not isinstance(excluded, list) or any(s not in EXCLUSIONS for s in excluded):
         errors.append('R02 invalid exclusions'); excluded = []
     if not isinstance(plan, list) or any(s not in TARGETS for s in plan):
         errors.append('R03 invalid plan'); plan = []
@@ -41,9 +44,6 @@ def validate(record):
                 or indexes != sorted(set(indexes))
                 or any(i < STAGES.index(entry) or i > STAGES.index(target) for i in indexes)):
             errors.append('R03 plan must run in order from entry to target only')
-    elif target in ('performance', 'raw'):
-        if entry != target or plan != [target]:
-            errors.append('R03 independent performance/raw route required')
     else:
         errors.append('R03 incompatible entry and target')
     save, policy = req.get('save', 'unspecified'), history.get('save_policy', 'on_request')

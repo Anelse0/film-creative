@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""旧版 / 新版盲选评测工具（film-seedance-director）。
+"""旧版 / 新版盲选评测工具（film-creative）。
 
 子命令:
   pack   <evaldir> --pair N --topic T --a A.md --b B.md [--a-label 2.3.1] [--b-label 2.4.0]

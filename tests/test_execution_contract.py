@@ -21,7 +21,10 @@ class ExecutionContractTests(unittest.TestCase):
         for row in rows:
             with self.subTest(case=row['id']):
                 result = validate(row['record'])
-                self.assertEqual(result['errors'], [])
+                if row['record']['request']['target'] == 'S5':
+                    self.assertTrue(any(e.startswith('R02') for e in result['errors']))
+                else:
+                    self.assertEqual(result['errors'], [])
                 self.assertEqual(result['decision']['write_files'], row['expected_write'])
                 self.assertFalse(result['decision']['confirmed'])
                 self.assertEqual(result['semantic_match'], 'not_verified')
@@ -65,7 +68,7 @@ class ExecutionContractTests(unittest.TestCase):
 
     def test_one_scene_does_not_limit_clips_or_imply_prompt(self):
         r=example();r['request']['units']={'scenes':1,'shots':None,'clips':3}
-        d=validate(r);self.assertFalse(d['errors']);self.assertEqual(d['decision']['target'],'S5')
+        d=validate(r);self.assertFalse(d['errors']);self.assertEqual(d['decision']['target'],'S3c')
 
     def test_confirmation_requires_evidence(self):
         r=example();r['confirmation']['confirmed']=True
