@@ -55,6 +55,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/dialogue-craft.md` | 逐句工艺检查：潜台词、一句一动作、比喻落地、声音、语域、双语坑；带出处 |
 | `references/series-engine.md` | 系列 / 先导：引擎立起了吗、每场接引擎、两线相交、宣布不揭结果、正典波及 |
 | `references/handoff-contract.md` | 与 film-director 的交接物、账本模式、正典变更协议、台词预算、交付默认 |
+| `references/craft-sources-1.3.0.md` | 1.3.0 台词工艺 / 系列引擎规则的出处与证据强度（一手 / 转述 / 推论 / 项目确认） |
 | `templates/dialogue-design-sheet.md` | 台词设计表（交接层材料，不进剧本正文） |
 | `references/output-formats.md` | 对话与文件交付、Markdown 正文、来源校验、Fountain 交换边界 |
 | `references/craft-sources-1.2.0.md` | 本版 Hollywood / 韩国一手访谈及 Fountain 规范、实现与局限 |
