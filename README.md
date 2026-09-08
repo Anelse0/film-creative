@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **1.2.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **1.3.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,15 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 1.3.0 更新（节拍草稿→台词 · 台词工艺 · 系列引擎 · 与 film-director 的协作契约）
+
+- **节拍草稿 → 台词** `references/beat-to-dialogue.md`：实际生产里最常见的输入（中文节拍草稿要英文台词）的默认路径——两行承接、逐节拍目的动词、目标语言先写再中文对照、台词设计表、收尾句、一分钟自检。
+- **台词工艺** `references/dialogue-craft.md`：逐句可检的规则（潜台词 vs 直白、一句一个动作、比喻落地测试、声音区分、用冲突交代世界、比喻/金句陷阱、美式青春剧语域、竖屏短剧密度、中文设计→英文台词的双语坑），每条带一手出处；末尾"逐句检查"清单。
+- **系列引擎** `references/series-engine.md`：先导必须立起的可重复冲突机器；每场"引擎在场吗"判断；私人线与引擎线在同一事件相交；宣布不揭结果；正典改动的波及处理。`templates/ip.md` 新增「故事引擎」与「正典变更」两节。
+- **协作契约** `references/handoff-contract.md`（film-director 同文）：交接物含**台词设计表**（`templates/dialogue-design-sheet.md`，交接层材料、不进正文），账本模式列所有权，正典变更五步协议，台词预算口径，修订给全文。
+- **正典漂移扫描** `scripts/canon_scan.py`（+ `scripts/xlsx_lite.py`，stdlib 读 xlsx）：按 `ip.md` 正典变更表的旧词扫描 md / xlsx / prompt 文件，命中逐条处理。
+- `references/preference-ledger.md` 记入本轮用户确认的偏好（直给优于比喻、对白场附说法与递进、承上启下先于机灵、引擎优先于私人线、引荐先介绍再特写）。硬规则 8（每场接引擎）、9（改正典就扫漂移）。
 
 ## 1.2.0 更新
 
@@ -42,6 +51,11 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/creative-search.md` | 从已有关系与选择发展新意，写实际片段，比较收益和修订代价 |
 | `references/screenwriting-methods.md` | 好莱坞/韩国一手实践提炼的七项操作：按创作问题选用 |
 | `references/dialogue-design.md` | 新写/改写对白：交流处境、听者回应、声音差异、具体正文修订 |
+| `references/beat-to-dialogue.md` | 用户给节拍草稿要台词：承接两行 → 目的动词 → 英文先写 → 台词设计表 → 收尾句 |
+| `references/dialogue-craft.md` | 逐句工艺检查：潜台词、一句一动作、比喻落地、声音、语域、双语坑；带出处 |
+| `references/series-engine.md` | 系列 / 先导：引擎立起了吗、每场接引擎、两线相交、宣布不揭结果、正典波及 |
+| `references/handoff-contract.md` | 与 film-director 的交接物、账本模式、正典变更协议、台词预算、交付默认 |
+| `templates/dialogue-design-sheet.md` | 台词设计表（交接层材料，不进剧本正文） |
 | `references/output-formats.md` | 对话与文件交付、Markdown 正文、来源校验、Fountain 交换边界 |
 | `references/craft-sources-1.2.0.md` | 本版 Hollywood / 韩国一手访谈及 Fountain 规范、实现与局限 |
 | `references/context-creativity-sources.md` | 1.1.0 专业资料、长故事生成研究、已读范围、实现对应与局限 |
@@ -74,6 +88,7 @@ python3 scripts/validate_concept.py <01_concept.md>
 python3 scripts/route_check.py --record <语义判断记录.json> --json
 python3 scripts/assemble_script.py 03_script/scene-01.md 03_script/scene-02.md --output 03_script/reading.md
 python3 scripts/assemble_script.py --verify 03_script/reading.md
+python3 scripts/canon_scan.py --ip ip.md <项目目录> [--deprecated 旧词,旧词2] [--json]
 ```
 
 自动检查负责约束与交付完整性；创意与编剧质量由用户盲选、具体文本证据和 `references/preference-ledger.md` 判断（`scripts/blind_eval.py`，协议见 `tests/creative-eval.md`）。

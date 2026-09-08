@@ -33,6 +33,9 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 **发展新意时**：S3a–S3c 按需读 `references/creative-search.md`，从人物选择、关系与后果形成实际正文；不把加戏等同于增加灾难、反转或新设定。好莱坞与韩国创作者的一手方法按 `references/screenwriting-methods.md` 的具体问题入口选用，不按地域套公式。
 
 **对白创作或修改时**：读 `references/dialogue-design.md`，写连续交流再从听者反应修订；按需查一手出处 `references/craft-sources-1.2.0.md`。
+**用户给节拍草稿要台词时**（"A 对 B 说 xx 意思，B 不舒服地回……换场"——最常见的输入）：走 `references/beat-to-dialogue.md`：先写两行承接，逐节拍定目的动词，先写目标语言再给中文对照，附台词设计表（`templates/dialogue-design-sheet.md`），收尾句。逐句工艺检查与英语语域见 `references/dialogue-craft.md`。
+**系列 / 多集项目**：每场戏做一次"引擎在场吗"的判断（`references/series-engine.md`）；私人线与引擎线在同一场相交时才是先导片该有的样子。
+**与 film-director 协作**：交接物、账本模式、正典变更协议、台词预算见 `references/handoff-contract.md`（两个 skill 同文）。
 **交付或保存时**：格式统一见 `references/output-formats.md`；正文先行，分析栏目按需。
 
 **只读当前阶段需要的文件。** 执行契约判断一次后复用，后续不重复推导保存与范围。
@@ -48,6 +51,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | 想故事 | S3a 创作判断与候选，必要时试写；用户要选方向时停 |
 | 发展已有想法 | S3b，从人物、台词或片段长出完整故事 |
 | 写完整剧本 | S3c；从零开始时按需要发展概念和故事，交付完整场景 |
+| 节拍草稿 → 台词 | `references/beat-to-dialogue.md`；意思是意图锁、用户逐字给的句子是台词锁；交英文＋中文对照＋台词设计表 |
 | 局部改写 | 从现有稿及批评定位层级，只改授权范围 |
 | 进入生产 / 表演测试 / 分镜 / Prompt | 不在本 skill 范围：交付或指认现有剧本材料，交由 film-director 承接 |
 | 只保存 | 保存指定现有文本，不启动新的创作 |
@@ -69,13 +73,14 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
     project-state.json       当前版本、确认快照、依赖、未决项（保存项目按需）
 ```
 
-ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 + 标题（`teaser-30s-举证`、`ep01-…`）。用户已有目录时沿用。同一项目目录的 04_shots / 05_assets / 06_prompts / 07_qa 子目录由 film-director 生成，本 skill 不写入。已保存项目的版本、快照、恢复与正典见 `references/project-state.md`；只读检查用 `scripts/project_check.py`。模板在 `templates/`：`ip.md` · `story.md` · `script-scene.md` · `concept.md`。
+ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 + 标题（`teaser-30s-举证`、`ep01-…`）。用户已有目录时沿用；项目主表是分镜 / 台词表（xlsx）时按 `references/handoff-contract.md` §二的账本模式工作：读表先于写，只写创作侧列，不强制补建 02_story。`ip.md` 维护「故事引擎」与「正典变更」两节（模板已含）；改人设 / 引擎 / 造型 / 删角色后跑 `python3 scripts/canon_scan.py --ip ip.md <项目目录>` 扫旧词漂移，命中逐条处理，不静默沿用旧稿。同一项目目录的 04_shots / 05_assets / 06_prompts / 07_qa 子目录由 film-director 生成，本 skill 不写入。已保存项目的版本、快照、恢复与正典见 `references/project-state.md`；只读检查用 `scripts/project_check.py`。模板在 `templates/`：`ip.md` · `story.md` · `script-scene.md` · `concept.md` · `dialogue-design-sheet.md`。
 
 示例：`examples/concept-worked-examples.md`（概念协议走查，概念模式不读）。示例展示流程，不提供答案，禁止复用其中的查询、候选、台词。
 
 ## 交接契约（进入生产）
 
-- 交付物：`03_script/scene-XX.md`（完整场景与台词）+ 场景参数卡 + `ip.md`（人物 / 地点 / 视觉声音总则）。
+- 交付物：`03_script/scene-XX.md`（完整场景与台词）或账本行 + 场景参数卡 + `ip.md`（人物 / 地点 / 视觉声音总则 / 正典变更）+ **台词设计表**（对白场进入生产时默认附；每句目的动词 · 潜台词 · 说法 · 听者反应 · 情绪递进 · 收尾标记，film-director 据此写〔说法〕〔情绪〕与【整体情绪弧线】）。设计表是交接层材料，不进剧本正文；用户只要故事阅读稿时不附。
+- 台词预算：生产侧回传"clip 秒数 → 句数 / 词数"时，在本 skill 精简台词（英语 2.5 词/s、对白 ≤2/3 clip），不指望生产侧拉长镜头承载。完整契约见 `references/handoff-contract.md`。
 - 用户要分镜、表演外化、情绪提示词或 Seedance Prompt 时，指认上述材料并说明由 film-director skill 承接；不在本 skill 内代写生产产物。
 - 剧本中已确认的台词与场景是生产侧的锁定输入；生产阶段发现需要改剧本时回到本 skill，按局部改写授权处理。
 
@@ -88,6 +93,8 @@ ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 +
 5. **需求参数优先于默认美学。** 场景强度、角色情绪强度、克制、方向与台词密度分别判断；高强度可以内收且无台词，不自动套预设。
 6. **单场属于整体故事。** 续写、扩写与局部改写先按 `references/story-context.md` 读取相关原文；分清故事事实、人物所知与观众所知，再创作。写后接回前后文，核远处铺垫与后续兑现，采用后记录变化量；未知的既有事实不冒充开放创作空间。因果诊断见 `references/causal-chain.md`；删除测试不能删识别性细节。
 7. **现实事实需要可靠依据**（`references/research-to-craft.md`）：真实素材记录来源与可信范围；未锁定的虚构是创造，不是幻觉。
+8. **系列项目每场戏接引擎。** 先导 / 多集项目在 `ip.md` 写清故事引擎（谁掌握什么决定权、每集必碰什么），每场对照一次：碰到了引擎、只在私人线、或两线相交；只在私人线时写明是有意的。私人线是主体，引擎是发动机；宣布 / 候选类场面不揭结果，留给后续（`references/series-engine.md`）。
+9. **改了正典就扫漂移。** 人设 / 引擎 / 造型 / 删角色的改动先登记到 `ip.md` 正典变更表，再跑 `scripts/canon_scan.py`，命中逐条改写、留空或写明保留理由；不 patch 旧分镜，不让旧词靠"表里还在"存活。
 
 ## 默认输出契约
 
@@ -100,6 +107,10 @@ ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 +
 - "改结尾，其他台词不动"：改授权结尾与直接影响上下文，保留其余硬锁。
 - "写故事看看"：只交故事。
 - "只保存已有稿"：保存动作，不新编故事或剧本。
+- "接戏：A 走后 B 对 C 说……然后换场"（节拍草稿）：`references/beat-to-dialogue.md`，交英文＋中文对照＋台词设计表，先写两行承接。
+- "这里的台词需优化 / 没逻辑 / 太牵强"：先按 `references/dialogue-craft.md` 逐句检查定位（在向观众解释？比喻落不了地？说话人不该知道？），再定点改；每次给整场全文。
+- "宣布 / 演讲要层层递进、缺收尾"：设计表写情绪阶梯（3–7 步各落一句）与收尾句。
+- "人设 / 引擎改了，检查其他文件"：登记正典变更 → `scripts/canon_scan.py` → 逐条处理，未出的段落留空标〔待定〕。
 - "出分镜 / 出 Prompt / 表演测试"：指认材料，交由 film-director。
 
 具体状态与异常判断统一见 `references/execution-contract.md`。不确定且结果会实质不同时只问必要问题，否则写明假设并推进已授权工作。

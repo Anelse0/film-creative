@@ -24,6 +24,24 @@ echo "$out" | grep -q "候选只有\|需要 3"; rc=$?
 [ "$rc" -ne 0 ]; check "no fixed candidate count" $? "$out"
 grep -q "^## 工作示例\|^## 附：骰子" references/concept-generation.md && { echo "FAIL concept-generation.md 仍含工作示例正文"; fail=1; } || echo "PASS concept-generation.md has no worked examples"
 
+# 1.3.0 canon_scan on a generated fixture (ip.md table + md + xlsx)
+tmpl=$(mktemp -d); python3 - "$tmpl" <<'PY'
+import sys; sys.path.insert(0, 'scripts')
+from pathlib import Path
+from xlsx_lite import write_workbook
+root = Path(sys.argv[1])
+(root / 'ip.md').write_text('# IP\n## 正典变更\n| 旧 | 新 | 状态 | 波及 |\n|---|---|---|---|\n| 旧守门人 | 队长 | 已废弃 | 镜3 |\n', encoding='utf-8')
+(root / 'scene.md').write_text('旧守门人站在门口。', encoding='utf-8')
+write_workbook(root / 'board.xlsx', {'分镜': [['镜号', '画面'], ['3', '旧守门人 拦住她']]})
+PY
+out=$(python3 scripts/canon_scan.py --ip "$tmpl/ip.md" "$tmpl"); rc=$?
+[ $rc -eq 1 ]; check "canon_scan exits 1 on hits" $? "rc=$rc"
+echo "$out" | grep -q "scene.md \[line 1\]"; check "canon_scan reports md line" $? "$out"
+echo "$out" | grep -q "board.xlsx \[分镜!B2\]"; check "canon_scan reports xlsx cell" $? "$out"
+echo "$out" | grep -q "ip.md \["; rc=$?
+[ "$rc" -ne 0 ]; check "canon_scan skips ip.md itself" $? "$out"
+rm -rf "$tmpl"
+
 # 结构：保留已安装的调用名称（目录大小写可以不同）
 grep -q "^name: film-creative" SKILL.md; check "SKILL.md invocation name preserved" $? ""
 # 所有 SKILL.md 引用的 references/templates 文件存在
