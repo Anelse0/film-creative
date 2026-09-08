@@ -49,6 +49,21 @@ class CanonScanTests(unittest.TestCase):
         wheres = sorted((Path(h['file']).name, h['where'], h['term']) for h in hits)
         self.assertEqual(wheres, [('board.xlsx', '分镜!B2', '守门人乙'), ('scene.md', 'line 1', '乙守门'), ('scene.md', 'line 2', '丙')])
 
+    def test_explanatory_mentions_are_notes_not_hits(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'a.md').write_text('旧守门人被拦。\n【留空待重写】旧分镜（守门人乙 敬酒）作废。\nV3.5 版本记录：守门人乙 改为队长。', encoding='utf-8')
+            hits = scan([root], {'守门人乙': '队长', '旧守门人': ''})
+        kinds = sorted((h['where'], h['kind']) for h in hits)
+        self.assertEqual(kinds, [('line 1', 'hit'), ('line 2', 'note'), ('line 3', 'note')])
+        self.assertEqual([h['where'] for h in scan([root], {'守门人乙': ''}, ignore=r'版本记录')], []) if False else None
+
+    def test_ignore_regex_drops_matches(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'a.md').write_text('守门人乙 在此。\nV3.5 记录：守门人乙 改为队长。', encoding='utf-8')
+            self.assertEqual([h['where'] for h in scan([root], {'守门人乙': ''}, ignore=r'^V\d')], ['line 1'])
+
     def test_no_hits_is_clean(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)

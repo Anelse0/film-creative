@@ -11,7 +11,13 @@ Terms come from a Markdown table in ip.md under a heading that contains
 are reported as file:line (or sheet!cell) with the surrounding text. The ip.md
 itself is skipped — the change table legitimately names the old term.
 
-Exit 1 when any hit is found, 0 when clean. Matching is literal and
+A match whose line/cell also carries an explanatory marker (作废 / 已删 /
+已废弃 / 待重写 / 留空 / 原为 / 改为 / 不再 / 旧的 / 版本记录 …) is reported as
+NOTE — the text is *talking about* the retirement, as the handoff contract
+asks for in blanked-out rows — and does not count toward the exit code unless
+--strict is given. --ignore REGEX drops lines/cells entirely (e.g. version logs).
+
+Exit 1 when any HIT remains, 0 when clean. Matching is literal and
 case-insensitive; it finds stale words, not stale logic — a scene can still
 carry an outdated premise without using a retired word.
 """
@@ -26,6 +32,7 @@ from xlsx_lite import read_workbook, column_letter  # noqa: E402
 
 TEXT_SUFFIXES = {".md", ".txt", ".csv", ".fountain", ".json"}
 HEADING_RE = re.compile(r"^#{1,6}\s*.*(正典变更|已废弃|canon.?delta|deprecated).*$", re.I | re.M)
+MENTION_RE = re.compile(r"作废|已删|已废弃|删除|待重写|留空|原为|改为|不再|旧的|旧分镜|旧稿|版本记录|变更表|canon.?delta|deprecated|retired", re.I)
 
 
 def terms_from_ip(ip_path):
@@ -74,7 +81,7 @@ def scan_text(path, terms):
         for term, repl in terms.items():
             if re.search(re.escape(term), line, re.I):
                 hits.append({"file": str(path), "where": f"line {no}", "term": term, "replacement": repl,
-                             "text": line.strip()[:120]})
+                             "text": line.strip()[:120], "kind": "note" if MENTION_RE.search(line) else "hit"})
     return hits
 
 
@@ -88,17 +95,21 @@ def scan_xlsx(path, terms):
                 for term, repl in terms.items():
                     if re.search(re.escape(term), value, re.I):
                         hits.append({"file": str(path), "where": f"{sheet}!{column_letter(c)}{r}", "term": term,
-                                     "replacement": repl, "text": value.strip().replace("\n", " ")[:120]})
+                                     "replacement": repl, "text": value.strip().replace("\n", " ")[:120],
+                                     "kind": "note" if MENTION_RE.search(value) else "hit"})
     return hits
 
 
-def scan(paths, terms, skip=()):
+def scan(paths, terms, skip=(), ignore=None):
     skip = {Path(s).resolve() for s in skip}
     hits = []
     for f in iter_files(paths):
         if f.resolve() in skip:
             continue
-        hits.extend(scan_xlsx(f, terms) if f.suffix.lower() == ".xlsx" else scan_text(f, terms))
+        found = scan_xlsx(f, terms) if f.suffix.lower() == ".xlsx" else scan_text(f, terms)
+        if ignore:
+            found = [h for h in found if not re.search(ignore, h["text"])]
+        hits.extend(found)
     return hits
 
 
@@ -108,6 +119,8 @@ def main(argv):
     parser.add_argument("--ip", help="ip.md holding the 正典变更 / 已废弃 table")
     parser.add_argument("--deprecated", default="", help="extra retired terms, comma separated")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--strict", action="store_true", help="count explanatory NOTE mentions as hits too")
+    parser.add_argument("--ignore", help="regex; drop lines/cells matching it (e.g. version logs)")
     args = parser.parse_args(argv[1:])
     terms = {}
     skip = []
@@ -121,16 +134,20 @@ def main(argv):
         terms.setdefault(t, "")
     if not terms:
         parser.error("no retired terms: give --ip with a 正典变更/已废弃 table or --deprecated")
-    hits = scan(args.paths, terms, skip)
+    hits = scan(args.paths, terms, skip, args.ignore)
+    real = [h for h in hits if h["kind"] == "hit" or args.strict]
+    notes = [h for h in hits if h["kind"] == "note" and not args.strict]
     if args.json:
-        print(json.dumps({"terms": terms, "hits": hits}, ensure_ascii=False, indent=2))
+        print(json.dumps({"terms": terms, "hits": real, "notes": notes}, ensure_ascii=False, indent=2))
     else:
         print(f"== canon_scan: {len(terms)} retired term(s): {', '.join(terms)}")
-        for h in hits:
+        for h in real:
             repl = f" → {h['replacement']}" if h["replacement"] else ""
             print(f"HIT  {h['file']} [{h['where']}] 「{h['term']}」{repl}: {h['text']}")
-        print(f"== {len(hits)} hit(s)")
-    return 1 if hits else 0
+        for h in notes:
+            print(f"NOTE {h['file']} [{h['where']}] 「{h['term']}」 说明性提及（作废/留空/版本记录），不计入")
+        print(f"== {len(real)} hit(s), {len(notes)} note(s)")
+    return 1 if real else 0
 
 
 if __name__ == "__main__":
