@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.1 — 2026-09-08
+
+按体系（好莱坞 / 欧洲 / 韩国 / 竖屏短剧）落地台词与系列方法论，并把 1.3.0 里未读原文就并入的链接逐条重新标注证据强度。
+
+- `references/dialogue-craft.md` 重写：Mamet（三问、观众不为信息收看、沉默电影测试、删第三方讨论场）· Sorkin（意图与障碍、press on it、对白如音乐、读出声、增减一个音节）· McKee《Dialogue》（the said / the unsaid / the unsayable；characterization vs true character；言语行动）· Truby（story / moral / key words 三轨；盟友批评手段；关键词累积）· Weston（情绪不可演、动词可演；潜台词比文本响；私密 adjustment）· Snyder（Pope in the Pool）· Rhimes（听过即陈词）· Lindelof（可见物件、问题收尾）· Scriptnotes 403/609/693 · on-the-nose 先直白再潜台词 · Sciamma · Yorke（want / need、分形）· Johnstone（地位句法、跷跷板）· 金银淑（挑词、把可怕写得迷人）· 卢熹京（研究、人人为主角、克制）· 朴海英（余韵、一字不差）· 郑瑞景 · 韩剧结构 · ReelShort / 红果 / 六幕标准 · 双语坑；13 条逐句检查。
+- `references/craft-sources-1.3.1.md`（取代 1.3.0）：每条来源附链接与强度；明确 M1 / P1 / KE1 / W1 作者页为已读原文，S1 / R1 / B1 / L1 等为课程页或报道摘录，Thorne / Davies 无讲稿文本故未采用。
+- `references/series-engine.md`：Truby 盟友批评、Parker / Stone 原话、Yorke 分形与 want / need、§4b 每集骨架（Harmon 八步 / 短剧单集公式）、Hitchcock 原话与例外、通过行动与他人反应亮相、Lindelof 问题收尾；去掉对具体项目的指涉。
+- `scripts/ledger_view.py` + `tests/test_ledger_view.py`：账本模式下按镜号范围读 xlsx 为 Markdown；`story-context.md` 加账本读取指引；`stage-3b-story.md` 多集行接 `series-engine.md`；`output-formats.md` 加"对白场交接生产"行（台词设计表为附件、不进正文）。
+- `preference-ledger.md`：来源列的项目名改为泛称（公共仓库不留具体项目标识）。
+- 测试：83 个 unittest 与 shell 回归通过。创意增益仍未做独立盲测。
+
 ## 1.3.0 — 2026-09-08
 
 面向两天实际协作里反复出现的否决（"没有交代叙事、承上启下""太牵强、没有美剧戏剧魅力""台词没逻辑""不要说钥匙这种不知道是什么意思""缺少会长宣布赛事的戏份""需要每句台词对应的设计、情绪、语气""3.8 不是让你根据最新情况更新过一版本"）建立可执行路径与工具；同时修复 1.2.0 与 film-director 1.1.0 之间断掉的接口（创作侧不再逐句给说法，生产侧 W20 却需要〔说法〕〔情绪〕）。
