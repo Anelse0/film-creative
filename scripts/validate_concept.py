@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""故事提案格式校验（film-creative S3a）。
+"""概念卡校验（film-seedance-director S3a，2.5.5）。
 
 用法: python3 validate_concept.py <01_concept.md> [--json]
 
-只查可识别的候选块和格式，不判断故事完整性、创意质量或自然语言事实依赖。
-支持「## 候选 1｜标题」正文提案与旧式字段卡；候选数量不固定。
+只查格式与交付完整性，不判断创意质量。候选数量不固定；集中研究一个题材不是错误。
 
 ERROR（退出码 1）:
   C01 没有候选，或候选只有标题 / 全部字段为空（空候选不能通过）
@@ -12,12 +11,12 @@ ERROR（退出码 1）:
   C05 候选标题与工作示例相同且一句话 / 主控画面也与示例重合（常见标题本身不是抄袭证据）
 
 WARN:
-  C02 已退役：不检查内部创作判断是否外显。
-  C04 已写出的差异行只提地点或未指向实质差别（不要求写该行）
+  C02 缺创作判断（最初理解 / 最后理解 / 独特之处 / 锁定与探索 少于 3 项）
+  C04 ≥ 2 候选时缺"与其他候选的差异"行，或差异只提地点
   C06 候选主控画面共用物件词（可能只换了地点）
   C07 研究记录缺失、缺列、来源为占位符，或发现 / 可信范围 / 影响决定为空
   C08 候选声明依赖外部事实，但研究记录里没有对应行
-  C09 已写出的一句话或独特之处为空（不要求写这些字段）
+  C09 候选缺一句话或独特之处（仅提示人工检查正文，其他辅助字段可选）
   C10 "这 N 秒拍什么"含镜头词（概念阶段偷做分镜）
   C11 候选一句话只是主题词（"关于……"且没有人物动作）
 """
@@ -49,20 +48,14 @@ def toks(q):
     return set(t for t in re.split(r"[\s,，、/|]+", q.strip().lower()) if t)
 
 
-LEGACY_HEAD = r"^[ \t]*候选[ \t]*\d*[ \t]*[〈《]([^〉》]+)[〉》][^\n]*$"
-PROSE_HEAD = r"^#{2,3}[ \t]+候选(?:[ \t]*\d+)?[ \t]*[｜|：:][ \t]*(.+?)[ \t]*$"
-
-
 def split_candidates(text):
-    """Accept prose headings and legacy cards; unrelated sections end a block."""
-    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
-    heads = sorted(list(re.finditer(LEGACY_HEAD, text, re.M))
-                   + list(re.finditer(PROSE_HEAD, text, re.M)), key=lambda m: m.start())
+    """返回 [(title, block_text)]；块从 '候选 〈…〉' 行到下一个候选或下一个二级标题。"""
+    heads = [m for m in re.finditer(r"^\s*候选\s*\d*\s*[〈《]([^〉》]+)[〉》][^\n]*$", text, re.M)]
     out = []
     for i, m in enumerate(heads):
         start = m.end()
         end = heads[i + 1].start() if i + 1 < len(heads) else len(text)
-        sect = re.search(r"^#{1,3}[ \t]+", text[start:end], re.M)
+        sect = re.search(r"^## ", text[start:end], re.M)
         if sect:
             end = start + sect.start()
         out.append((m.group(1).strip(), text[m.start():end]))
@@ -70,45 +63,32 @@ def split_candidates(text):
 
 
 def field(block, name):
-    m = re.search(rf"^[ \t]*{re.escape(name)}[^:：\n]*[:：][ \t]*(.*)$", block, re.M)
+    m = re.search(rf"^\s*{re.escape(name)}[^:：\n]*[:：][ \t]*(.*)$", block, re.M)  # 不让 \s 吞掉换行
     return m.group(1).strip() if m else None
 
 
-FIELD_LINE = r"^[ \t]*(一句话|前提|反讽|基调|人物|关系|观众|主控画面|这[^:：\n]*拍什么|独特之处|依赖[^:：\n]*|风险|与其他候选[^:：\n]*)[ \t]*[:：]"
+FIELD_LINE = r"^\s*(一句话|前提|反讽|基调|人物|观众|主控画面|这 ?.*拍什么|独特之处|依赖|风险|与其他候选)"
 
 
 def field_lines(block):
-    return [line for line in block.splitlines() if re.match(FIELD_LINE, line)]
-
-
-def placeholder(value):
-    value = value.strip()
-    return value in PLACEHOLDER or bool(re.fullmatch(r"_+|〈[^〉]*〉|<[^>]*>", value))
-
-
-def prose_lines(block):
-    return [line.strip() for line in block.splitlines()[1:]
-            if line.strip() and not re.match(FIELD_LINE, line)
-            and not re.match(r"^[ \t]*(?:#|\||```|~~~)", line)
-            and not placeholder(line)]
+    return [l for l in block.splitlines() if re.match(FIELD_LINE, l)]
 
 
 def is_full(title, block):
-    """正文不要求字段数量；旧卡至少有一句实际内容才可选。"""
-    return bool(prose_lines(block)) or any(
-        not placeholder(re.sub(r"^[^:：]*[:：][ \t]*", "", line))
-        for line in field_lines(block))
+    """被否候选只有一行（标题 + 一句话 + 不选理由）；有 ≥ 2 个字段行的才算完整候选。"""
+    return len(field_lines(block)) >= 2
 
 
 def is_empty(title, block):
-    if is_full(title, block):
-        return False
-    head = block.splitlines()[0] if block.splitlines() else ""
-    # Historical rejected candidates keep a synopsis/reason on the heading line.
-    if re.match(LEGACY_HEAD, head):
-        tail = re.sub(r"^[ \t]*候选[ \t]*\d*[ \t]*[〈《][^〉》]+[〉》]", "", head).strip(" \t—-–:：")
-        return placeholder(tail) or len(tail) < 6
-    return True
+    """只有标题，或所有字段行的值都是占位符：空候选。"""
+    lines = block.splitlines()
+    values = [re.sub(r"^[^:：]*[:：]\s*", "", l).strip() for l in field_lines(block)]
+    head = lines[0] if lines else ""
+    after_title = re.sub(r"^\s*候选\s*\d*\s*[〈《][^〉》]+[〉》]", "", head).strip(" \t—-–:：")
+    rest = [l.strip() for l in lines[1:] if l.strip()]
+    if not rest:
+        return len(after_title) < 6  # 被否候选把一句话与理由写在标题行上，不算空
+    return bool(values) and all(v in PLACEHOLDER for v in values) and len(rest) == len(values)
 
 
 def grams(text, n=3):
@@ -117,12 +97,12 @@ def grams(text, n=3):
 
 
 def main(path, as_json=False):
-    text = re.sub(r"<!--.*?-->", "", Path(path).read_text(encoding="utf-8"), flags=re.S)
+    text = Path(path).read_text(encoding="utf-8")
     errors, warns = [], []
 
     cands = split_candidates(text)
     if not cands:
-        errors.append("C01 没有候选（需要「## 候选 1｜标题」正文提案或旧式「候选 〈标题〉」块）")
+        errors.append("C01 没有候选（需要至少 1 个「候选 〈标题〉」块）")
     for t, b in cands:
         if is_empty(t, b):
             errors.append(f"C01 候选〈{t}〉为空：只有标题或所有字段为占位符，空候选不能通过")
@@ -130,12 +110,15 @@ def main(path, as_json=False):
     if cands and not full and not any(is_empty(t, b) for t, b in cands):
         errors.append("C01 没有完整候选：每个候选块都只有一行（被否候选格式），没有任何一个可以选定的候选")
 
-    # Internal analysis is not a required deliverable; C02 is retired.
+    # C02 创作判断
+    judg = sum(1 for k in ("最初", "最后", "独特", "锁定") if re.search(k, text))
+    if judg < 3:
+        warns.append(f"C02 创作判断只找到 {judg}/4 项（最初理解 / 最后理解 / 独特之处 / 锁定与探索）")
 
     # C05 示例照搬：标题相同且内容重合才算；标题相同但内容自写只提示
     for t, b in cands:
         if t in EXAMPLE_CANDIDATES and "夹具" not in text[:400]:
-            own = " ".join(x for x in ((field(b, "一句话") or ""), (field(b, "主控画面") or ""), " ".join(prose_lines(b))) if x)
+            own = " ".join(x for x in ((field(b, "一句话") or ""), (field(b, "主控画面") or "")) if x)
             g_own, g_ex = grams(own), grams(EXAMPLE_CANDIDATES[t])
             overlap = len(g_own & g_ex) / len(g_ex) if g_ex else 0
             if own and overlap >= 0.5:
@@ -148,7 +131,7 @@ def main(path, as_json=False):
     research_text = text[m_res.start():] if m_res else ""
     imgs = []
     for t, b in full:
-        missing = [n for n in ("一句话", "独特之处") if (field(b, n) is not None and placeholder(field(b, n)))]
+        missing = [n for n in ("一句话", "独特之处") if (field(b, n) is None or field(b, n) in PLACEHOLDER)]
         if missing:
             warns.append(f"C09 候选〈{t}〉缺 {'/'.join(missing)}")
         one = field(b, "一句话") or ""
@@ -162,7 +145,9 @@ def main(path, as_json=False):
             warns.append(f"C10 候选〈{t}〉「拍什么」行含镜头词，概念阶段不分镜")
         if len(full) >= 2:
             diff = field(b, "与其他候选的差异")
-            if diff is not None and not any(w in diff for w in DIFF_WORDS):
+            if diff is None:
+                warns.append(f"C04 候选〈{t}〉缺「与其他候选的差异」行")
+            elif not any(w in diff for w in DIFF_WORDS) or (any(w in diff for w in LOCATION_ONLY) and not any(w in diff for w in DIFF_WORDS)):
                 warns.append(f"C04 候选〈{t}〉的差异只提地点或未指向人物 / 事件 / 观众理解：「{diff}」")
         dep = field(b, "依赖的事实与可信范围") or field(b, "依赖的事实")
         if dep and not re.search(r"无外部事实|无依赖|不依赖", dep):

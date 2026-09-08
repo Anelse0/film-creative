@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **1.2.1**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **1.2.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,12 +15,6 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
-
-## 1.2.1 更新
-
-候选交付改为 **标题 + 连续故事提案**。人物、关系、观众判断与默认地图用于内部开发；多个方案需要帮助选择时集中比较，关键依据或不确定性按需说明。取消十字段卡、模型执行风险和固定结尾问句，校验器同步接受正文格式并兼容旧卡。
-
-[新交付协议](references/concept-generation.md) · [阅读格式示意](examples/concept-prose.md) · [修订记录](tests/acceptance-1.2.1.md)。82 个 unittest 与 shell 回归通过；新增测试检查格式行为，不评判创意质量。
 
 ## 1.2.0 更新
 
