@@ -25,7 +25,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 |---|---|---|---|
 | S1 资源读取 | `references/stage-1-intake.md` | 材料登记（按保存契约）+ 缺口清单 | |
 | S2 需求识别 | 同上 §需求识别 ＋ `references/scene-parameters.md` §一 | 创作意图 · 材料成熟度与入口 · 锁定项 · 目标终点与排除项 · 自主度 / 确认 / 保存 · **场景参数卡** | |
-| S3a 概念 | `references/concept-generation.md` ＋ `references/stage-3a-concept.md` ＋ `references/research-to-craft.md` | 对话内创作判断 + 候选（数量由任务定，可附关键场景试写）；选定内容；按保存契约写 `01_concept.md` | ▮ 候选（用户要选方向时） |
+| S3a 概念 | `references/concept-generation.md` ＋ `references/stage-3a-concept.md` ＋ `references/research-to-craft.md` | 标题 + 连续故事提案（数量由任务定，比较/依据/试写按需）；选定内容；按保存契约写 `01_concept.md` | ▮ 候选（用户要选方向时） |
 | S3b 故事开发 | `references/stage-3b-story.md` ＋ `references/screenwriting-traditions.md` | 对话内可连续阅读的故事正文（辅助表按需）；按保存契约写 `02_story.md` + `ip.md` | 按执行契约 |
 | S3c 剧本落地 | `references/stage-3c-script.md` ＋ `references/scene-parameters.md` | 对话内每场剧本页；按保存契约写 `03_script/scene-XX.md` | 按执行契约 |
 
@@ -71,7 +71,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 
 ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 + 标题（`teaser-30s-举证`、`ep01-…`）。用户已有目录时沿用。同一项目目录的 04_shots / 05_assets / 06_prompts / 07_qa 子目录由 film-director 生成，本 skill 不写入。已保存项目的版本、快照、恢复与正典见 `references/project-state.md`；只读检查用 `scripts/project_check.py`。模板在 `templates/`：`ip.md` · `story.md` · `script-scene.md` · `concept.md`。
 
-示例：`examples/concept-worked-examples.md`（概念协议走查，概念模式不读）。示例展示流程，不提供答案，禁止复用其中的查询、候选、台词。
+示例：`examples/concept-worked-examples.md`（协议走查）与 `examples/concept-prose.md`（正文提案格式），概念模式默认不读。示例展示流程，不提供答案，禁止复用其中的查询、候选、台词。
 
 ## 交接契约（进入生产）
 

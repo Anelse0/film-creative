@@ -13,7 +13,7 @@ check "good-concept exits 0" $rc "$out"
 echo "$out" | grep -q "0 error(s), 0 warning(s)"; check "good-concept clean (single candidate, research rows with 可信范围)" $? "$(echo "$out" | tail -1)"
 out=$($C examples/bad-concept.md); rc=$?
 [ $rc -eq 1 ]; check "bad-concept exits 1" $? "rc=$rc"
-for code in C02 C03 C04 C06 C07 C09 C10 C11; do
+for code in C03 C04 C06 C07 C10 C11; do
   echo "$out" | grep -q "$code"; check "bad-concept has $code" $? ""
 done
 # 2.4.0: 候选数量不固定；集中研究一个题材不是错误；旧格式概念卡只告警不报错

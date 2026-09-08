@@ -130,5 +130,64 @@ class ConceptValidatorTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn("C09 候选〈杯子〉缺 独特之处", out)
 
+class ProseConceptTests(unittest.TestCase):
+    def test_plain_proposal_needs_no_analysis_fields(self):
+        rc, out = run("## 候选｜晚班\n\n两位同事终于有空一起吃饭，却仍在互相报工作进度。她先合上工作本，问他今天吃过什么。\n")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("0 error(s), 0 warning(s)", out)
+
+    def test_multiple_proposals_and_shared_comparison(self):
+        text = ("## 候选 1｜晚班\n\n她替同事留了一份晚饭，两人终于一起坐下来。\n"
+                "## 候选 2｜早班\n\n他第一次主动替同事交班，好让她赶上孩子的演出。\n"
+                "## 比较\n第一个适合共同停留的时刻，第二个关注离开后留下的责任。\n")
+        rc, out = run(text)
+        self.assertEqual(rc, 0, out)
+        self.assertIn("完整候选 2", out)
+        self.assertIn("0 error(s), 0 warning(s)", out)
+
+    def test_new_and_legacy_blocks_can_coexist(self):
+        text = "## 候选 1｜晚班\n\n她坐下来和同事一起吃饭。\n" + cand("杯子")
+        rc, out = run(text)
+        self.assertEqual(rc, 0, out)
+        self.assertIn("完整候选 2", out)
+        self.assertNotIn("C04", out)
+
+    def test_title_comment_and_placeholder_only_fail(self):
+        for tail in ("", "\n<!-- 这是分析说明 -->", "\n〈连续的故事概述〉", "\n______"):
+            rc, out = run("## 候选 1｜空壳\n" + tail + "\n## 推荐\n推荐这个方向。")
+            self.assertEqual(rc, 1, out)
+            self.assertIn("C01", out)
+
+    def test_unfilled_current_template_fails(self):
+        rc, out = run((ROOT/'templates/concept.md').read_text())
+        self.assertEqual(rc, 1, out)
+        self.assertIn("C01", out)
+
+    def test_filled_current_template_passes(self):
+        text = (ROOT/'templates/concept.md').read_text()
+        text = text.replace('〈项目标题〉', '晚班').replace('〈短标题〉', '一起吃饭')
+        text = text.replace('〈连续的故事概述。人物关系、具体事件、回应与发展可能写进正文，不另填分析字段。〉',
+                            '两位同事终于有空一起吃饭，却仍在互相报工作进度。她先合上工作本，问他今天吃过什么。')
+        rc, out = run(text)
+        self.assertEqual(rc, 0, out)
+        self.assertIn("0 error(s), 0 warning(s)", out)
+
+    def test_prose_starting_with_character_is_not_a_field(self):
+        rc, out = run("## 候选｜小店\n\n人物介绍写到一半，她发现自己从不知道父亲年轻时做什么。她把笔记本递给父亲，请他改。")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("0 error(s), 0 warning(s)", out)
+
+    def test_copied_example_in_prose_is_still_detected(self):
+        rc, out = run("## 候选｜袖带\n\n" + validate_concept.EXAMPLE_CANDIDATES['袖带'])
+        self.assertEqual(rc, 1, out)
+        self.assertIn("C05", out)
+
+    def test_reading_example_has_two_clean_candidates(self):
+        rc, out = run((ROOT/'examples/concept-prose.md').read_text())
+        self.assertEqual(rc, 0, out)
+        self.assertIn("完整候选 2", out)
+        self.assertIn("0 error(s), 0 warning(s)", out)
+
+
 if __name__ == '__main__':
     unittest.main()
