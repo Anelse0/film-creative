@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""概念卡校验（film-seedance-director S3a，2.5.5）。
+"""概念卡校验（film-creative S3a）。
 
 用法: python3 validate_concept.py <01_concept.md> [--json]
 

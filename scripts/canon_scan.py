@@ -17,6 +17,11 @@ NOTE — the text is *talking about* the retirement, as the handoff contract
 asks for in blanked-out rows — and does not count toward the exit code unless
 --strict is given. --ignore REGEX drops lines/cells entirely (e.g. version logs).
 
+Excel lock files (~$name.xlsx) are ignored; an .xlsx that cannot be read
+(not a zip, truncated) is reported as SKIP and the scan continues. When two
+aliases match the same line/cell and one is a substring of the other
+(Preston / Preston Vane) only the longer one is reported.
+
 Exit 1 when any HIT remains, 0 when clean. Matching is literal and
 case-insensitive; it finds stale words, not stale logic — a scene can still
 carry an outdated premise without using a retired word.
@@ -26,6 +31,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from xlsx_lite import read_workbook, column_letter  # noqa: E402
@@ -64,52 +70,59 @@ def iter_files(paths):
         if p.is_dir():
             for f in sorted(p.rglob("*")):
                 if f.is_file() and (f.suffix.lower() in TEXT_SUFFIXES or f.suffix.lower() == ".xlsx"):
-                    if "_archive" in f.parts or ".git" in f.parts:
+                    if "_archive" in f.parts or ".git" in f.parts or f.name.startswith("~$"):
                         continue
                     yield f
         elif p.is_file():
             yield p
 
 
-def scan_text(path, terms):
+def _matches(text, terms, file, where):
+    found = [t for t in terms if re.search(re.escape(t), text, re.I)]
+    # An alias contained in a longer matched alias is the same drift, not a second one.
+    found = [t for t in found if not any(o != t and t.lower() in o.lower() for o in found)]
+    kind = "note" if MENTION_RE.search(text) else "hit"
+    return [{"file": file, "where": where, "term": t, "replacement": terms[t],
+             "text": text.strip().replace("\n", " ")[:120], "kind": kind} for t in found]
+
+
+def scan_text(path, terms, ignore=None):
     hits = []
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except UnicodeDecodeError:
         return hits
     for no, line in enumerate(lines, 1):
-        for term, repl in terms.items():
-            if re.search(re.escape(term), line, re.I):
-                hits.append({"file": str(path), "where": f"line {no}", "term": term, "replacement": repl,
-                             "text": line.strip()[:120], "kind": "note" if MENTION_RE.search(line) else "hit"})
+        if ignore and re.search(ignore, line):
+            continue
+        hits.extend(_matches(line, terms, str(path), f"line {no}"))
     return hits
 
 
-def scan_xlsx(path, terms):
+def scan_xlsx(path, terms, ignore=None):
+    try:
+        book = read_workbook(path)
+    except (ValueError, KeyError, ET.ParseError) as exc:
+        return [{"file": str(path), "where": "-", "term": "", "replacement": "",
+                 "text": str(exc)[:120], "kind": "skip"}]
     hits = []
-    for sheet, rows in read_workbook(path).items():
+    for sheet, rows in book.items():
         for r, row in enumerate(rows, 1):
             for c, value in enumerate(row, 1):
-                if not isinstance(value, str):
+                if not isinstance(value, str) or (ignore and re.search(ignore, value)):
                     continue
-                for term, repl in terms.items():
-                    if re.search(re.escape(term), value, re.I):
-                        hits.append({"file": str(path), "where": f"{sheet}!{column_letter(c)}{r}", "term": term,
-                                     "replacement": repl, "text": value.strip().replace("\n", " ")[:120],
-                                     "kind": "note" if MENTION_RE.search(value) else "hit"})
+                hits.extend(_matches(value, terms, str(path), f"{sheet}!{column_letter(c)}{r}"))
     return hits
 
 
 def scan(paths, terms, skip=(), ignore=None):
+    """Return hit/note/skip records; `ignore` is matched against the full line or cell text."""
     skip = {Path(s).resolve() for s in skip}
     hits = []
     for f in iter_files(paths):
         if f.resolve() in skip:
             continue
-        found = scan_xlsx(f, terms) if f.suffix.lower() == ".xlsx" else scan_text(f, terms)
-        if ignore:
-            found = [h for h in found if not re.search(ignore, h["text"])]
-        hits.extend(found)
+        hits.extend(scan_xlsx(f, terms, ignore) if f.suffix.lower() == ".xlsx" else scan_text(f, terms, ignore))
     return hits
 
 
@@ -135,10 +148,11 @@ def main(argv):
     if not terms:
         parser.error("no retired terms: give --ip with a 正典变更/已废弃 table or --deprecated")
     hits = scan(args.paths, terms, skip, args.ignore)
-    real = [h for h in hits if h["kind"] == "hit" or args.strict]
+    real = [h for h in hits if h["kind"] == "hit" or (args.strict and h["kind"] == "note")]
     notes = [h for h in hits if h["kind"] == "note" and not args.strict]
+    skipped = [h for h in hits if h["kind"] == "skip"]
     if args.json:
-        print(json.dumps({"terms": terms, "hits": real, "notes": notes}, ensure_ascii=False, indent=2))
+        print(json.dumps({"terms": terms, "hits": real, "notes": notes, "skipped": skipped}, ensure_ascii=False, indent=2))
     else:
         print(f"== canon_scan: {len(terms)} retired term(s): {', '.join(terms)}")
         for h in real:
@@ -146,7 +160,9 @@ def main(argv):
             print(f"HIT  {h['file']} [{h['where']}] 「{h['term']}」{repl}: {h['text']}")
         for h in notes:
             print(f"NOTE {h['file']} [{h['where']}] 「{h['term']}」 说明性提及（作废/留空/版本记录），不计入")
-        print(f"== {len(real)} hit(s), {len(notes)} note(s)")
+        for h in skipped:
+            print(f"SKIP {h['file']}: 无法读取（{h['text']}），未扫描")
+        print(f"== {len(real)} hit(s), {len(notes)} note(s), {len(skipped)} skipped")
     return 1 if real else 0
 
 

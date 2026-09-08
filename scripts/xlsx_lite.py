@@ -68,7 +68,14 @@ def read_workbook(path):
     Rows are lists indexed from column A (index 0). Empty cells are None.
     """
     result = {}
-    with zipfile.ZipFile(path) as zf:
+    try:
+        zf = zipfile.ZipFile(path)
+    except zipfile.BadZipFile as exc:
+        # Excel lock files (~$name.xlsx), truncated downloads, non-xlsx renames.
+        raise ValueError(f"not an .xlsx workbook (not a zip): {path}") from exc
+    with zf:
+        if "xl/workbook.xml" not in zf.namelist():
+            raise ValueError(f"not an .xlsx workbook (no xl/workbook.xml): {path}")
         shared = _shared_strings(zf)
         for name, target in _sheet_paths(zf):
             root = ET.fromstring(zf.read(target))
@@ -78,12 +85,16 @@ def read_workbook(path):
                 result[name] = rows
                 continue
             for row in data.findall("m:row", NS):
-                r = int(row.get("r"))
+                # OOXML allows omitting r on <row>/<c>; the position is then implicit.
+                r_attr = row.get("r")
+                r = int(r_attr) if r_attr else len(rows) + 1
                 while len(rows) < r:
                     rows.append([])
                 cells = rows[r - 1]
+                col = 0
                 for c in row.findall("m:c", NS):
-                    col = column_index(c.get("r"))
+                    ref = c.get("r")
+                    col = column_index(ref) if ref else col + 1
                     while len(cells) < col:
                         cells.append(None)
                     kind = c.get("t")

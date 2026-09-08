@@ -4,8 +4,9 @@ in context before writing. Standard library only (uses xlsx_lite).
 
 Usage: ledger_view.py LEDGER.xlsx [--from 30] [--to 40] [--sheet NAME] [--cols 镜号,入点,出点,场景,台词]
 The sheet is found by a header row containing 「镜号」. Columns are matched by header
-substring; omit --cols to print every non-empty column. Times given as Excel day
-fractions are shown as mm:ss.
+substring; omit --cols to print every non-empty column. In columns whose header
+names a time (入点 / 出点 / 起 / 止 / 时间 / time / start / end) Excel day fractions
+are shown as mm:ss; other fractional numbers (词/秒 …) print as they are.
 """
 import argparse
 import re
@@ -16,8 +17,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from xlsx_lite import read_workbook  # noqa: E402
 
 
-def fmt(value):
-    if isinstance(value, float) and 0 <= value < 1:
+TIME_HEADER_RE = re.compile(r"入点|出点|^起$|^止$|起点|止点|时间|time|start|end", re.I)
+
+
+def fmt(value, time_col=False):
+    if time_col and isinstance(value, float) and 0 <= value < 1:
         s = int(round(value * 86400))
         return f"{s // 60:02d}:{s % 60:02d}"
     if isinstance(value, float) and value.is_integer():
@@ -41,12 +45,13 @@ def view(path, start=None, end=None, sheet=None, cols=None):
         header = [str(c) if c is not None else "" for c in rows[hdr]]
         idx = [i for i, h in enumerate(header) if h and (not cols or any(c in h for c in cols))]
         id_col = next(i for i, h in enumerate(header) if "镜号" in h)
+        time_cols = {i for i, h in enumerate(header) if TIME_HEADER_RE.search(h)}
         out = ["| " + " | ".join(header[i] for i in idx) + " |", "|" + "---|" * len(idx)]
         for r in rows[hdr + 1:]:
             k = shot_key(r[id_col]) if id_col < len(r) else None
             if k is None or (start is not None and k < start) or (end is not None and k > end):
                 continue
-            out.append("| " + " | ".join(fmt(r[i]) if i < len(r) else "" for i in idx) + " |")
+            out.append("| " + " | ".join(fmt(r[i], i in time_cols) if i < len(r) else "" for i in idx) + " |")
         return f"### {name}\n" + "\n".join(out)
     raise ValueError("no sheet with a 「镜号」 header")
 

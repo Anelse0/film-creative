@@ -56,13 +56,36 @@ class CanonScanTests(unittest.TestCase):
             hits = scan([root], {'守门人乙': '队长', '旧守门人': ''})
         kinds = sorted((h['where'], h['kind']) for h in hits)
         self.assertEqual(kinds, [('line 1', 'hit'), ('line 2', 'note'), ('line 3', 'note')])
-        self.assertEqual([h['where'] for h in scan([root], {'守门人乙': ''}, ignore=r'版本记录')], []) if False else None
 
     def test_ignore_regex_drops_matches(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / 'a.md').write_text('守门人乙 在此。\nV3.5 记录：守门人乙 改为队长。', encoding='utf-8')
             self.assertEqual([h['where'] for h in scan([root], {'守门人乙': ''}, ignore=r'^V\d')], ['line 1'])
+
+    def test_ignore_regex_sees_full_text_not_truncated_summary(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'a.md').write_text('x' * 130 + ' 守门人乙 出现在 V3.5 版本记录。', encoding='utf-8')
+            self.assertEqual(scan([root], {'守门人乙': ''}, ignore=r'版本记录'), [])
+
+    def test_overlapping_aliases_report_longest_match_once(self):
+        terms = {'Preston': '删除', 'Preston Vane': '删除'}
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'a.md').write_text('Preston Vane 举杯。\nPreston 转身。', encoding='utf-8')
+            hits = sorted((h['where'], h['term']) for h in scan([root], terms))
+        self.assertEqual(hits, [('line 1', 'Preston Vane'), ('line 2', 'Preston')])
+
+    def test_lock_and_unreadable_xlsx_are_skipped_not_fatal(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / '~$board.xlsx').write_bytes(b'excel lock file')
+            (root / 'broken.xlsx').write_bytes(b'not a zip')
+            (root / 'a.md').write_text('守门人乙 在此。', encoding='utf-8')
+            hits = scan([root], {'守门人乙': ''})
+        self.assertEqual(sorted((Path(h['file']).name, h['kind']) for h in hits),
+                         [('a.md', 'hit'), ('broken.xlsx', 'skip')])
 
     def test_no_hits_is_clean(self):
         with tempfile.TemporaryDirectory() as d:

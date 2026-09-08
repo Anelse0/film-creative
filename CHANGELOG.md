@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.2 — 2026-09-08
+
+容错修复（对两个 skill 的脚本、测试与文档做一次审查后发现的问题；无新功能）。
+
+- `scripts/canon_scan.py`：跳过 Excel 锁文件（`~$…xlsx`，主表在 Excel 里打开时必然存在）；无法读取的 xlsx（非 zip、损坏）报 `SKIP` 并继续，不再整次扫描崩溃；同一行 / 单元格里互为子串的别名（如 `Preston` 与 `Preston Vane`）只报最长匹配一次；`--ignore` 对完整原文生效（此前只对截断到 120 字的摘要匹配，标记在 120 字之后时漏过滤）。`--json` 多一个 `skipped` 数组。
+- `scripts/xlsx_lite.py`、`scripts/ledger_view.py`：与 film-director 1.3.2 同文——`<row>` / `<c>` 缺 `r` 属性时按位置读；非 zip 文件抛 `ValueError`；`ledger_view` 只把时间列的小数显示为 mm:ss（词/秒等列此前会显示成 `720:00`）。
+- `SKILL.md`：对白出处指向补 `craft-sources-1.3.1.md`（1.3.1 之后台词工艺的出处在该文件；`craft-sources-1.2.0.md` 只覆盖 dialogue-design 的 D1/D2 与 Fountain）。
+- `scripts/validate_concept.py` 文档字符串改为 film-creative。
+- 测试：`test_canon_scan.py` +3（ignore 全文匹配、别名去重、锁文件 / 损坏文件跳过）并删一行死代码；`test_collab_docs.py` 的同文检查扩到 xlsx_lite / ledger_view（与 film-director 侧新增的 `test_shared_files.py` 互为镜像）；`test_ledger_view.py` 加非时间列小数断言。86 unittest + shell 回归通过。
+
 ## 1.3.1 — 2026-09-08
 
 按体系（好莱坞 / 欧洲 / 韩国 / 竖屏短剧）落地台词与系列方法论，并把 1.3.0 里未读原文就并入的链接逐条重新标注证据强度。

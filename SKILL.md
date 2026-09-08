@@ -32,7 +32,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 **接已有材料时**：先读 `references/story-context.md`，开写前定位整体故事、当前状态、远处依赖与后文边界；每次换场/修订复用，不能只读最近一段。
 **发展新意时**：S3a–S3c 按需读 `references/creative-search.md`，从人物选择、关系与后果形成实际正文；不把加戏等同于增加灾难、反转或新设定。好莱坞与韩国创作者的一手方法按 `references/screenwriting-methods.md` 的具体问题入口选用，不按地域套公式。
 
-**对白创作或修改时**：读 `references/dialogue-design.md`，写连续交流再从听者反应修订；按需查一手出处 `references/craft-sources-1.2.0.md`。
+**对白创作或修改时**：读 `references/dialogue-design.md`，写连续交流再从听者反应修订；按需查一手出处 `references/craft-sources-1.3.1.md`（台词工艺 / 系列引擎）与 `references/craft-sources-1.2.0.md`（dialogue-design 的 D1/D2、Fountain）。
 **用户给节拍草稿要台词时**（"A 对 B 说 xx 意思，B 不舒服地回……换场"——最常见的输入）：走 `references/beat-to-dialogue.md`：先写两行承接，逐节拍定目的动词，先写目标语言再给中文对照，附台词设计表（`templates/dialogue-design-sheet.md`），收尾句。逐句工艺检查与英语语域见 `references/dialogue-craft.md`。
 **系列 / 多集项目**：每场戏做一次"引擎在场吗"的判断（`references/series-engine.md`）；私人线与引擎线在同一场相交时才是先导片该有的样子。
 **与 film-director 协作**：交接物、账本模式、正典变更协议、台词预算见 `references/handoff-contract.md`（两个 skill 同文）。
