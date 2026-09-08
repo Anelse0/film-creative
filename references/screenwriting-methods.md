@@ -70,3 +70,5 @@
 ## 采用后的共同步骤
 
 只比较正文中的收益、所需新前提和受影响后文。新段若精彩却越界，先改回边界内，或仅作为明确的上游修订提案；不能靠“作者风格”豁免连续性。采用后按 `story-context.md` 更新状态变化，按 `creative-loop.md` 保留改稿优点。
+
+新版对白生成入口见 `dialogue-design.md`；人物成功后的目标发展和群像选择见 `creative-search.md` 末节；新增来源 D1/D2/K5/K6/F1 见 `craft-sources-1.2.0.md`。

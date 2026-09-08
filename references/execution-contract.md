@@ -23,6 +23,8 @@
 
 ## 结构化自检
 
-复杂请求形成结构化记录，简单请求只需一行判断；不要求用户填 JSON。格式见 `templates/execution-record.json`：原始 source；request 的 target、entry、excluded、autonomy、save、units；相关 history；本次 confirmation；hard_locks；planned_stages。未知值留 unspecified，不猜测授权。确认来源不能伪造。
+复杂请求形成结构化记录，简单请求只需内部简短判断；不要求用户填 JSON。格式见 `templates/execution-record.json`：原始 source；request 的 target、entry、excluded、autonomy、save、units；相关 history；本次 confirmation；hard_locks；planned_stages。未知值留 unspecified，不猜测授权。确认来源不能伪造。
 
 `python3 scripts/route_check.py --record route.json` 只校验判断的结构、保存继承和计划边界，不判断自然语言理解正确性。旧自由文本 CLI 返回“需要语义理解”及退出码 2，不再猜意图。无保存任务可用临时文件检查；实际语义通过任务轨迹与用户指令对照验证。
+
+`planned_stages` 是本次成果推进的有序范围，不是创意思考轨迹；试写和诊断可以回流，既有稿只改授权部分，不因回流重复新建上游产物。

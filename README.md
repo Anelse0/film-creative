@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **1.1.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **1.2.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -16,14 +16,16 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
 
-## 1.1.0 更新
+## 1.2.0 更新
 
-- 接已有故事时，开写前读取整体、当前场、远处依赖和后文边界；区分故事事实、人物所知与观众所知，采用后记录变化量，恢复时不混入否定分支。
-- 创意从人物选择、关系、日常条件与后果中发展，实际比较正文收益与修改代价；不把加戏自动变成新灾难、新反派或规则例外。
-- 提炼好莱坞与韩国创作者的七项方法：场景作用、行为处境、选择后果、空间因果、事件与关系共用行动、语言来源、有依据的歧义。全部注明一手出处与适用边界，不按地域套公式。
-- 修复独立 Skill 的路由边界与残留生产模板；默认对话交付、已有保存约定及用户新授权仍沿用。
+- **编剧创意**：新增人物成功后的目标发展、共同事件下的群像选择；修正固定代价、短主控句、镜头套路表等限制。
+- **台词设计**：写连续交流，再从听者实际接收的信息修订；覆盖直接表达、长独白、喜剧群戏、文雅修辞与重复变义，保护锁定台词和人物知识。
+- **工作流**：按当前任务取用材料，试写允许回流；正文先行，必要说明后置，精简模板与重复回显，不自动增加审批或文件。
+- **文件格式**：统一 Markdown 场头/动作/人物/台词；新增可选 Fountain 语法模板。汇编器支持相对来源清单、只读校验、覆盖保护及常规写入失败回滚，保留旧版输入兼容。
 
-[审查与验证记录](tests/acceptance-1.1.0/review.md)：60 个 unittest 与 shell 回归通过，13 个合成案例非盲文本走查。**尚未做独立创意盲测，不宣称质量增益已被证明。**
+[专业来源与方法对应](references/craft-sources-1.2.0.md) · [整体审查与验证](tests/acceptance-1.2.0/review.md) · [实际阅读版样稿](tests/acceptance-1.2.0/reading.md)
+
+73 个 unittest 与 shell 回归通过，另有 8 个合成案例的非盲文本/文件走查。未开展独立创意盲测，不将规则落地或程序通过等同于质量增益。1.1.0 的上下文协议与七项一手方法继续沿用。
 
 ## 文件地图
 
@@ -39,7 +41,10 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/story-context.md` | 续写/改写开写前：整体/本场/远处依据、人物知识、后续边界、变化量与恢复 |
 | `references/creative-search.md` | 从已有关系与选择发展新意，写实际片段，比较收益和修订代价 |
 | `references/screenwriting-methods.md` | 好莱坞/韩国一手实践提炼的七项操作：按创作问题选用 |
-| `references/context-creativity-sources.md` | 本版专业资料、长故事生成研究、已读范围、实现对应与局限 |
+| `references/dialogue-design.md` | 新写/改写对白：交流处境、听者回应、声音差异、具体正文修订 |
+| `references/output-formats.md` | 对话与文件交付、Markdown 正文、来源校验、Fountain 交换边界 |
+| `references/craft-sources-1.2.0.md` | 本版 Hollywood / 韩国一手访谈及 Fountain 规范、实现与局限 |
+| `references/context-creativity-sources.md` | 1.1.0 专业资料、长故事生成研究、已读范围、实现对应与局限 |
 | `templates/scene-context.md` | 可选本场依据摘记；不新设审批/保存要求，不替代原文 |
 | `references/story-development.md` | 试写、跨场发展与信息排序操作 |
 | `references/character-scene-development.md` | S3b–S3c 共用：人物与观众责任、交流处境、声音的基础/对象/当下、分层诊断 |
@@ -68,6 +73,7 @@ cd <实际安装的Skill目录>
 python3 scripts/validate_concept.py <01_concept.md>
 python3 scripts/route_check.py --record <语义判断记录.json> --json
 python3 scripts/assemble_script.py 03_script/scene-01.md 03_script/scene-02.md --output 03_script/reading.md
+python3 scripts/assemble_script.py --verify 03_script/reading.md
 ```
 
 自动检查负责约束与交付完整性；创意与编剧质量由用户盲选、具体文本证据和 `references/preference-ledger.md` 判断（`scripts/blind_eval.py`，协议见 `tests/creative-eval.md`）。

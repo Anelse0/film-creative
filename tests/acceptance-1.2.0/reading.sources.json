@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "path_base": "manifest",
+  "derived": true,
+  "sources": [
+    {
+      "path": "scenes/scene-01.md",
+      "sha256": "9cbf56530ddaf5efa7a06dedf7602a72e98d902410617fb9a6c361128868680c"
+    },
+    {
+      "path": "scenes/scene-02.md",
+      "sha256": "b2d5dcb113ee1231c0152b7ac0fa038e17e8ec2a61a4d340a1bf733499f4eb1c"
+    }
+  ],
+  "output_sha256": "b2eaaa313e8c972421ac70ccae078138aa2c15266e93c483603caf761334b1f3"
+}

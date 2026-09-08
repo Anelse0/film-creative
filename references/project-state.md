@@ -28,3 +28,7 @@
 - assets/assets.md 使用稳定 ID（如 char-a-front-v1）。上传顺序只在本条 clip 的记录映射 img1/vid1/aud1；已有生产记录 schema 与 Prompt 引用不变。换序只影响该条上传映射，换素材内容才影响依赖它的其他条目。
 - `06_prompts/scene-XX-clipYY.production.json` 与对应 Prompt 并列，由 film-director 按其生产流程维护；本 skill 的检查器只读，不写入生产记录，也不代替其审阅。
 - 全剧本阅读视图是按场序汇集的派生物，标明源版本；修改回各场原文，禁止另维护一套竞争正稿。
+
+## 阅读副本
+
+多场汇编与校验统一见 `output-formats.md`。阅读副本不是当前场景稿；源稿改变后旧副本失效，恢复工作时可先用 `assemble_script.py --verify` 检查。不反向用阅读副本覆盖场景，也不把哈希一致当成语义连续。

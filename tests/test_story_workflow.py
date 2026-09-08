@@ -30,7 +30,6 @@ class StoryWorkflowPresenceTests(unittest.TestCase):
         text = self.read('references/creative-loop.md')
         for phrase in ('修订账本', '已确认内容', '暂定假设', '本轮问题', '需要保留的优点', '受影响部分', '达到目标就停'):
             self.assertIn(phrase, text)
-        self.assertIn('修订账本', self.read('templates/script-scene.md'))
 
     def test_route_check_is_wired_into_skill(self):
         self.assertTrue((ROOT / 'scripts/route_check.py').exists())
