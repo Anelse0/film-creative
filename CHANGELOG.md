@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.0 — 2026-09-10
+
+叙事节奏方法（节奏 ≠ 台词长短）。此前用户要求"调整节奏"时，本 skill 只有"台词预算/精简台词"这一条现成杠杆（`dialogue-craft.md` §四、`beat-to-dialogue.md`、`handoff-contract.md` §四都在讲时长适配），没有独立的叙事节奏方法，也没有把两者分开的护栏——于是"调节奏"被默认执行成"缩句"。
+
+**根因**：①无叙事节奏方法文件；②SKILL 无对应硬规则/路由；③"台词预算=精简台词"的时长适配语汇是唯一现成杠杆，被误当成节奏杠杆。
+
+**改动（均在 film-creative 侧文件，不动同文的 `handoff-contract.md`）**：
+- 新增 `references/narrative-pacing.md`：核心结论——节奏快慢 = 观众获取新信息与张力/情绪变化的速率，由信息释放顺序、场景转折、赌注升级、节拍密度、场序、潜台词决定，**不等于单句台词字数**；放慢常是加停顿/节拍，加快常是重排信息或砍整个冗余节拍/场。给出触发→先诊断（哪层 · 慢/赶在哪 · 动哪个杠杆）、叙事节奏杠杆表、"台词只在解释/重复/离题时才动且需授权"、"台词预算 ≠ 叙事节奏"、误用信号。
+- `SKILL.md`：硬规则 10（调节奏先叙事诊断，不以增删改台词为默认手段）＋快速路由"节奏太慢/太赶"条＋组件引用"调整叙事节奏时"。
+- `dialogue-craft.md` §四、`beat-to-dialogue.md`：台词预算处补一句——预算是**时长适配**，与叙事节奏是两件事，"调节奏"走 `narrative-pacing.md`，不等于缩句；预算精简只在 film-director 回传超预算时做，且先重构场再考虑削句。
+- 边界：画面/剪辑节奏（镜头长度、切点、一句一切）属生产侧 film-director `dialogue-pacing.md`，本文件是叙事节奏。
+- 来源：Murch《In the Blink of an Eye》、McKee《Story》、Yorke《Into the Woods》、No Film School / ScreenCraft / Script Mag、TV showrunner craft（Fiveable / 《Showrunners》/ Scriptnotes 728）——经 web search 获取要点，**未通读原文**，tag 从严（`[转述]`/`[行业文]`），条件式操作为本 skill `[推论]`。
+- 测试：`test_routing.py` 加 `test_pacing_routes_to_narrative_not_dialogue_trim`，并把 `narrative-pacing.md` 纳入退役门禁短语扫描；87 unittest + shell 回归通过。
+
 ## 1.3.2 — 2026-09-08
 
 容错修复（对两个 skill 的脚本、测试与文档做一次审查后发现的问题；无新功能）。

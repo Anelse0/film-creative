@@ -13,6 +13,7 @@ CREATIVE_DOCS = [
     'references/stage-3c-script.md', 'references/concept-generation.md', 'references/character-scene-development.md',
     'references/creative-loop.md', 'references/causal-chain.md', 'references/anti-mechanical.md',
     'references/research-to-craft.md', 'references/screenwriting-traditions.md', 'references/scene-parameters.md',
+    'references/narrative-pacing.md',
     'templates/concept.md', 'templates/story.md', 'templates/script-scene.md',
 ]
 # Phrases that turned methods into gates in ≤ 2.5.0. Any reappearance is a regression.
@@ -46,6 +47,19 @@ class CreativeGateRegressionTests(unittest.TestCase):
         text = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
         for ref in set(re.findall(r'`((?:references|templates|scripts|examples)/[^`]+)`', text)):
             self.assertTrue((ROOT / ref).exists(), ref)
+
+    def test_pacing_routes_to_narrative_not_dialogue_trim(self):
+        # 1.4.0: "调整节奏" must route to a narrative diagnosis, not a trim-the-lines reflex.
+        skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
+        self.assertIn('references/narrative-pacing.md', skill)
+        self.assertIn('调整节奏先做叙事诊断', skill)  # hard rule 10 present
+        self.assertIn('不以增删改台词为默认手段', skill)
+        pacing = (ROOT / 'references/narrative-pacing.md').read_text(encoding='utf-8')
+        # Core guardrail: pace != line length; trimming is last-resort + authorized.
+        self.assertIn('不等于单句台词的字数', pacing)
+        self.assertIn('最后一档', pacing)
+        # Keeps 台词预算 (duration-fit) explicitly separate from narrative pacing.
+        self.assertIn('台词预算 ≠ 叙事节奏', pacing)
 
 
 if __name__ == '__main__':

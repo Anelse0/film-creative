@@ -35,6 +35,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 **对白创作或修改时**：读 `references/dialogue-design.md`，写连续交流再从听者反应修订；按需查一手出处 `references/craft-sources-1.3.1.md`（台词工艺 / 系列引擎）与 `references/craft-sources-1.2.0.md`（dialogue-design 的 D1/D2、Fountain）。
 **用户给节拍草稿要台词时**（"A 对 B 说 xx 意思，B 不舒服地回……换场"——最常见的输入）：走 `references/beat-to-dialogue.md`：先写两行承接，逐节拍定目的动词，先写目标语言再给中文对照，附台词设计表（`templates/dialogue-design-sheet.md`），收尾句。逐句工艺检查与英语语域见 `references/dialogue-craft.md`。
 **系列 / 多集项目**：每场戏做一次"引擎在场吗"的判断（`references/series-engine.md`）；私人线与引擎线在同一场相交时才是先导片该有的样子。
+**调整叙事节奏时**（用户说"节奏太慢 / 太拖 / 太赶 / 调一下节奏"）：读 `references/narrative-pacing.md`。节奏快慢 = 观众获取新信息与张力变化的速率，是**叙事结构**问题；先诊断（哪层 · 慢/赶在哪 · 动哪个叙事杠杆），台词增删改是最后一档且需授权，不是默认手段。这与"台词预算"（时长适配）是两件事。画面/剪辑节奏属生产侧（film-director `dialogue-pacing.md`）。
 **与 film-director 协作**：交接物、账本模式、正典变更协议、台词预算见 `references/handoff-contract.md`（两个 skill 同文）。
 **交付或保存时**：格式统一见 `references/output-formats.md`；正文先行，分析栏目按需。
 
@@ -95,6 +96,7 @@ ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 +
 7. **现实事实需要可靠依据**（`references/research-to-craft.md`）：真实素材记录来源与可信范围；未锁定的虚构是创造，不是幻觉。
 8. **系列项目每场戏接引擎。** 先导 / 多集项目在 `ip.md` 写清故事引擎（谁掌握什么决定权、每集必碰什么），每场对照一次：碰到了引擎、只在私人线、或两线相交；只在私人线时写明是有意的。私人线是主体，引擎是发动机；宣布 / 候选类场面不揭结果，留给后续（`references/series-engine.md`）。
 9. **改了正典就扫漂移。** 人设 / 引擎 / 造型 / 删角色的改动先登记到 `ip.md` 正典变更表，再跑 `scripts/canon_scan.py`，命中逐条改写、留空或写明保留理由；不 patch 旧分镜，不让旧词靠"表里还在"存活。
+10. **调整节奏先做叙事诊断，不以增删改台词为默认手段。** 节奏快慢 = 观众获取新信息与张力/情绪变化的速率，由信息释放、场景转折、赌注升级、节拍密度与场序决定，不等于台词字数（放慢常是加一个停顿/节拍，加快常是重排信息或砍整个冗余节拍/场）。用户要求调节奏时走 `references/narrative-pacing.md`：先判断哪一层、慢/赶在哪、动哪个叙事杠杆；台词增删改是最后一档、只在某句本身在解释/重复/离题时做、且需授权（呼应规则 4、6）。台词预算（时长适配）是另一件事，只在 film-director 回传超预算时做（`references/dialogue-craft.md` §四）。
 
 ## 默认输出契约
 
@@ -109,6 +111,7 @@ ip-slug = 用户给的 IP 名或概念选定后的标题；story-slug = 格式 +
 - "只保存已有稿"：保存动作，不新编故事或剧本。
 - "接戏：A 走后 B 对 C 说……然后换场"（节拍草稿）：`references/beat-to-dialogue.md`，交英文＋中文对照＋台词设计表，先写两行承接。
 - "这里的台词需优化 / 没逻辑 / 太牵强"：先按 `references/dialogue-craft.md` 逐句检查定位（在向观众解释？比喻落不了地？说话人不该知道？），再定点改；每次给整场全文。
+- "节奏太慢 / 太拖 / 太赶 / 调一下节奏"：`references/narrative-pacing.md`——先做叙事诊断（信息率 / 场景转折 / 赌注升级 / 节拍密度 / 场序 / 潜台词），动叙事杠杆；台词增删改是最后一档且需授权，**不默认缩句**；这与"台词预算"（时长适配）是两件事，画面/剪辑节奏交 film-director。
 - "宣布 / 演讲要层层递进、缺收尾"：设计表写情绪阶梯（3–7 步各落一句）与收尾句。
 - "人设 / 引擎改了，检查其他文件"：登记正典变更 → `scripts/canon_scan.py` → 逐条处理，未出的段落留空标〔待定〕。
 - "出分镜 / 出 Prompt / 表演测试"：指认材料，交由 film-director。

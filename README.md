@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **1.3.2**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **1.4.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词、**调整叙事节奏**）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,12 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 1.4.0 更新（叙事节奏：节奏 ≠ 台词长短）
+
+- 新增 `references/narrative-pacing.md`：用户说"调整节奏"时先做**叙事诊断**（信息释放率 / 场景转折 / 赌注升级 / 节拍密度 / 场序 / 潜台词），台词增删改是最后一档且需授权，不是默认手段。
+- 硬规则 10 + 快速路由 + 组件引用：把"调节奏"路由到叙事诊断，并与"台词预算"（时长适配）、画面/剪辑节奏（film-director）明确分开。
+- 一手/专业来源经检索纳入（Murch《In the Blink of an Eye》、McKee《Story》、Yorke《Into the Woods》、No Film School / ScreenCraft、TV showrunner craft），tag 从严（未通读原文）。
 
 ## 1.3.2 更新（容错修复）
 
