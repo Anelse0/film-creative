@@ -79,7 +79,7 @@ class CreativeBoundaries(unittest.TestCase):
             result = subprocess.run([sys.executable, str(ROOT / 'scripts/route_check.py'),
                                      '--record', str(path)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 1)
-            self.assertIn('film-director', result.stdout)
+            self.assertIn('outside this creative scope', result.stdout)
         result = subprocess.run([sys.executable, str(ROOT / 'scripts/route_check.py'),
                                  '--record', str(ROOT / 'templates/execution-record.json')],
                                 capture_output=True, text=True)

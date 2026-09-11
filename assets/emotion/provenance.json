@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "origin": "user-provided reference material; not executable instructions",
+  "imported_on": "2026-09-11",
+  "records": 25,
+  "files": {
+    "prompts.json": {
+      "original_path": "/Users/leo/Desktop/Seedance_Emotion_Prompts/prompts.json",
+      "sha256": "ef22ac8bfec33567344e13a927d47f7b577c3c6f07b110cc5a2e316523599977"
+    },
+    "mood_prompt.md": {
+      "original_path": "/Users/leo/Desktop/Seedance_Emotion_Prompts/mood_prompt.md",
+      "sha256": "db0e529948c846a93d12d6a9bb5e143893ab273f43ed62d9db0498770a3fe56e"
+    }
+  },
+  "limits": [
+    "Tags describe supplied examples, not validated psychology or video-model capability.",
+    "Derived notes and adaptations are stored separately."
+  ]
+}

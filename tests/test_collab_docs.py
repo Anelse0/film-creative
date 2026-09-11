@@ -17,15 +17,6 @@ class CollabDocsTests(unittest.TestCase):
                 if name.startswith(('references', 'templates')) or name.endswith('canon_scan.py'):
                     self.assertIn(name, skill)
 
-    def test_shared_files_are_identical_to_film_director_copies_when_present(self):
-        sibling = ROOT.parent / 'film-director'
-        if not sibling.is_dir():
-            self.skipTest('sibling film-director checkout not present')
-        for name in ('references/handoff-contract.md', 'scripts/xlsx_lite.py', 'scripts/ledger_view.py'):
-            with self.subTest(file=name):
-                self.assertEqual((ROOT / name).read_bytes(), (sibling / name).read_bytes(),
-                                 f'{name} differs from the film-director copy; update both in the same change')
-
     def test_ip_template_has_engine_and_canon_delta_sections(self):
         text = (ROOT / 'templates/ip.md').read_text(encoding='utf-8')
         self.assertIn('## 故事引擎', text)

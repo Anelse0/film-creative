@@ -1,6 +1,6 @@
 # 台词设计：从听者的反应写出下一句
 
-用于新写、扩写对白，以及“台词都像作者”“每句漂亮但交流不成立”的修订。已有稿先按 `story-context.md` 取故事依据；声音基础和诊断分层沿用 `character-scene-development.md`。以下是 Skill 的方法提炼，不是专家原话或逐句打分公式。来源 D1/D2 见 `craft-sources-1.2.0.md`。
+用于新写、扩写对白，以及“台词都像作者”“每句漂亮但交流不成立”的修订。已有稿先按 `story-context.md` 取故事依据；声音基础和诊断分层沿用 `character-scene-development.md`。以下是 Skill 的方法提炼，不是专家原话或逐句打分公式。依据见 `craft-evidence.md` S04、S06、S07；情绪与交流联动见 `emotion-dramaturgy.md`。
 
 ## 先找到这一段为什么发生
 

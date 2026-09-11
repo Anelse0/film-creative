@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "status": "original creative synthesis; not source text or psychology",
+  "entries": [
+    {
+      "id": 1,
+      "aliases": [
+        "喜悦",
+        "大笑",
+        "欢乐"
+      ],
+      "temporal_value": "笑从受控转为释放，最后仍有余笑",
+      "possible_context": "重逢、共同失误、松绑后的玩笑",
+      "adaptation_options": "压着不笑直到对方也笑；或完整爆发后保留亲近",
+      "counter_reading": "角色笑不等于观众应笑；不把所有喜悦写成露齿"
+    },
+    {
+      "id": 2,
+      "aliases": [
+        "震惊",
+        "惊愕"
+      ],
+      "temporal_value": "骤然张开与定住之间的停滞",
+      "possible_context": "新证据直接推翻眼前判断",
+      "adaptation_options": "先停下正在做的事，延迟一句常规回答",
+      "counter_reading": "震惊不同于逐渐想通；不能只靠瞪眼新增信息"
+    },
+    {
+      "id": 3,
+      "aliases": [
+        "恐惧",
+        "惊恐",
+        "恐怖"
+      ],
+      "temporal_value": "急促呼吸与持续无法释放",
+      "possible_context": "危险仍在且无法确认安全",
+      "adaptation_options": "保持任务但呼吸无法配合；也可原样强烈外放",
+      "counter_reading": "持续恐惧不必每拍更大；生存行动需有空间依据"
+    },
+    {
+      "id": 4,
+      "aliases": [
+        "愤怒",
+        "暴怒",
+        "怒火"
+      ],
+      "temporal_value": "控制破口与向前施压",
+      "possible_context": "边界遭侵犯、决定权被夺",
+      "adaptation_options": "低外显时改变措辞或继续任务的方式；爆发时保留后果",
+      "counter_reading": "低声不是愤怒的默认终点；改编不能假称原文"
+    },
+    {
+      "id": 5,
+      "aliases": [
+        "厌恶",
+        "反感",
+        "恶心"
+      ],
+      "temporal_value": "收缩、后撤和转开形成拒绝",
+      "possible_context": "接触到不愿接触的东西或行为",
+      "adaptation_options": "必须留在原位时缩减接触、换交付方式",
+      "counter_reading": "不能由皱鼻判断道德立场；生理与价值厌恶分开"
+    },
+    {
+      "id": 6,
+      "aliases": [
+        "哭泣",
+        "大哭",
+        "崩溃"
+      ],
+      "temporal_value": "呼吸断续后身体控制进一步失效",
+      "possible_context": "消息终于被接收、允许脆弱或累积破防",
+      "adaptation_options": "句子仍试图完整但呼吸打断；或先做完任务再哭",
+      "counter_reading": "不是悲伤必哭；哭也可能是喜悦、疼痛或表演"
+    },
+    {
+      "id": 7,
+      "aliases": [
+        "疼痛",
+        "刺痛",
+        "畏缩"
+      ],
+      "temporal_value": "突然收缩后只部分缓解",
+      "possible_context": "具体接触、动作牵动或身体刺激",
+      "adaptation_options": "掩盖疼痛时仍留动作功能的代价",
+      "counter_reading": "不靠扭脸假装医学真实；无依据不诊断伤病"
+    },
+    {
+      "id": 8,
+      "aliases": [
+        "白眼",
+        "不耐烦",
+        "翻眼"
+      ],
+      "temporal_value": "短暂撤回配合后留下平直注视",
+      "possible_context": "同一请求再来、礼貌已耗尽",
+      "adaptation_options": "公共场合把反应推迟到背过身；也可直接翻白眼",
+      "counter_reading": "不是任何轻蔑的通用脸；谁看见决定关系后果"
+    },
+    {
+      "id": 9,
+      "aliases": [
+        "怀疑",
+        "猜疑",
+        "可疑"
+      ],
+      "temporal_value": "注意集中却暂不判断",
+      "possible_context": "一个细节和先前说法不合",
+      "adaptation_options": "继续聊天但换问一个可验证的小问题",
+      "counter_reading": "单侧眉毛不是测谎；保留猜测与事实差别"
+    },
+    {
+      "id": 10,
+      "aliases": [
+        "调情",
+        "暧昧",
+        "试探"
+      ],
+      "temporal_value": "回望与稍作停留维持邀请",
+      "possible_context": "已有关系语境中的试探或回应",
+      "adaptation_options": "允许接近后又回到共同任务；或延长回应时间",
+      "counter_reading": "眼神不证明同意或爱意；不是所有亲密都调情"
+    },
+    {
+      "id": 11,
+      "aliases": [
+        "得意",
+        "幸灾乐祸",
+        "自鸣得意"
+      ],
+      "temporal_value": "缓慢显露优越感并保持接触",
+      "possible_context": "得到优势、希望对方承认输赢",
+      "adaptation_options": "表面替对方解围，实际保留成果；或公开享受胜利",
+      "counter_reading": "与自我满足的骄傲不同；优越也可能只是他人误读"
+    },
+    {
+      "id": 12,
+      "aliases": [
+        "无聊",
+        "厌倦",
+        "走神"
+      ],
+      "temporal_value": "注意力逐渐流失，动作趋于停滞",
+      "possible_context": "任务无新意、他人反复讲已知内容",
+      "adaptation_options": "身体仍在工作，回应延迟或错过信息",
+      "counter_reading": "不是疲惫的诊断；角色无聊不等于场景应无聊"
+    },
+    {
+      "id": 13,
+      "aliases": [
+        "困惑",
+        "迷惑",
+        "不理解"
+      ],
+      "temporal_value": "寻找解释却迟迟无法收敛",
+      "possible_context": "词义、规则或证据暂时对不上",
+      "adaptation_options": "尝试一个具体理解，被新回答打断",
+      "counter_reading": "不能为拖延让角色无故听不懂；与震惊不同"
+    },
+    {
+      "id": 14,
+      "aliases": [
+        "领悟",
+        "想通",
+        "恍然大悟"
+      ],
+      "temporal_value": "理解落地后重新聚焦",
+      "possible_context": "证据终于形成解释",
+      "adaptation_options": "改变正在做的动作来检验理解，不必点头或解释",
+      "counter_reading": "领悟可以错误；不把推测悄悄写成真相"
+    },
+    {
+      "id": 15,
+      "aliases": [
+        "惊叹",
+        "敬畏",
+        "好奇",
+        "奇观"
+      ],
+      "temporal_value": "逐渐开放、向对象靠近",
+      "possible_context": "第一次看到尺度、能力或可能性",
+      "adaptation_options": "暂停熟悉任务，试图再看清一点",
+      "counter_reading": "不是瞬时惊吓；惊叹也不必增加奇观预算"
+    },
+    {
+      "id": 16,
+      "aliases": [
+        "决心",
+        "坚定",
+        "坚决"
+      ],
+      "temporal_value": "呼吸与身体重新组织成行动准备",
+      "possible_context": "代价已知仍选择继续",
+      "adaptation_options": "少写姿态，多写先前做不到的第一步",
+      "counter_reading": "咬紧牙不构成选择；不能靠点头完成整个人物弧"
+    },
+    {
+      "id": 17,
+      "aliases": [
+        "挫败",
+        "沮丧",
+        "受挫"
+      ],
+      "temporal_value": "用力逐渐转为败意与泄气",
+      "possible_context": "重复努力无效、方案被事实阻挡",
+      "adaptation_options": "停下无效步骤、换求助对象，或暂时放弃",
+      "counter_reading": "不强迫立刻振作；与持续愤怒有不同方向"
+    },
+    {
+      "id": 18,
+      "aliases": [
+        "焦虑",
+        "忐忑",
+        "紧张"
+      ],
+      "temporal_value": "注意游移与未能安定的节律",
+      "possible_context": "未来结果悬而未决、失去控制感",
+      "adaptation_options": "过度检查同一件事，或刻意维持工作表面",
+      "counter_reading": "小动作不证明焦虑；恐惧可能有眼前明确对象"
+    },
+    {
+      "id": 19,
+      "aliases": [
+        "悲伤",
+        "难过",
+        "伤心"
+      ],
+      "temporal_value": "细小失守后状态仍未消散",
+      "possible_context": "具体失去、被忽略、迟来的理解",
+      "adaptation_options": "保持眼前工作，改变对方留下东西的处理方式",
+      "counter_reading": "不等于低强度内心；不必走向哭泣"
+    },
+    {
+      "id": 20,
+      "aliases": [
+        "内疚",
+        "愧疚",
+        "心虚"
+      ],
+      "temporal_value": "话到口边受阻，之后回避",
+      "possible_context": "人物认为自己对某事负有责任",
+      "adaptation_options": "试图补偿却避开承认；或最终清楚直说",
+      "counter_reading": "低头不证明有罪；与羞耻、尴尬及恐惧要靠语境区分"
+    },
+    {
+      "id": 21,
+      "aliases": [
+        "尴尬",
+        "窘迫",
+        "害羞"
+      ],
+      "temporal_value": "社交自信内收，尝试维持表面",
+      "possible_context": "被点破、失误被看见、关注超出准备",
+      "adaptation_options": "先顺着笑再改变话题；也可坦然承认失误",
+      "counter_reading": "红脸不是普遍可见表现；不能从脸色断言内心"
+    },
+    {
+      "id": 22,
+      "aliases": [
+        "疲惫",
+        "耗尽",
+        "精疲力竭"
+      ],
+      "temporal_value": "恢复变慢，保持清醒也费力",
+      "possible_context": "长期工作或持续事件后的身体消耗",
+      "adaptation_options": "省掉不必要的应答，把力气留给一件事",
+      "counter_reading": "疲惫不是懒惰或不关心；不统一写成长叹"
+    },
+    {
+      "id": 23,
+      "aliases": [
+        "宽慰",
+        "松口气",
+        "释然"
+      ],
+      "temporal_value": "先呼出压力，笑意在其后出现",
+      "possible_context": "威胁解除或终于得到确认",
+      "adaptation_options": "保留先释放再回应；释放后也可发现新责任",
+      "counter_reading": "宽慰不等于和解；危险只暂缓时不写彻底安全"
+    },
+    {
+      "id": 24,
+      "aliases": [
+        "骄傲",
+        "自豪",
+        "满足"
+      ],
+      "temporal_value": "满意逐渐稳定，身体舒展",
+      "possible_context": "完成自己认可的事或见他人成长",
+      "adaptation_options": "无需展示给对手，继续做好剩下的小事",
+      "counter_reading": "与优越感区分；微笑不是每种自豪的必要动作"
+    },
+    {
+      "id": 25,
+      "aliases": [
+        "假笑",
+        "紧张笑",
+        "强颜欢笑"
+      ],
+      "temporal_value": "维持笑的表面与别处紧张不同步，掉落后补回",
+      "possible_context": "需要表现没事、维持礼貌或保护别人",
+      "adaptation_options": "笑先给对方，转身才松掉；或话语过于周全",
+      "counter_reading": "不强配吞咽；假笑可出于礼貌并非欺骗"
+    }
+  ]
+}

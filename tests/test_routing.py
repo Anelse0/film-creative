@@ -55,9 +55,9 @@ class CreativeGateRegressionTests(unittest.TestCase):
         self.assertIn('调整节奏先做叙事诊断', skill)  # hard rule 10 present
         self.assertIn('不以增删改台词为默认手段', skill)
         pacing = (ROOT / 'references/narrative-pacing.md').read_text(encoding='utf-8')
-        # Core guardrail: pace != line length; trimming is last-resort + authorized.
+        # Core guardrail: diagnose actual cause and preserve locks.
         self.assertIn('不等于单句台词的字数', pacing)
-        self.assertIn('最后一档', pacing)
+        self.assertIn('授权范围', pacing)
         # Keeps 台词预算 (duration-fit) explicitly separate from narrative pacing.
         self.assertIn('台词预算 ≠ 叙事节奏', pacing)
 

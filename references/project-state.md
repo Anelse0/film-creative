@@ -26,7 +26,7 @@
 
 - IP 的 ip.md 仅维护共享正典及其来源。本集暂定发现留在本集故事/人物段；用户明确建立共享设定或已有正典维护授权时再合并，保留旧值来源，不顺手改变其他故事。
 - assets/assets.md 使用稳定 ID（如 char-a-front-v1）。上传顺序只在本条 clip 的记录映射 img1/vid1/aud1；已有生产记录 schema 与 Prompt 引用不变。换序只影响该条上传映射，换素材内容才影响依赖它的其他条目。
-- `06_prompts/scene-XX-clipYY.production.json` 与对应 Prompt 并列，由 film-director 按其生产流程维护；本 skill 的检查器只读，不写入生产记录，也不代替其审阅。
+- `06_prompts/scene-XX-clipYY.production.json` 与对应 Prompt 并列，由 后续制作方 按其生产流程维护；本 skill 的检查器只读，不写入生产记录，也不代替其审阅。
 - 全剧本阅读视图是按场序汇集的派生物，标明源版本；修改回各场原文，禁止另维护一套竞争正稿。
 
 ## 阅读副本

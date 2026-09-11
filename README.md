@@ -1,135 +1,18 @@
-# film-creative
+# film-creative 2.0.0
 
-版本 **1.4.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词、**调整叙事节奏**）。
+独立的影视创意与剧本开发技能。入口是 `SKILL.md`；可构思、发展故事、写剧本、改台词、调整节奏，并将视听方法和表演参考转成场景。不依赖其他 film 技能或远程仓库。
 
-生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
+方法根据具体问题选择，不要求固定三幕、双语、情绪阶梯或每集留钩。官方一手研究的实际访问范围与迁移边界见 `references/craft-evidence.md`；导演方法不是模仿预设。
 
-## 一句话
+25 条用户情绪原文完整保存在 `assets/emotion/`。检索：
 
-从故事整体找到本场依据，在边界内发展新意，交付完整故事与场景。
-
-## 流水线
-
-```
-S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事 ↔ S3c 剧本）→ 有针对性地修订 → 交接生产（film-director）
-```
-
-创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
-
-## 1.4.0 更新（叙事节奏：节奏 ≠ 台词长短）
-
-- 新增 `references/narrative-pacing.md`：用户说"调整节奏"时先做**叙事诊断**（信息释放率 / 场景转折 / 赌注升级 / 节拍密度 / 场序 / 潜台词），台词增删改是最后一档且需授权，不是默认手段。
-- 硬规则 10 + 快速路由 + 组件引用：把"调节奏"路由到叙事诊断，并与"台词预算"（时长适配）、画面/剪辑节奏（film-director）明确分开。
-- 一手/专业来源经检索纳入（Murch《In the Blink of an Eye》、McKee《Story》、Yorke《Into the Woods》、No Film School / ScreenCraft、TV showrunner craft），tag 从严（未通读原文）。
-
-## 1.3.2 更新（容错修复）
-
-- `canon_scan`：跳过 Excel 锁文件，损坏 xlsx 报 SKIP 不中断；互为子串的别名只报最长一次；`--ignore` 匹配完整原文。
-- `xlsx_lite` / `ledger_view` 与 film-director 1.3.2 同文（缺 `r` 属性、非 zip 文件、非时间列小数）。
-- `SKILL.md` 对白出处指向补 `craft-sources-1.3.1.md`；同文文件一致性测试扩到脚本。
-
-## 1.3.1 更新（台词方法论按体系落地 · 出处核对 · 账本阅读）
-
-- `references/dialogue-craft.md` 重写为**方法论层**：好莱坞（Mamet 三问与沉默电影测试 · Sorkin 意图/障碍与对白如音乐 · McKee 三层 the said / unsaid / unsayable 与言语行动 · Truby 三轨与关键词 · Weston 可演动词与潜台词 · Snyder 说明与吸引力同时发生 · Rhimes / Lindelof / Scriptnotes · on-the-nose 修法）、欧洲（Sciamma 无冲突的张力 · Yorke 想要/需要与分形结构 · Johnstone 地位句法）、韩国（金银淑挑词与"把可怕写得迷人" · 卢熹京研究与人人为主角 · 朴海英余韵 · 郑瑞景语言来处 · 韩剧每集留钩结局给答案）、竖屏短剧（ReelShort 结构 · 国内三秒钩子 / 单集公式 / 六幕标准）、双语坑；末尾 13 条逐句检查。
-- `references/craft-sources-1.3.1.md` 取代 1.3.0：逐条链接与证据强度（一手 / 原著要点 / 报道 / 转述 / 行业文），标明哪些已读原文、哪些只据摘录。
-- `references/series-engine.md`：Truby 盟友批评手段、Parker/Stone 原话、Yorke 分形、新增 §4b 3–5 分钟一集骨架（Harmon 八步 / 短剧单集公式两种可选）、Hitchcock 原话、通过行动与他人反应亮相。
-- `scripts/ledger_view.py`：账本模式下按镜号范围把 xlsx 读成 Markdown；`story-context.md`、`stage-3b-story.md`、`output-formats.md` 接线（台词设计表作为交接附件）。
-- 公共仓库内的项目标识改为泛称。
-
-## 1.3.0 更新（节拍草稿→台词 · 台词工艺 · 系列引擎 · 与 film-director 的协作契约）
-
-- **节拍草稿 → 台词** `references/beat-to-dialogue.md`：实际生产里最常见的输入（中文节拍草稿要英文台词）的默认路径——两行承接、逐节拍目的动词、目标语言先写再中文对照、台词设计表、收尾句、一分钟自检。
-- **台词工艺** `references/dialogue-craft.md`：逐句可检的规则（潜台词 vs 直白、一句一个动作、比喻落地测试、声音区分、用冲突交代世界、比喻/金句陷阱、美式青春剧语域、竖屏短剧密度、中文设计→英文台词的双语坑），每条带一手出处；末尾"逐句检查"清单。
-- **系列引擎** `references/series-engine.md`：先导必须立起的可重复冲突机器；每场"引擎在场吗"判断；私人线与引擎线在同一事件相交；宣布不揭结果；正典改动的波及处理。`templates/ip.md` 新增「故事引擎」与「正典变更」两节。
-- **协作契约** `references/handoff-contract.md`（film-director 同文）：交接物含**台词设计表**（`templates/dialogue-design-sheet.md`，交接层材料、不进正文），账本模式列所有权，正典变更五步协议，台词预算口径，修订给全文。
-- **正典漂移扫描** `scripts/canon_scan.py`（+ `scripts/xlsx_lite.py`，stdlib 读 xlsx）：按 `ip.md` 正典变更表的旧词扫描 md / xlsx / prompt 文件，命中逐条处理。
-- `references/preference-ledger.md` 记入本轮用户确认的偏好（直给优于比喻、对白场附说法与递进、承上启下先于机灵、引擎优先于私人线、引荐先介绍再特写）。硬规则 8（每场接引擎）、9（改正典就扫漂移）。
-
-## 1.2.0 更新
-
-- **编剧创意**：新增人物成功后的目标发展、共同事件下的群像选择；修正固定代价、短主控句、镜头套路表等限制。
-- **台词设计**：写连续交流，再从听者实际接收的信息修订；覆盖直接表达、长独白、喜剧群戏、文雅修辞与重复变义，保护锁定台词和人物知识。
-- **工作流**：按当前任务取用材料，试写允许回流；正文先行，必要说明后置，精简模板与重复回显，不自动增加审批或文件。
-- **文件格式**：统一 Markdown 场头/动作/人物/台词；新增可选 Fountain 语法模板。汇编器支持相对来源清单、只读校验、覆盖保护及常规写入失败回滚，保留旧版输入兼容。
-
-[专业来源与方法对应](references/craft-sources-1.2.0.md) · [整体审查与验证](tests/acceptance-1.2.0/review.md) · [实际阅读版样稿](tests/acceptance-1.2.0/reading.md)
-
-73 个 unittest 与 shell 回归通过，另有 8 个合成案例的非盲文本/文件走查。未开展独立创意盲测，不将规则落地或程序通过等同于质量增益。1.1.0 的上下文协议与七项一手方法继续沿用。
-
-## 文件地图
-
-| 文件 | 何时读 |
-|---|---|
-| `SKILL.md` | 入口：路由、硬规则、输出契约、交接契约 |
-| `references/execution-contract.md` | S2 唯一决策源：范围 / 自主 / 确认 / 保存 |
-| `references/stage-1-intake.md` | S1 / S2：材料登记、创作意图与三轴、按材料成熟度的入口表、项目目录 |
-| `references/concept-generation.md` | S3a 概念模式契约：创作判断 / 默认地图 / 入口 / 研究服务缺口 / 候选比较维度 / 关键场景先行 |
-| `references/stage-3a-concept.md` | S3a 概念长什么样：素材入口 / 候选弱点 / 可选的主控句、三问与默认画面地图 / 交付格式 |
-| `references/stage-3b-story.md` | S3b 故事开发：故事正文优先 / 叙事组织四判断 / 世界观与人物按需 / 温度表与场景清单按需 |
-| `references/stage-3c-script.md` | S3c：多种试写入口 / 连续交流诊断 / 节拍估时 / 物件状态 / 定点重写 |
-| `references/story-context.md` | 续写/改写开写前：整体/本场/远处依据、人物知识、后续边界、变化量与恢复 |
-| `references/creative-search.md` | 从已有关系与选择发展新意，写实际片段，比较收益和修订代价 |
-| `references/screenwriting-methods.md` | 好莱坞/韩国一手实践提炼的七项操作：按创作问题选用 |
-| `references/dialogue-design.md` | 新写/改写对白：交流处境、听者回应、声音差异、具体正文修订 |
-| `references/beat-to-dialogue.md` | 用户给节拍草稿要台词：承接两行 → 目的动词 → 英文先写 → 台词设计表 → 收尾句 |
-| `references/dialogue-craft.md` | 逐句工艺检查：潜台词、一句一动作、比喻落地、声音、语域、双语坑；带出处 |
-| `references/series-engine.md` | 系列 / 先导：引擎立起了吗、每场接引擎、两线相交、宣布不揭结果、正典波及 |
-| `references/handoff-contract.md` | 与 film-director 的交接物、账本模式、正典变更协议、台词预算、交付默认 |
-| `references/craft-sources-1.3.1.md` | 台词方法论 / 系列引擎规则的出处与证据强度（一手 / 原著要点 / 报道 / 转述 / 行业文） |
-| `templates/dialogue-design-sheet.md` | 台词设计表（交接层材料，不进剧本正文） |
-| `references/output-formats.md` | 对话与文件交付、Markdown 正文、来源校验、Fountain 交换边界 |
-| `references/craft-sources-1.2.0.md` | 本版 Hollywood / 韩国一手访谈及 Fountain 规范、实现与局限 |
-| `references/context-creativity-sources.md` | 1.1.0 专业资料、长故事生成研究、已读范围、实现对应与局限 |
-| `templates/scene-context.md` | 可选本场依据摘记；不新设审批/保存要求，不替代原文 |
-| `references/story-development.md` | 试写、跨场发展与信息排序操作 |
-| `references/character-scene-development.md` | S3b–S3c 共用：人物与观众责任、交流处境、声音的基础/对象/当下、分层诊断 |
-| `references/dialogue-observations.md` | 语言或人物有缺口时：中文交流材料、创作者方法及迁移边界 |
-| `references/dialogue-diagnostics.md` | 具体诊断困难时：局部改稿得失与反例，不是台词答案库 |
-| `references/creative-loop.md` | 允许的回流、收到批评后先诊断层级、修订账本与停止条件、场景写作可选步骤 |
-| `references/preference-ledger.md` | 用户确认过的偏好：喜欢哪种效果 / 在哪类作品适用 / 反例；重写前先查 |
-| `references/scene-parameters.md` | 场景参数卡：六参数及其在台词 / 结构中的取值；预设只是参数组合 |
-| `references/screenwriting-traditions.md` | 基于第一手编剧/导演资料，按场景问题选方法，不按地区或配额套写 |
-| `references/research-to-craft.md` | 研究材料如何进入创作（缺口 → 发现 / 可信范围 / 影响的决定） |
-| `references/causal-chain.md` | 剧情因果三测："每句都对但不推动"时用 |
-| `references/anti-mechanical.md` | 机械感诊断：特征齐全但没有生命时用 |
-| `references/genre-packs.md` | 基调为动作 / 悬疑恐怖 / UGC 广告 / 蒙太奇时叠加（生产用法交 film-director） |
-| `references/project-state.md` + `scripts/project_check.py` | 已保存项目：版本、恢复、依赖失效、正典 |
-| `templates/*.md` | 概念 / 故事 / 剧本页 / ip 骨架 |
-| `scripts/validate_concept.py` | 概念选定落盘后跑；只查格式与完整性，不判断创意 |
-| `scripts/route_check.py` | S2 结构化决策校验：仅执行 S3a–S3c/save_only；不解释自然语言，旧自由文本 CLI 返回 2 |
-| `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓 |
-| `scripts/baseline_snapshot.py` | Git / 非 Git 版本目录的归档与完整性检查 |
-| `examples/concept-worked-examples.md` | 概念协议跑出来长什么样（概念模式默认不读，禁止复用候选） |
-
-## 常用脚本
-
-```bash
-cd <实际安装的Skill目录>
-python3 scripts/validate_concept.py <01_concept.md>
-python3 scripts/route_check.py --record <语义判断记录.json> --json
-python3 scripts/assemble_script.py 03_script/scene-01.md 03_script/scene-02.md --output 03_script/reading.md
-python3 scripts/assemble_script.py --verify 03_script/reading.md
-python3 scripts/canon_scan.py --ip ip.md <项目目录> [--deprecated 旧词,旧词2] [--ignore 正则] [--json]
-python3 scripts/ledger_view.py <分镜与台词.xlsx> --from 30 --to 40 [--cols 镜号,入点,出点,台词]
+```sh
+python3 scripts/emotion_lookup.py --id 20 25
+python3 scripts/emotion_lookup.py --query 内疚
+python3 scripts/emotion_lookup.py --id 4 --raw
+python3 scripts/emotion_lookup.py --verify
 ```
 
-自动检查负责约束与交付完整性；创意与编剧质量由用户盲选、具体文本证据和 `references/preference-ledger.md` 判断（`scripts/blind_eval.py`，协议见 `tests/creative-eval.md`）。
+改编与原文分离；原库分类仅作为原始标签。日常创作不需要联网或安装额外 Python 包。
 
-## 项目目录约定
-
-```
-<workspace>/<ip-slug>/ip.md · <story-slug>/{00_brief, 01_concept, 02_story, 03_script/}
-```
-
-同一项目的 04_shots 及之后的子目录由 film-director 生成。
-
-## 版本管理
-
-- 语义化版本，记录在 `VERSION` 与 `CHANGELOG.md`。
-- 每次改动跑 `bash tests/run_tests.sh`；GitHub Actions 在 push 与 PR 时自动跑。
-
-## 安装
-
-```bash
-git clone https://github.com/Anelse0/film-creative.git <skills目录>/film-creative
-```
+验证：`bash tests/run_tests.sh`。程序验证数据、边界、资源和项目工具；创作能力由实际正文审阅，不能用测试通过率代替。2.0.0 的场景走查见 `tests/acceptance-2.0.0/`，为本次作者自检，并非独立盲评。

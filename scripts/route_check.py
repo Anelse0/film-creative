@@ -9,7 +9,7 @@ from pathlib import Path
 
 STAGES = ['S3a', 'S3b', 'S3c']
 EXTERNAL_STAGES = ['S4', 'S5', 'S5b', 'S6', 'S7', 'performance', 'raw']
-TARGETS = STAGES + ['save_only']
+TARGETS = STAGES + ['save_only', 'reference']
 # Production constraints may be retained for handoff, never executed here.
 EXCLUSIONS = TARGETS + EXTERNAL_STAGES
 
@@ -27,7 +27,7 @@ def validate(record):
         errors.append('R01 original source required')
     target, entry = req.get('target'), req.get('entry')
     if target not in TARGETS or entry not in TARGETS:
-        errors.append('R02 target/entry must be S3a/S3b/S3c/save_only; production belongs to film-director')
+        errors.append('R02 target/entry must be S3a/S3b/S3c/save_only/reference; production is outside this creative scope')
     excluded, plan = req.get('excluded', []), record.get('planned_stages')
     if not isinstance(excluded, list) or any(s not in EXCLUSIONS for s in excluded):
         errors.append('R02 invalid exclusions'); excluded = []
@@ -35,7 +35,10 @@ def validate(record):
         errors.append('R03 invalid plan'); plan = []
     if any(s in excluded for s in plan) or target in excluded:
         errors.append('R03 plan/target enters excluded stage')
-    if target == 'save_only':
+    if target == 'reference':
+        if plan or entry != 'reference':
+            errors.append('R03 reference lookup must not start creative work')
+    elif target == 'save_only':
         if plan or entry != 'save_only':
             errors.append('R03 save_only must not start creative work')
     elif target in STAGES and entry in STAGES:
