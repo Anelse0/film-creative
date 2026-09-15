@@ -66,6 +66,6 @@ metadata:
 
 复杂任务可用 `templates/execution-record.json` 与 `scripts/route_check.py` 检查执行记录；保存的概念卡可用 `scripts/validate_concept.py` 检查格式；脚本告警不能成为添加情节的理由。项目状态按 `references/project-state.md` 与 `scripts/project_check.py` 检查；正典改动用 `scripts/canon_scan.py` 定位旧词，再人工核语义。多场阅读稿用 `scripts/assemble_script.py` 汇集，不能反向覆盖源稿。表格读取可用 `scripts/ledger_view.py`，只修改用户授权的创作列。
 
-需要分析表时可裁剪 `templates/dialogue-design-sheet.md`，不默认逐句填写。已确认偏好见 `references/preference-ledger.md`；没有项目证据的旧偏好不能当新项目要求。
+需要分析表时可裁剪 `templates/dialogue-design-sheet.md`，不默认逐句填写。对白场进入生产时改用同一模板的生产版（每句一行、逐字、来源标注）作为交接物，见 `references/handoff-contract.md`。已确认偏好见 `references/preference-ledger.md`；没有项目证据的旧偏好不能当新项目要求。
 
 交付前连读真实正文，核知识边界、空间与动作先后、硬锁、语言和结尾承诺。区分文本模拟、真人围读和成片验证；程序通过不等于创意优秀。完成本次目标后停止。
