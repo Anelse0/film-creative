@@ -14,6 +14,7 @@ CREATIVE_DOCS = [
     'references/creative-loop.md', 'references/causal-chain.md', 'references/anti-mechanical.md',
     'references/research-to-craft.md', 'references/screenwriting-traditions.md', 'references/scene-parameters.md',
     'templates/concept.md', 'templates/story.md', 'templates/script-scene.md',
+    'references/story-engine.md', 'references/episode-design.md',
 ]
 # Phrases that turned methods into gates in ≤ 2.5.0. Any reappearance is a regression.
 RETIRED_GATES = [

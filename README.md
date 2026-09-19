@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **1.1.0**。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **3.0.0**（直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,14 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 3.0.0 更新
+
+- `SKILL.md` 新增核心判断、十条默认创作取向（用户明确要求优先）、五种任务模式的交付范围（从零 / 诊断 / 单集 / 单场 / 对白），硬规则 8（正文先写会发生什么）与 9（反模式是信号不是判决）。
+- 新增 `references/story-engine.md`：概念能否持续产生事件、外部与私人两线互改、吸引 / 交集 / 靠近的代价、确认关系后的张力、隐瞒三问、配角与场景、观看欲望、正面写法。
+- 新增 `references/episode-design.md`：短剧 / 多集单集的承接 · 进入 · 兑现 · 牵引，分集框架怎样不像摘要，平台秒数公式的边界。
+- 故事阶段、对白审阅、重写诊断、模板与偏好账本接线；恢复 1.3.x 中被回滚掉的用户已确认偏好。
+- 验证见 `tests/acceptance-3.0.0/`：新旧版在独立会话对六个固定任务的实际输出、盲序评审与已知限制。
 
 ## 1.1.0 更新
 
@@ -36,10 +44,12 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/stage-3a-concept.md` | S3a 概念长什么样：素材入口 / 候选弱点 / 可选的主控句、三问与默认画面地图 / 交付格式 |
 | `references/stage-3b-story.md` | S3b 故事开发：故事正文优先 / 叙事组织四判断 / 世界观与人物按需 / 温度表与场景清单按需 |
 | `references/stage-3c-script.md` | S3c：多种试写入口 / 连续交流诊断 / 节拍估时 / 物件状态 / 定点重写 |
+| `references/story-engine.md` | 多集 / 高概念 / 关系主线：机制能否持续产生事件、两线互改、吸引与代价、触发链、配角、观看欲望、正面写法 |
+| `references/episode-design.md` | 短剧 / 多集：一集的承接 · 进入 · 兑现 · 牵引；分集框架不像摘要；优化单集 |
 | `references/story-context.md` | 续写/改写开写前：整体/本场/远处依据、人物知识、后续边界、变化量与恢复 |
 | `references/creative-search.md` | 从已有关系与选择发展新意，写实际片段，比较收益和修订代价 |
 | `references/screenwriting-methods.md` | 好莱坞/韩国一手实践提炼的七项操作：按创作问题选用 |
-| `references/context-creativity-sources.md` | 本版专业资料、长故事生成研究、已读范围、实现对应与局限 |
+| `references/context-creativity-sources.md` | 1.1.0 与 3.0.0 的专业资料、已读范围、来源原意 / 本地采用 / 局限 |
 | `templates/scene-context.md` | 可选本场依据摘记；不新设审批/保存要求，不替代原文 |
 | `references/story-development.md` | 试写、跨场发展与信息排序操作 |
 | `references/character-scene-development.md` | S3b–S3c 共用：人物与观众责任、交流处境、声音的基础/对象/当下、分层诊断 |

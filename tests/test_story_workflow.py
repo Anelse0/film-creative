@@ -32,6 +32,25 @@ class StoryWorkflowPresenceTests(unittest.TestCase):
             self.assertIn(phrase, text)
         self.assertIn('修订账本', self.read('templates/script-scene.md'))
 
+    def test_story_engine_and_episode_design_present_and_wired(self):
+        skill = self.read('SKILL.md')
+        for ref in ('references/story-engine.md', 'references/episode-design.md'):
+            self.assertTrue((ROOT / ref).exists(), ref)
+            self.assertIn(ref, skill)
+        for phrase in ('核心判断', '创作取向', '任务模式与交付范围', '正文先写会发生什么', '反模式是信号'):
+            self.assertIn(phrase, skill)
+        engine = self.read('references/story-engine.md')
+        for phrase in ('因此 / 但是', '外部剧情与私人关系互相改变', '靠近要有代价', '隐瞒、误会、退缩的三问', '删掉这个配角', '观看欲望从哪里来', '先写会发生什么'):
+            self.assertIn(phrase, engine)
+        episode = self.read('references/episode-design.md')
+        for phrase in ('承接', '进入', '兑现', '牵引', '不像摘要', '平台公式的边界'):
+            self.assertIn(phrase, episode)
+        # 3.0.0 wiring into existing stage files
+        self.assertIn('story-engine.md', self.read('references/stage-3b-story.md'))
+        self.assertIn('episode-design.md', self.read('references/stage-3b-story.md'))
+        self.assertIn('story-engine.md', self.read('references/creative-loop.md'))
+        self.assertIn('隐瞒、误会、退缩要有理由与代价', self.read('references/character-scene-development.md'))
+
     def test_route_check_is_wired_into_skill(self):
         self.assertTrue((ROOT / 'scripts/route_check.py').exists())
         self.assertIn('scripts/route_check.py', self.read('SKILL.md'))
