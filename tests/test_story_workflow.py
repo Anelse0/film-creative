@@ -37,7 +37,7 @@ class StoryWorkflowPresenceTests(unittest.TestCase):
         for ref in ('references/story-engine.md', 'references/episode-design.md'):
             self.assertTrue((ROOT / ref).exists(), ref)
             self.assertIn(ref, skill)
-        for phrase in ('核心判断', '创作取向', '任务模式与交付范围', '正文写具体行动与后果', '反模式是信号'):
+        for phrase in ('核心判断', '创作取向', '任务模式与交付范围', '诊断任务的交付', '创作任务的交付', '正文写具体行动与后果', '反模式是信号'):
             self.assertIn(phrase, skill)
         engine = self.read('references/story-engine.md')
         for phrase in ('因此 / 但是', '外部剧情与私人关系互相改变', '靠近要有代价', '隐瞒、误会、退缩的三问', '删掉这个配角', '观看欲望从哪里来', '写具体行动与后果', '不按句子的肯定或否定形式判断', '持续交集要有可信的理由', '有明确终点的有限季'):
