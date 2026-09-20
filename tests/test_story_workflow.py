@@ -51,6 +51,17 @@ class StoryWorkflowPresenceTests(unittest.TestCase):
         self.assertIn('story-engine.md', self.read('references/creative-loop.md'))
         self.assertIn('隐瞒、误会、退缩要有理由与代价', self.read('references/character-scene-development.md'))
 
+    def test_modification_requests_split_scope_method_adoption(self):
+        contract = self.read('references/execution-contract.md')
+        for phrase in ('修改请求：范围、改法、采用是三件事', '改法选项', '不改稿', '落盘是保存动作，不是采用', '未采用前都不更新依赖文档'):
+            self.assertIn(phrase, contract)
+        skill = self.read('SKILL.md')
+        for phrase in ('批评已有稿、改法未定', '不把批评当成改法授权', '改稿采用前不算数'):
+            self.assertIn(phrase, skill)
+        self.assertIn('先判改法，再决定改不改', self.read('references/creative-loop.md'))
+        self.assertIn('采用是用户的动作', self.read('references/story-context.md'))
+        self.assertIn('"method": "unspecified"', self.read('templates/execution-record.json'))
+
     def test_route_check_is_wired_into_skill(self):
         self.assertTrue((ROOT / 'scripts/route_check.py').exists())
         self.assertIn('scripts/route_check.py', self.read('SKILL.md'))

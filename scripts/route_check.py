@@ -65,11 +65,22 @@ def validate(record):
         errors.append('R06 unknown unit'); units = {}
     if any(v is not None and (type(v) is not int or v < 1) for v in units.values()):
         errors.append('R06 units must be positive integers or null')
+    method, adoption = req.get('method', 'unspecified'), req.get('adoption', 'exploratory')
+    if method not in ('given', 'open', 'unspecified') or adoption not in ('exploratory', 'adopted'):
+        errors.append('R08 method must be given/open/unspecified and adoption exploratory/adopted')
+    if adoption == 'adopted' and confirmed is not True:
+        errors.append('R08 a model rewrite is exploratory until the user adopts it; adopted needs confirmation evidence')
+    resolved_autonomy = prior if autonomy == 'unspecified' else autonomy
+    rewrite_allowed = None if method == 'unspecified' else (method == 'given' or resolved_autonomy == 'autonomous')
+    if method == 'open' and resolved_autonomy != 'autonomous' and record.get('deliverable') == 'rewrite':
+        errors.append('R08 open method under guided autonomy delivers options, not a rewrite')
     locks = record.get('hard_locks', [])
     if not isinstance(locks, list) or any(not isinstance(s, str) or not s.strip() for s in locks):
         errors.append('R05 hard locks must be concrete strings')
-    decision = {'target': target, 'write_files': write, 'autonomy': prior if autonomy == 'unspecified' else autonomy,
-                'confirmed': confirmed is True, 'units': units}
+    decision = {'target': target, 'write_files': write, 'autonomy': resolved_autonomy,
+                'confirmed': confirmed is True, 'units': units,
+                'method': method, 'rewrite_allowed': rewrite_allowed, 'adoption': adoption,
+                'sync_dependents': adoption == 'adopted'}
     if 'decision' in record and record['decision'] != decision:
         errors.append('R07 decision contradicts explicit directives/history')
     return {'errors': errors, 'decision': decision, 'semantic_match': 'not_verified'}

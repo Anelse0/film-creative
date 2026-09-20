@@ -6,7 +6,7 @@
 
 故事目录的 `project-state.json` 以 `templates/project-state.json` 起步；小项目也可把等价字段放在 00_brief.md，自动检查时才使用 JSON。记录目标、排除项、保存约定、硬锁、当前产物路径与哈希、确认版本、历史快照、依赖和未决事项。索引不复制正文，路径均相对索引。恢复时读索引及相关原文，摘要不替代锁定台词与表演。
 
-一个稳定 artifact ID 对应一种成果（如 script-scene-01）；版本号和磁盘路径可以改变，ID 不变。`current` 是当前采用稿，`approved` 是有用户证据的确认快照，`drafts` 是未采用尝试。三者不自动互相替换。用户新的改写授权在范围内生效，其他硬锁不变。
+一个稳定 artifact ID 对应一种成果（如 script-scene-01）；版本号和磁盘路径可以改变，ID 不变。`current` 是当前采用稿，`approved` 是有用户证据的确认快照，`drafts` 是未采用尝试。三者不自动互相替换：模型自选改法的改稿进 drafts，用户给定改法的定点修改可直接改 current 但先存 history 快照；用户采用后才同步依赖文档，用户确认后才进 approved。用户新的改写授权只在范围内生效（改法与采用另判，见 `execution-contract.md` §修改请求），其他硬锁不变。
 
 ## 创作状态的恢复
 

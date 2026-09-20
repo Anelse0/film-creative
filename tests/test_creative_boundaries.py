@@ -72,6 +72,38 @@ class CreativeBoundaries(unittest.TestCase):
         self.assertEqual(result['decision']['target'], 'S3c')
         self.assertEqual(result['decision']['units'], r['request']['units'])
 
+    def test_open_method_under_guided_autonomy_delivers_options_not_rewrite(self):
+        r = record()
+        r['request']['autonomy'] = 'guided'
+        r['request']['method'] = 'open'
+        r['deliverable'] = 'rewrite'
+        result = validate(r)
+        self.assertTrue(any(e.startswith('R08') for e in result['errors']))
+        self.assertFalse(result['decision']['rewrite_allowed'])
+        r['deliverable'] = 'options'
+        self.assertEqual(validate(r)['errors'], [])
+
+    def test_given_method_or_autonomous_allows_rewrite(self):
+        r = record(); r['request']['method'] = 'given'; r['request']['autonomy'] = 'guided'
+        self.assertTrue(validate(r)['decision']['rewrite_allowed'])
+        r = record(); r['request']['method'] = 'open'; r['request']['autonomy'] = 'autonomous'
+        r['deliverable'] = 'rewrite'
+        result = validate(r)
+        self.assertEqual(result['errors'], [])
+        self.assertTrue(result['decision']['rewrite_allowed'])
+
+    def test_rewrite_is_exploratory_until_user_adopts(self):
+        r = record(); r['request']['method'] = 'given'
+        result = validate(r)
+        self.assertEqual(result['decision']['adoption'], 'exploratory')
+        self.assertFalse(result['decision']['sync_dependents'])
+        r['request']['adoption'] = 'adopted'
+        self.assertTrue(any(e.startswith('R08') for e in validate(r)['errors']))
+        r['confirmation'] = {'confirmed': True, 'evidence': '用户："就这样，同步到故事"'}
+        result = validate(r)
+        self.assertEqual(result['errors'], [])
+        self.assertTrue(result['decision']['sync_dependents'])
+
     def test_cli_rejects_production_and_accepts_shipped_template(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / 'route.json'

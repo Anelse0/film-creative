@@ -13,6 +13,8 @@
     ],
     "autonomy": "unspecified",
     "save": "unspecified",
+    "method": "unspecified",
+    "adoption": "exploratory",
     "units": {
       "scenes": null,
       "shots": null,

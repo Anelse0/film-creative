@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.2.0 — 2026-09-20
+
+**修改请求拆成范围、改法、采用三个独立判断。** 触发：用户对一场戏说"这里我觉得调整一下吧，攻击性太强了"，3.1.1 直接改稿并把改稿同步进故事正文、分集框架与方法文档。定位到三处规则叠加：`execution-contract.md`"新修改请求授权其范围内修订，不再问同一授权"把批评当成改法授权；"何时停"只在用户主动要选方向时停；`creative-loop.md` §二诊断后默认进入改稿。同步依赖文档则违反了已有的"探索稿不自动替换采用稿 / 模型自主选择不是确认"，诱因是项目"直接落盘"的保存约定让落盘看起来等于采用。
+
+- `execution-contract.md` 新增 §修改请求：**范围**（批评即授权，其余硬锁保留）；**改法** given / open——open 且解法不止一种、会改变人物或后续时交付两到三种改法（改什么 / 这场变成什么 / 影响后面什么），不改稿，用户点选后再改；解法唯一或只涉措辞直接改；autonomous 时自主选一种并说明未选的；判断依据是解法空间不是触发词；**采用**——模型改稿默认探索稿，落盘 ≠ 采用，采用是用户动作；采用前不同步故事正文、分集框架、`ip.md`、速览表、方法文档，受影响处列待复核；给定改法原位改并先存快照，模型自选改法进 drafts。"何时停"加入改法选项停靠。
+- `route_check.py` / `templates/execution-record.json`：新增 `request.method`（given / open / unspecified）与 `request.adoption`（exploratory / adopted）；R08 拒绝"open + guided 却交付 rewrite"和"未确认却标 adopted"；decision 输出 `rewrite_allowed`、`sync_dependents`。
+- `SKILL.md`：任务表拆出"批评已有稿、改法未定"与"优化单场（改法已定或用户说你定）"两行；需求识别段、硬规则 4（改稿采用前不算数）、快速路由三条。`creative-loop.md` §二 加"先判改法，再决定改不改"分支，§三 第 1、5 条对齐；`story-context.md` §4"采用是用户的动作"；`project-state.md` drafts / current / approved 的进入条件；`stage-3c-script.md` §3c.7；`preference-ledger.md` 记 2026-09-20 反馈。
+- 测试：`test_creative_boundaries.py` +3（open+guided 拒绝 rewrite、given/autonomous 允许、adopted 需确认）；`test_story_workflow.py` +1 措辞在场；65 项通过。
+- 验证（`tests/acceptance-3.2.0/`）：合成项目（保存约定"直接落盘"）上四次独立运行——3.1.1 复现了直接改稿并同步依赖文档；3.2.0 候选对改法未定的批评给三种改法且零文件变更，对给定改法只改该场并列待复核，对"你直接改"自主改进 drafts 并说明未选改法。单次样本，非盲；未重跑 T1–T9（改动不涉及故事与对白方法）。
+
 ## 3.1.1 — 2026-09-19
 
 只修诊断交付过长。3.1.0 的 T2 输出为 3,068 / 3,190 字符（约 2,200 汉字，8.1 / 8.2 KB UTF-8；此前报告误写为“8k 字”，已更正单位），原因是任务表、`stage-3c` §3c.5b 与通用输出契约三处叠加要求，输出长成“结论 / 已确认 / 信号 / 不是问题 / 总结 / 下一步”六段。
