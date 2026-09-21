@@ -15,6 +15,9 @@ import review_script as rs  # noqa: E402
 FIX = ROOT / 'tests' / 'fixtures' / 'review'
 V1 = FIX / 'theorder-ep02-s01-v1.md'
 V3 = FIX / 'theorder-ep02-s01-v3.md'
+S2 = FIX / 'theorder-ep02-s02-v2.md'
+S3_BAD = FIX / 'theorder-ep02-s03-v2-key-unanchored.md'
+S3_OK = FIX / 'theorder-ep02-s03-v2-key-asked.md'
 
 
 def scene(body_text):
@@ -118,6 +121,57 @@ class ScriptLevelShotChecksTests(unittest.TestCase):
         self.assertEqual(r['verdict'], 'pass')
 
 
+class AnchoringTests(unittest.TestCase):
+    """3.4.0: 潜台词支点——场 3 v2 钥匙段（修复前）必须报；有前文支点的省略与修复稿不报。"""
+
+    def test_key_segment_is_flagged_first_with_fixes(self):
+        r = rs.review_file(S3_BAD, context=[V3, S2])
+        self.assertEqual(r['verdict'], 'issues')
+        it = next(i for i in r['issues'] if i['key'] == 'unanchored_subtext')
+        self.assertIn('You have a key', it['evidence'])
+        self.assertIn('指了指', it['evidence'])           # 只由动作行承载
+        self.assertIn('…Yeah. Okay.', it['evidence'])    # 没人问
+        self.assertEqual(r['anchoring']['candidates'][0]['refs'][0], 'key')
+        self.assertTrue(r['anchoring']['candidates'][0]['load_bearing'])
+        self.assertEqual(len(it['fixes']), 3)
+        for f in it['fixes']:
+            self.assertIn('这场变成', f)
+            self.assertIn('影响后面', f)
+        self.assertIn('[推论]', it['basis'])
+        self.assertIn('S10', it['sources'])
+        self.assertIn('改法', r['text'])
+        self.assertLessEqual(chars(r['text']), 800)
+        # 账本已声明的 lake house 不进问题，只进复核
+        self.assertNotIn('lake house', it['evidence'])
+        self.assertTrue(any('lake house' in x and '账本已声明' in x for x in r['review_needed']))
+
+    def test_fixed_scene_and_prior_scenes_pass(self):
+        for path in (S3_OK, S2, V3):
+            r = rs.review_file(path)
+            self.assertNotIn('unanchored_subtext', {i['key'] for i in r['issues']}, path.name)
+        self.assertEqual(rs.review_file(S3_OK)['anchoring']['candidates'], [])
+
+    def test_grounded_ellipsis_is_not_a_candidate(self):
+        quotes = [e['quote'] for p in (V3, S2) for e in rs.review_file(p)['anchoring']['candidates']]
+        for line in ('Sloane, you might want to step back.', 'Nothing.', 'Everything.'):
+            self.assertFalse(any(line in q for q in quotes), line)
+        # "my phone's right here"：指着画面里的东西，本句即支点
+        planted = [e['refs'][0] for e in rs.review_file(V3)['anchoring']['planted']]
+        self.assertIn('phone', planted)
+
+    def test_context_files_establish_terms(self):
+        text = scene('两人在门口。\n\n**A**\nSo bring the ladder.\n\n**B**\nFine.\n\n**A**\nAnd the rope.\n\n**B**\nOkay.\n')
+        prior = scene('**B**\nThe ladder is in the shed, with the rope.\n\n**A**\nGood.\n')
+        with tempfile.TemporaryDirectory() as d:
+            p, q = Path(d) / 's.md', Path(d) / 'prior.md'
+            p.write_text(text, encoding='utf-8')
+            q.write_text(prior, encoding='utf-8')
+            without = rs.review_file(p)['anchoring']['candidates']
+            with_ctx = rs.review_file(p, context=[q])['anchoring']['candidates']
+        self.assertTrue(any(e['refs'][0] == 'ladder' for e in without))
+        self.assertEqual(with_ctx, [])
+
+
 class CliTests(unittest.TestCase):
     def test_exit_codes_and_json(self):
         buf = io.StringIO()
@@ -144,7 +198,7 @@ class WiringTests(unittest.TestCase):
         s3c = (ROOT / 'references' / 'stage-3c-script.md').read_text(encoding='utf-8')
         self.assertIn('review_script.py', s3c)
         src = (ROOT / 'references' / 'dialogue-review-sources.md').read_text(encoding='utf-8')
-        for code in ('S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'):
+        for code in ('S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11'):
             self.assertRegex(src, r'\| ' + code + r' \|')
         self.assertIn('[推论', src)
         self.assertIn('不改稿', skill)

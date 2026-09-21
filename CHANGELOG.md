@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.4.0 — 2026-09-21
+
+**review 工具新增"潜台词无支点"检查与改法输出。** 触发：EP02 场 3 v2 钥匙段——Beckett "Your grey hoodie's in my bag… half my stuff is still at your place." → 动作行"Cole 指了指钥匙圈上多出来的那一把" → Cole "So go get it. You have a key."；用户："这个太委婉了，没有上下文铺垫和场景铺垫，看不懂。"观众要从一个手势推出三层设定，前文没有铺垫。
+
+- `scripts/review_script.py`：新增 `anchoring()`——逐句抽取"当作已知"的指称（限定词 / 物主 + 名词短语、"you have a X"、配 still / again / all over 的名词），对照前文（本场已出现的台词与英文动作行 + `--context` 前几场）；指称是新的、本句是省略句（≤5 词、回应词起句、截断的短句）、接下来没人问 → "潜台词无支点"，含 imperative / 决定的句子排最前；`this / these`、"right here" 视为指画面里的东西；模板头部与"上下文承接"里声明过的指称（如账本写明的旧梗）降为"需模型复核"；本句明说的新设定列为信号。问题附三种改法（直说来历 / 用当场动作引出 / 让第三人替观众问，各含改什么 / 这场变成什么 / 影响后面什么），按 `execution-contract.md` §修改请求 作为改法未定时的选项，不改稿。`basis` 同步标注：共同基础与收件人设计有来源，代理量是 `[推论]`。中文动作行无法与英文指称对齐，只引用交复核。
+- `references/dialogue-review-sources.md`：新增 S10 Clark & Brennan 1991（p. 127 共同基础定义，Stanford 开放 PDF）、S11 Scriptnotes 693（凭空出现生硬 / 当场需要 / 当场问）；S1 补 p. 727 recipient design；§二、§三、§四 对应行；未读的 Clark & Marshall 1981、Levinson 1983 如实列为不引用。
+- 接入：`SKILL.md` 任务表该行加 `--context` 与改法说明；`stage-3c-script.md` §对白审阅 同步。
+- 测试：`tests/fixtures/review/` 新增场 3 v2 修复前（正例）、修复后（反例，用户选定改法 C 后 Mack 替观众问）、场 2 v2；`test_review_script.py` +4：正例报 key 且排第一、附三种改法；反例三份不报；"Sloane, you might want to step back." / "Nothing." / "Everything." 不在候选；账本声明的 lake house 降为复核。79 项通过。**工程完成；效果为非盲呈现改善——正反例都是校准样本。**
+
 ## 3.3.1 — 2026-09-21
 
 只做来源复核与输出标注，不改判定逻辑与阈值。

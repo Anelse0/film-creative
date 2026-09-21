@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""出稿后的剧本对白 review（film-creative 3.3.1）。
+"""出稿后的剧本对白 review（film-creative 3.4.0）。
 
 用法:
-  review_script.py 03_script/scene-01.md [scene-02.md ...] [--json] [--full]
+  review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--json] [--full]
+  --context：按 story-context 指认的前几场，只用来建立"前文已出现过的设定"，不 review 它们。
 
 读 `templates/script-scene.md` 格式的剧本页（`<!-- script-body:start/end -->` 之间；
 台词块为 `**NAME**` 或独立一行的角色名，下一行台词；括号行是表演/声音提示），
 只做可量化的部分：收件人链、来回（exchange）、句长分布、短句占比、连续无人接的句子、
-主谓宾完整度、画外标注、每句换人（一句一镜代理量）。语义判断不冒充已判定，
+主谓宾完整度、画外标注、每句换人（一句一镜代理量）、潜台词支点（省略句依赖的设定前文有没有建立）。语义判断不冒充已判定，
 列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3 校准），
 在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S9）。
 
@@ -33,6 +34,7 @@ THRESHOLDS = {
     'third_party_jump_max': 0.4,  # 换到第三个人说且不接前句的比例（一句一镜代理量）
     'orphan_run_min': 3,       # 连续多少句互不接话算一段
     'short_words': 4,
+    'elliptical_words': 5,     # ≤ 此词数或被截断 / 以回应词起句的句子视为省略句（支点检查用）
 }
 
 START_ACTION_RESET = re.compile(r'^场\s*\d+')
@@ -323,12 +325,145 @@ def analyse(lines, actions, names):
     return stats
 
 
+# ---- 潜台词支点：省略句依赖的设定，前文有没有建立 ------------------------------
+# 依据：说话人按共同基础与收件人设计说话（S10 Clark & Brennan 1991；S1 SSJ 1974 p.727），人物之间省略得掉的，
+# 观众不在他们的共同基础里就读不出来；设定"凭空出现"会显得生硬，好的做法是让它由本场此刻的需要引出，或有人当场问一句（S11 Scriptnotes 693）。
+# 可量化的代理量 [推论]：一句省略句里出现"当作已知"的指称（你的 X / 那个 X / 你有 X / 还 X），该指称在前文台词与英文动作行里没出现过，
+# 且接下来没人问——记为"无支点"。中文动作行无法与英文指称自动对齐，只能引用出来交模型复核。
+DETERMINERS = {'the', 'that', 'those', 'my', 'your', 'his', 'her', 'their', 'our'}  # this / these 指画面里的东西，本句即支点，不算当作已知
+ITERATIVES = re.compile(r"\b(still|again|anymore|all over|by the way|as usual|the other|last time|like before)\b", re.I)
+KNOWN_TO_YOU = re.compile(r"\byou(?:'ve| have|'ve got| still have| kept| left)\s+(?:got\s+)?(?:a|an|the|my|your|his|her|their)\s+((?:[a-z]+\s?){1,3})", re.I)
+DEICTIC = re.compile(r"\b(right here|here|over there|this one|these)\b", re.I)
+NP_STOP = {'one', 'thing', 'things', 'way', 'time', 'lot', 'bit', 'kind', 'sort', 'guy', 'guys', 'man', 'people',
+           'everybody', 'everyone', 'somebody', 'nobody', 'same', 'whole', 'rest', 'point', 'rule', 'story', 'minute',
+           'second', 'night', 'tonight', 'day', 'morning', 'today', 'week', 'place', 'here', 'there', 'now'}
+ELLIPTICAL_OPENERS = {'so', 'then', 'and', 'but', 'or'}
+
+
+def _stem(w):
+    w = w.lower().rstrip("'")
+    w = re.sub(r"'s$", '', w)
+    for suf in ('ies', 'es', 's'):
+        if w.endswith(suf) and len(w) - len(suf) >= 3:
+            return w[:-len(suf)] if suf != 'ies' else w[:-3] + 'y'
+    return w
+
+
+def _np_heads(text):
+    """当作已知的指称：限定词 / 物主 + 名词短语的中心词；"you have a X"；配 still/again 等重复词的名词。返回 [(head, phrase)]。"""
+    found = []
+    toks = re.findall(r"[A-Za-z]+(?:'[a-z]+)?", text)
+    low = [t.lower() for t in toks]
+    for i, t in enumerate(low):
+        if t in DETERMINERS:
+            phrase = []
+            for j in range(i + 1, min(i + 4, len(low))):
+                w = low[j]
+                owner = w.endswith("'s")  # hoodie's = hoodie is：名词本身仍算，短语到此为止
+                w = re.sub(r"'s$", '', w)
+                if w in STOP or w in AUX or w in VERBS or w in DETERMINERS or "'" in w:
+                    break
+                phrase.append(w)
+                if owner:
+                    break
+            if phrase and phrase[-1] not in NP_STOP and len(phrase[-1]) >= 3:
+                found.append((_stem(phrase[-1]), ' '.join(phrase)))
+    for m in KNOWN_TO_YOU.finditer(text):
+        phrase = [w for w in m.group(1).lower().split() if w not in STOP and w not in AUX and w not in VERBS]
+        if phrase and phrase[-1] not in NP_STOP and len(phrase[-1]) >= 3:
+            found.append((_stem(phrase[-1]), ' '.join(phrase)))
+    seen, out = set(), []
+    for h, ph in found:
+        if h not in seen:
+            seen.add(h)
+            out.append((h, ph))
+    return out
+
+
+def is_elliptical(ln):
+    """省略句：很短、以回应词起句、或被截断的短句；一句 13 词的完整陈述即使末尾被打断也不算。"""
+    t = ln['text'].strip()
+    first = tokens(t)[:1]
+    return bool(ln['words'] <= THRESHOLDS['elliptical_words']
+                or t.startswith('—')
+                or (t.endswith('—') and ln['words'] <= THRESHOLDS['elliptical_words'] + 3)
+                or (first and first[0] in ELLIPTICAL_OPENERS))
+
+
+def has_imperative_or_decision(ln):
+    return ln['clause'] == 'imperative' or bool(re.match(r"^\s*(so|then)\b", ln['text'], re.I)) or \
+        bool(re.search(r"\b(i'm gonna|i'll|let's|go|come|take|bring|keep|give)\b", ln['text'], re.I))
+
+
+def anchoring(lines, actions, context_text='', ledger_text=''):
+    """逐句检查省略句里当作已知的指称是否在前文建立过。返回 candidates（无支点）、planted（本句明说的新设定）、declared（账本已声明不交代）。
+    ledger_text = 剧本页正文之外的文字（修订账本 / 上下文承接 / 对白审阅）：指称出现在那里，视为作者已声明的决定，降为复核项。"""
+    established = {_stem(t) for t in tokens(context_text) if len(t) >= 3}
+    declared_terms = {_stem(t) for t in tokens(ledger_text) if len(t) >= 3}
+    declared = []
+    cjk_actions_before = bool(CJK.search(' '.join(actions))) and not any(len(tokens(a)) >= 3 for a in actions)
+    candidates, planted = [], []
+    act_cursor = -1
+    for k, ln in enumerate(lines):
+        # 先把本句之前的动作行并入已建立词表（英文部分）
+        while act_cursor < ln['action_idx']:
+            act_cursor += 1
+            established |= {_stem(t) for t in tokens(actions[act_cursor]) if len(t) >= 3}
+        if ln['cjk']:
+            ln['presupposed'] = []
+            established |= {_stem(t) for t in tokens(ln['text']) if len(t) >= 3}
+            continue
+        heads = _np_heads(ln['text'])
+        iterative = ITERATIVES.search(ln['text'])
+        new_refs = [(h, ph) for h, ph in heads if h not in established and h not in {_stem(x) for x in tokens(ln['speaker'])}]
+        ln['presupposed'] = [ph for _, ph in new_refs]
+        if new_refs:
+            ell = is_elliptical(ln)
+            nxt = [x for x in lines[k + 1:k + 4] if x['speaker'] != ln['speaker'] and x['action_idx'] <= ln['action_idx'] + 1][:2]
+            asked = any(x['question'] and any(h in {_stem(t) for t in tokens(x['text'])} for h, _ in new_refs) for x in nxt)
+            asked_any = any(x['question'] for x in nxt)
+            act = actions[ln['action_idx']] if ln['action_idx'] >= 0 else ''
+            entry = {
+                'line': k, 'quote': quote(ln), 'refs': [ph for _, ph in new_refs], 'iterative': bool(iterative),
+                'elliptical': ell, 'asked_about': asked, 'asked_any': asked_any,
+                'load_bearing': has_imperative_or_decision(ln),
+                'preceding_action': act[:60], 'action_is_cjk': bool(CJK.search(act)) and not tokens(act),
+                'next': quote(nxt[0]) if nxt else '（无人接）',
+            }
+            visible = bool(DEICTIC.search(ln['text']))  # "my phone's right here"：指着画面里的东西，本句即支点
+            if ell and not asked and not visible:
+                if all(h in declared_terms for h, _ in new_refs):
+                    declared.append(entry)
+                else:
+                    candidates.append(entry)
+            else:
+                planted.append(entry)
+        established |= {_stem(t) for t in tokens(ln['text']) if len(t) >= 3}
+    candidates.sort(key=lambda e: (not e['load_bearing'], e['line']))
+    return candidates, planted, declared
+
+
+FIX_TEMPLATES = (
+    ('直说来历', '{who} 把"{ref}"说成一句完整的话再接现在这句', '明说，默契感减一层', '后场不必再交代，新事实进 ip.md'),
+    ('用当场动作引出', '让"{ref}"由本场此刻的需要带出——被用到、被交接、被当场撞见，而不是只被提到或指到', '多一个动作节拍', '物件或事件的初末态与前场要核'),
+    ('让第三人替观众问', '在场另一人问一句"What {head}?"，答一句', '多一来一回，旁人知情', '知情范围扩大，"只限两人"的设定会变'),
+)
+
+
+def fixes_for(entry):
+    """按 SKILL.md"批评已有稿、改法未定"契约：两到三种改法，各一两句（改什么 / 这场变成什么 / 影响后面什么），不改稿。"""
+    ref = entry['refs'][0]
+    head = ref.split()[-1]
+    who = entry['quote'].split('「')[0]
+    return [f"{name}：{what.format(who=who, ref=ref, head=head)}；这场变成 {becomes}；影响后面 {after}" for name, what, becomes, after in FIX_TEMPLATES]
+
+
 # ---- 判断 --------------------------------------------------------------------
 def quote(ln):
     return f"{ln['speaker']}「{ln['text']}」"
 
 
-def judge(lines, actions, stats):
+def judge(lines, actions, stats, candidates=(), planted=(), declared=()):
     """返回 issues（问题）、signals（信号，不判定）、review_needed（需模型复核）。"""
     T = THRESHOLDS
     issues, signals, review = [], [], []
@@ -336,7 +471,6 @@ def judge(lines, actions, stats):
     if n < T['min_lines']:
         signals.append(f'台词只有 {n} 句，统计判断不适用；按安静戏人工读。')
         return issues, signals, review
-
     # (a) 来回
     no_pair = stats['longest_exchange'] < T['longest_exchange_min']
     weak_link = stats['conversation_share'] < T['exchange_coverage_min']
@@ -401,13 +535,35 @@ def judge(lines, actions, stats):
             issues.append(item)
     elif no_pair or weak_link:
         signals.append(f"两人来回最长 {stats['longest_exchange']} 轮、有人接的台词 {int(stats['conversation_share'] * 100)}%：多人场可以成立，读一遍确认谁在回应谁。")
+    # (d) 潜台词支点：省略句 + 当作已知的新设定 + 无人问
+    if candidates:
+        c = candidates[0]
+        carrier = ('本句前只有动作行「' + c['preceding_action'] + '」' + ('（中文动作行，能否算铺垫需人工核）' if c['action_is_cjk'] else '')) \
+            if c['preceding_action'] else '前文没有任何句子或动作提到它'
+        others = '；同类：' + '、'.join(f"{e['quote']}（{e['refs'][0]}）" for e in candidates[1:3]) if len(candidates) > 1 else ''
+        issues.append({
+            'key': 'unanchored_subtext',
+            'title': '潜台词无支点',
+            'evidence': f"{c['quote']} 把\"{c['refs'][0]}\"当作双方已知，{carrier}；下一句 {c['next']} 没人问" + others,
+            'why': '人物之间省得掉的话，观众不在他们的共同基础里就读不出；一个凭空出现的设定要靠观众自己推三层，就是"看不懂"。若是有意不交代的旧梗，请在账本标明，模型复核时按此区分。',
+            'sources': ['S10', 'S1', 'S11'],
+            'basis': '共同基础与收件人设计有来源（S10, S1）；"省略句+新指称+无人问"作为看不懂的代理量是[推论]',
+            'fixes': fixes_for(c),
+        })
+
     # 信号（不判定）
+    if planted:
+        signals.append('本句明说的新设定（可作后文支点）：' + '、'.join(f"{e['quote'].split('「')[0]}—{e['refs'][0]}" for e in planted[:4]) + '。')
     if stats['questions']:
         signals.append(f"问句 {stats['questions']} 个，被下一位接住 {stats['questions_answered']} 个。")
     else:
         signals.append('全场没有一个问句。')
     signals.append(f"犹豫 / 打断 / 口头填充标记 {stats['hesitation_marks']} 句（有无都不判错）。")
     # 需模型复核
+    for e in candidates[:3]:
+        review.append(f"{e['quote']}：\"{e['refs'][0]}\"是有意不交代的旧梗，还是观众需要的设定？{'（前置中文动作行：' + e['preceding_action'][:30] + '…）' if e['action_is_cjk'] else ''}")
+    for e in declared[:2]:
+        review.append(f"{e['quote']}：\"{e['refs'][0]}\"账本已声明不交代——确认观众只需知道'有共同过去'，不需要内容。")
     for k in stats['unknown_addressee'][:6]:
         ln = lines[k]
         act = actions[ln['action_idx']] if ln['action_idx'] >= 0 else '（无前置动作行）'
@@ -422,7 +578,7 @@ def judge(lines, actions, stats):
     return issues, signals, review
 
 
-SOURCE_LEGEND = '来源编号 S1–S9 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题'
+SOURCE_LEGEND = '来源编号 S1–S11 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题'
 
 
 def _count(text):
@@ -442,6 +598,9 @@ def render(path, stats, issues, signals, review, full=False, limit=800):
     else:
         verdict = f"{path.name}：有问题——{'、'.join(i['title'] for i in issues)}。"
     head = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。{it['why']}（{it['basis']}）" for i, it in enumerate(issues[:3], 1)]
+    for it in issues[:3]:
+        if it.get('fixes'):
+            head.append('改法（改法未定时供选，不改稿）：' + ' '.join(f'({i}) {f}' for i, f in enumerate(it['fixes'], 1)))
     tail = []
     if stats['offscreen_lines']:
         tail.append(f"交接 film-director：画外句 {len(stats['offscreen_lines'])} 句，分镜时核对声画对位。")
@@ -464,16 +623,42 @@ def render(path, stats, issues, signals, review, full=False, limit=800):
             return text
 
 
-def review_file(path, full=False):
+def ledger_text(text):
+    """模板里作者声明决定的位置：'## 剧本页' 之前的版本 / 修订账本行，以及 '## 上下文承接' 一节。对白审阅等分析栏目不算声明。"""
+    head = text.split('## 剧本页', 1)[0] if '## 剧本页' in text else ''
+    m = re.search(r'## 上下文承接.*?(?=\n## |\Z)', text, re.S)
+    return head + ('\n' + m.group(0) if m else '')
+
+
+def context_text(paths):
+    """前几场的正文（台词 + 动作行）只用来建立已出现过的设定；解析失败的文件按纯文本并入。"""
+    parts = []
+    for p in paths or ():
+        raw = Path(p).read_text(encoding='utf-8')
+        try:
+            parts.append(body(raw))
+        except ValueError:
+            parts.append(raw)
+    return '\n'.join(parts)
+
+
+def review_file(path, full=False, context=None):
     text = Path(path).read_text(encoding='utf-8')
     lines, actions = parse(text)
     names = sorted({ln['speaker'] for ln in lines})
     stats = analyse(lines, actions, names)
-    issues, signals, review = judge(lines, actions, stats)
+    ledger = ledger_text(text)
+    candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger)
+    stats['unanchored'] = [e['line'] for e in candidates]
+    stats['planted'] = [e['line'] for e in planted]
+    stats['declared'] = [e['line'] for e in declared]
+    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared)
     return {
-        'file': str(path), 'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
+        'file': str(path), 'context': [str(c) for c in (context or [])],
+        'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
+        'anchoring': {'candidates': candidates, 'planted': planted, 'declared': declared},
         'verdict': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('issues' if issues else 'pass'),
-        'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation')} for ln in lines],
+        'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation', 'presupposed')} for ln in lines],
         'thresholds': THRESHOLDS,
         'text': render(Path(path), stats, issues, signals, review, full=full),
     }
@@ -484,11 +669,12 @@ def main(argv=None):
     ap.add_argument('scenes', nargs='+')
     ap.add_argument('--json', action='store_true', help='输出 JSON（含逐句特征与阈值）')
     ap.add_argument('--full', action='store_true', help='不截到 800 字，复核清单全列')
+    ap.add_argument('--context', nargs='*', default=[], help='前几场剧本页：只用来建立前文已出现的设定，不 review')
     args = ap.parse_args(argv)
     results = []
     for p in args.scenes:
         try:
-            results.append(review_file(p, full=args.full))
+            results.append(review_file(p, full=args.full, context=args.context))
         except (ValueError, OSError) as e:
             print(f'{p}: 无法解析（{e}）', file=sys.stderr)
             return 2
