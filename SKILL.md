@@ -38,6 +38,7 @@ description: 影视创意与剧本开发：概念构思、故事发展、完整�
 | 批评已有稿、改法未定（"太强了""太假""调整一下"） | `references/execution-contract.md` §修改请求 判改法 → `references/creative-loop.md` §二 定位层级 | 解法不止一种且会改变作品时：两到三种改法，各一两句（改什么 / 这场变成什么 / 影响后面什么），可推荐；**不改稿**。解法唯一或只涉措辞时直接改并说明 | 不把批评当成改法授权；不同步任何依赖文档 |
 | 优化单场（改法已定，或用户说"你定 / 直接改"） | `references/story-context.md` 取本场依据 → `references/creative-loop.md` §三 定点改 | 改动清单 + 整场全文；说明改了什么、解决什么、保留了什么；改稿为探索稿，采用前不更新故事 / 框架 / 正典 | 不扩改范围，不把安静戏改成对抗，不动锁定句 |
 | 优化对白 | `references/character-scene-development.md` §四–五 | 只改对白的整段全文 + 一行说明；每个人有说这句的理由与自己的立场，声音有别 | 不改事件、人物设定、场景与结尾；不顺手加道具、前史；范围小不等于改得少 |
+| 出稿后 review 对白（S3c 写完 `03_script/scene-XX.md` 后默认跑；用户要"检查台词"也走这里） | 跑 `scripts/review_script.py`（参数为一个或多个剧本页路径）→ 结果按 §默认输出契约的诊断格式；来源与阈值见 `references/dialogue-review-sources.md` | 一句总判断 + ≤3 个问题（各含台词原文证据与来源编号）+ 需模型复核的句子；脚本只算可量化项，语义部分由模型按取向 6 复核后写进同一份 review | 不改稿、不替用户采用；判为通过不等于台词好，只表示没触发已知问题；阈值是 `[推论]`，用户可调 |
 
 ## 流水线
 
@@ -53,7 +54,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | S2 需求识别 | 同上 §需求识别 ＋ `references/scene-parameters.md` §一 | 创作意图 · 材料成熟度与入口 · 锁定项 · 目标终点与排除项 · 自主度 / 确认 / 保存 · **场景参数卡** | |
 | S3a 概念 | `references/concept-generation.md` ＋ `references/stage-3a-concept.md` ＋ `references/research-to-craft.md` | 对话内创作判断 + 候选（数量由任务定，可附关键场景试写）；选定内容；按保存契约写 `01_concept.md` | ▮ 候选（用户要选方向时） |
 | S3b 故事开发 | `references/stage-3b-story.md` ＋ `references/screenwriting-traditions.md`；多集 / 高概念 / 爱情线加 `references/story-engine.md`，短剧或多集分集加 `references/episode-design.md` | 对话内可连续阅读的故事正文（辅助表按需）；按保存契约写 `02_story.md` + `ip.md` | 按执行契约 |
-| S3c 剧本落地 | `references/stage-3c-script.md` ＋ `references/scene-parameters.md`；写单集分场时加 `references/episode-design.md` §三 | 对话内每场剧本页；按保存契约写 `03_script/scene-XX.md` | 按执行契约 |
+| S3c 剧本落地 | `references/stage-3c-script.md` ＋ `references/scene-parameters.md`；写单集分场时加 `references/episode-design.md` §三 | 对话内每场剧本页；按保存契约写 `03_script/scene-XX.md`；落盘后默认跑 `scripts/review_script.py`，review 随剧本页一起交付（只 review 不改稿） | 按执行契约 |
 
 **接已有材料时**：先读 `references/story-context.md`，开写前定位整体故事、当前状态、远处依赖与后文边界；每次换场/修订复用，不能只读最近一段。
 **发展新意时**：S3a–S3c 按需读 `references/creative-search.md`，从人物选择、关系与后果形成实际正文；不把加戏等同于增加灾难、反转或新设定。好莱坞与韩国创作者的一手方法按 `references/screenwriting-methods.md` 的具体问题入口选用，不按地域套公式。
