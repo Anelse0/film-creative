@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""出稿后的剧本对白 review（film-creative 3.3.0）。
+"""出稿后的剧本对白 review（film-creative 3.3.1）。
 
 用法:
   review_script.py 03_script/scene-01.md [scene-02.md ...] [--json] [--full]
@@ -353,6 +353,7 @@ def judge(lines, actions, stats):
                         f"能看出有人接或在接别人的台词只有 {int(stats['conversation_share'] * 100)}%；" + '；'.join(ev),
             'why': '每句都在对谁说、下一句接不接住，是会话成立的最小条件；观众听到的是各丢一句，没人对着谁说。',
             'sources': ['S1', 'S5'],
+            'basis': '相邻对与交错独白有来源（S1, S5）；"三轮才算来回""50%"是[推论]阈值',
         })
     # (b) 标语化：短、碎、每句换人
     slogan = []
@@ -377,6 +378,7 @@ def judge(lines, actions, stats):
             'evidence': '；'.join(slogan),
             'why': '真实会话的单句平均约 1.7 秒、六七个词，长短随回应变化；连续的两到四词短句配上每句换人，只能一句一镜，声音落不到脸上。',
             'sources': ['S3', 'S4', 'S9', 'S8'],
+            'basis': '轮次时长与语料均值有来源（S3, S4）；4 词/句、短句占比、"第三人跳"代理量是[推论]',
         })
     # (c) 画外 / 同框
     off = stats['offscreen_lines']
@@ -388,11 +390,13 @@ def judge(lines, actions, stats):
             'evidence': f'{len(off)} 句标了画外：{ev}',
             'why': '观众的视线跟着说话人的脸走，画外句落在别人脸上时听不出谁对谁说。',
             'sources': ['S9'],
+            'basis': '视线跟随说话人有来源（S9）；由此判画外句为问题是[推论]',
         }
         if len(off) >= 2 and issues:
             # 与来回问题同根因（没人对着谁说），合并进第一条，不另立
             issues[0]['evidence'] += f'；其中 {len(off)} 句标为画外（{ev}）'
             issues[0]['sources'] = sorted(set(issues[0]['sources']) | {'S9'})
+            issues[0]['basis'] += '；画外句判为问题依据 S9，属[推论]'
         else:
             issues.append(item)
     elif no_pair or weak_link:
@@ -418,7 +422,7 @@ def judge(lines, actions, stats):
     return issues, signals, review
 
 
-SOURCE_LEGEND = '来源编号 S1–S9 见 references/dialogue-review-sources.md'
+SOURCE_LEGEND = '来源编号 S1–S9 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题'
 
 
 def _count(text):
@@ -437,7 +441,7 @@ def render(path, stats, issues, signals, review, full=False, limit=800):
                    + f"，画外 {len(stats['offscreen_lines'])} 句。")
     else:
         verdict = f"{path.name}：有问题——{'、'.join(i['title'] for i in issues)}。"
-    head = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。{it['why']}（{', '.join(it['sources'])}）" for i, it in enumerate(issues[:3], 1)]
+    head = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。{it['why']}（{it['basis']}）" for i, it in enumerate(issues[:3], 1)]
     tail = []
     if stats['offscreen_lines']:
         tail.append(f"交接 film-director：画外句 {len(stats['offscreen_lines'])} 句，分镜时核对声画对位。")

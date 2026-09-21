@@ -40,6 +40,8 @@ class RealSampleTests(unittest.TestCase):
         for it in r['issues']:
             self.assertRegex(it['evidence'], r'「.+」')
             self.assertTrue(it['sources'])
+            self.assertIn('[推论]', it['basis'])  # 3.3.1: 输出同步标注哪些是来源、哪些是推论
+        self.assertIn('[推论]', r['text'])
         self.assertIn("Not in this shirt", r['text'])
         self.assertIn('交接 film-director', r['text'])
         self.assertLessEqual(chars(r['text']), 800)
