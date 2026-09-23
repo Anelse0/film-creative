@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **3.6.1**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **3.7.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,13 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 3.7.0 更新
+
+- **本场赌注卡与场面轨合成一张"事件轨"**（`references/stage-3c-script.md` §3c.0b，模板 `templates/script-scene.md`）：表上方是人物清单（持续赌注 / 此刻向谁要什么 / 怕 / 为什么是现在），范围从"说 ≥3 句的人"扩到每一行变化的主体——**不说话的人也在内**；表里每行是一次变化（谁：进 → 出（类别））、说出口的那句或不说的理由与代价、**删掉损失**（每行必填）、地点 / 活动 / 时间 / 锚句 / 估时。**推进只数变化，不数地点**：换了地点或跳了时间的行必须有变化；没有变化的行只能是原地的余韵。
+- §3c.0c 改为"画面单调先诊断缺什么"：缺事件 / 缺人 / 缺信息 / 都不缺（交分镜）；`execution-contract.md` §修改请求：加段或换景的改法选项必须写出新行的变化与删掉损失，写不出的不列。
+- `scripts/review_script.py`：`checks.stakes` 与 `checks.picture` 合为 `checks.events`。3.6 的"全场一个地点 × 活动即报问题"撤掉（改为复核：先诊断缺什么）；新增问题：换地点 / 跳时间却没有变化、进出相同或重演同一人的状态、变化主体不在人物清单、≥30 s 少于两次变化且未登记"本场静止：理由"。写得出变化的换地点 / 无台词 / 只改变观众所知的行，带证据交模型做删除测试。来源补 Mamet 备忘录"不推进剧情的场是多余的"（S6，本次核对转载页）。
+- 纠偏：3.6 把 THE ORDER EP03 场 4 v4.1"几分钟后，牛棚边"当作正样本（测试断言通过、§3c.0c 示例、§3c.8 处理、偏好账本）；用户看成片问"这 16 s 存在的意义是？"。3.7.0 起它是反例：v4 通过（附"全场一个地点"复核）、v4.1 在牛棚行报问题、v4.1 删牛棚为对照通过。
 
 ## 3.6.1 更新
 
@@ -98,7 +105,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/project-state.md` + `scripts/project_check.py` | 已保存项目：版本、恢复、依赖失效、正典 |
 | `templates/*.md` | 概念 / 故事 / 剧本页 / ip 骨架 |
 | `scripts/validate_concept.py` | 概念选定落盘后跑；只查格式与完整性，不判断创意 |
-| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：人物赌注卡与场面轨各自与正文的逐字核对、按文本估时 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项列需模型复核；来源与阈值登记 |
+| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：事件轨（人物清单、每行变化、说出口、删掉损失）与正文的逐字核对、按文本估时 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项（含删除测试）列需模型复核；来源与阈值登记 |
 | `scripts/route_check.py` | S2 结构化决策校验：仅执行 S3a–S3c/save_only；不解释自然语言，旧自由文本 CLI 返回 2 |
 | `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓 |
 | `scripts/baseline_snapshot.py` | Git / 非 Git 版本目录的归档与完整性检查 |

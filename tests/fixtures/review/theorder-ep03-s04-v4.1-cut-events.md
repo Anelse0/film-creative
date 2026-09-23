@@ -1,27 +1,30 @@
-<!-- 3.6.0 校准样本：THE ORDER EP03 场 4 v4.1 采用稿快照（2026-09-23 14:21 版）+ 回填的场面轨；正文逐字未改。分镜实排 88 s（theorder-ep03-s04-plan.md）。3.7.0 起只作旧格式样本（本场赌注 + 场面轨 → 报"缺事件轨"）；事件轨版见 theorder-ep03-s04-v4.1-events.md -->
+<!-- 3.7.0 对照样本：v4.1 采用稿删掉"几分钟后，牛棚边"两段（其余逐字未改，保留"队伍跑进太阳"收尾）+ 事件轨（维护者回填，非盲）。不是项目稿，是删除测试的对照。 -->
 # EP03《生日派对 · The Birthday Party》· 场 04〈周一之前〉
 
 版本：v4.1（2026-09-23 采用；过线后改到牛棚边拉伸；用户采用时要求保留"队伍跑进太阳"，放在过线之后、换到牛棚之前）
 修订账本：v4.1 采用时（用户 2026-09-23）："采用 4.1，但保留'队伍跑进太阳'，画面比较美丽唯美"——恢复 v4 的"队伍从他们身边跑过去，跑进刚出来的太阳里"，放在 Cole 跑过之后、"几分钟后，牛棚边"之前，作为从终点到牛棚的过渡 ／ v4.1 改动＝用户 2026-09-23 看分镜时指出整场 74 s 都在跑道上，定"回剧本改：过线后换到休息区，或牛棚边拉伸"。选牛棚（EP01 已有"牛棚外长凳"，是投手与捕手的地方，能把 Beckett 的条件"let Diego block it"变成一个看得见的处境）：过线那一段压短（Tess 秒表与出赛板 CUT DAY — MONDAY 并到同一处、Cole 一眼保留）；删"Isa 看板、队伍跑进太阳"；新增"几分钟后，牛棚边"：队员散在草地上拉伸，Isa 在牛棚围栏外拉左肩，Diego 一个人在牛棚里绑好护腿、蹲到本垒板后、拍两下手套看着他；Beckett 走过按了一下 Isa 的肩、没说话；Isa 还坐着。台词不动。选牛棚不选休息区：休息区在 EP01 已用作 Beckett 替 Diego 做决定的地方，牛棚是 Isa 要不要投给 Diego 的地方，直接接本场的条件 ／ 保留＝v4 全部台词、赌注卡的"说出口"两句、冲刺 ／ 受影响（采用后同步）＝框架 EP03 场 4 行结尾改写；场 4 分镜 clip03 重排；牛棚资产（EP01 有无图待查）；EP05 S03 Isa 接受捕手方案——本场 Diego 在牛棚等他，那场是他走进去 ／ v4 改动＝用户 2026-09-23 否决 v3 台词（"没有突出人物自身的压力和希望'出道'的情绪，更多是在平铺说话"），定方向"Isa、Beckett；EP02–03 到目前都是群像，强化体育明星／竞技"。场景、时间、晨跑、出赛板保留；对话人从 Diego↔Isa 换成 Beckett↔Isa：队长把 Isa 叫到队伍最前面，当面给他 Game One 的路（场 1 被 Cole 一句 "Beck. It's a party." 压下的 scouting sheet）和条件（不再摇头），Isa 说出自己的怕（他丢一分和 Cole 丢一分不是一回事），Beckett 把自己的名字压上去；Isa 不答，改成比最后一段直道——他赢了一个身位，Cole 在后面看见两人一起冲线。删：v3 Diego↔Isa 全部台词（"Thanks for last night." / "I covered for you once. That's it." / "That's fair." / "And yesterday. You shook off the curve…" / "It bounces." / "Then I block it. That's the job." / "Monday they decide if I even get to take the test. You could've let me show them."）、Cole "He'd have blocked it."、Isa 快半步 Diego 跟上 ／ v4 采用后微调（用户 2026-09-23 棒球逻辑）：Isa "One bounce and that's a run." → "One bounce, he's on third. One fly ball, he scores."——二垒有人时曲球砸地先是跑者进三垒，一个高飞球才得分 ／ 保留＝晨跑、Beckett "Two more. Nobody walks."、Tess 出勤表、出赛板 CUT DAY — MONDAY、队伍跑进太阳 ／ 受影响（采用后复核）＝EP06 Diego 请 Cole 的铺垫不再在这里（原 Cole 替 Diego 说话）；Diego 把"摇头＝不信我挡得住"说出口改由 Beckett 替捕手说；EP04 场 2／4 Beckett "替别人作主"在这里先出现一次（绕过 Cole 给 Isa 铺路）；EP04 场 1 Beckett 签 Diego 担保与本场"它算我的"同一性格 ／ 暂定假设＝第 7 日周六清晨队内晨跑（非正式 Session）；Tess 周末照常记出勤并掐最后一圈的表；球场用 EP01 Sharks 球场资产
 
-## 本场赌注
+## 事件轨（对照：v4.1 删牛棚）
 
-| 人物 | 持续赌注（出处） | 此刻向谁要什么 | 怕失去什么 | 为什么是现在 | 说出口（逐字台词）／不说的理由与代价 | 场末（得到 / 没得到 / 推迟；代价） |
-|---|---|---|---|---|---|---|
-| Isa | 转学生、全额奖学金，家在 Trenton，稿子读三遍发回家；只靠手臂、没有姓氏可依（ip.md 人物表 Isaiah 行；EP00 "His arm, not his last name."）；GUEST BALLOT 问"谁先发 Game One"（框架 §2）；S02 失 2 分、Cole 0 分，教练记下两次摇头（场 1） | 向 Beckett 要一句准话：Game One 是不是他的 | 丢一分就被当成撑不住的奖学金生，输给一个有姓氏的人 | 周一 CUT DAY；队长第一次当着全队把他叫到最前面 | "Cole gives up a run, he's still a Prescott. I give up a run, I'm the scholarship kid who couldn't handle it." | 推迟：拿到了路，没答应条件；用一段冲刺代替回答，赢了一个身位——代价是 Beckett 刚替他压上名字没得到一句"好"，Cole 在后面看见了；场末 Diego 在牛棚里蹲着等他，他还坐着 |
-| Beckett | 队长资格 UNDER REVIEW；能替队员说明、能签名担保、不能批准先发（ip.md Beckett 行；框架 §2 谁决定什么）；与 Cole 同属世家在册；性格"我先安排好，你一定会接受"（框架 §3）；EP01 打中了 Cole、挥空了 Isa | 向 Isa 要：别再摇头，投 Diego 叫的球 | 带着错的投手输掉 Game One，队长做不成；昨晚被 Cole 压下的那张纸白拿 | 周一教练组定名单；那张纸昨晚没人听 | "Then it's on me. I'm the one telling them to start you." | 没得到：Isa 不答、跟他比冲刺还赢了他；他笑了一下，但名字已经压上去了，Cole 看见两人一起冲线；牛棚边他只按了一下 Isa 的肩，不再说 |
+人物（本场说 ≥3 句的人，以及任何一行变化的主体——含不说话的人）：
+- **Isa**｜持续赌注：转学生、全额奖学金，家在 Trenton；只靠手臂、没有姓氏可依；GUEST BALLOT 问谁先发 Game One（ip.md 人物表 Isaiah 行；EP00 "His arm, not his last name."；框架 §2）｜此刻向 Beckett 要：一句准话，Game One 是不是他的｜怕：丢一分就被当成撑不住的奖学金生，输给一个有姓氏的人｜为什么是现在：周一 CUT DAY；队长第一次当着全队把他叫到最前面
+- **Beckett**｜持续赌注：队长资格 UNDER REVIEW；能推荐、不能批准先发；与 Cole 同属世家在册（ip.md Beckett 行；框架 §2、§3）｜此刻向 Isa 要：别再摇头，投 Diego 叫的球｜怕：带着错的投手输掉 Game One，队长做不成｜为什么是现在：周一教练组定名单；那张纸昨晚被 Cole 压下
+- **Cole**｜持续赌注：Game One 先发之争，世家在册（ip.md Cole 行；框架 §2 GUEST BALLOT）｜此刻向 Beckett 要：先发还是他的（不说）｜怕：被队长绕过去｜为什么是现在：Isa 刚越过他跑到队长旁边
 
-## 场面轨（校准样本：按 v4.1 采用稿自己的空间 / 节拍表栏如实回填，正文不动）
+| # | 谁 → 对谁 | 变化：进 → 出（类别） | 说出口（逐字）／不说：理由；代价 | 删掉损失（观众少知道 / 少感到什么） | 地点（子空间） | 活动 | 时间 | 锚句（逐字） | 估时 s |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Beckett → Isa | Isa：在队伍中段 → 被队长当着全队叫到最前面（地位） | — | 队长当众把新王牌抬出来 | Sharks 球场外圈跑道（队伍最前面） | 跑步 | — | 几个队友互相看了一眼。 | 8 |
+| 2 | Beckett → Isa | Isa：不知道先发怎么定 → 拿到 Game One 的路：对手前四棒打不了左投（信息） | — | scouting sheet 第一次当面给 Isa；Cole 没看 | Sharks 球场外圈跑道（并排） | 跑步 | 连续 | Cole didn't want to read it. | 8 |
+| 3 | Beckett → Isa | Isa：以为 Game One 是他的 → 知道条件：不能再摇捕手（信息） | — | 路是有条件的 | Sharks 球场外圈跑道（并排） | 跑步 | 连续 | Game One could be yours. | 4 |
+| 4 | Isa → Beckett | Beckett：只知道 Isa 摇头 → 听到 Isa 的怕：他丢一分和 Cole 丢一分不是一回事（信息） | "Cole gives up a run, he's still a Prescott. I give up a run, I'm the scholarship kid who couldn't handle it." | Isa 的赌注说出口 | Sharks 球场外圈跑道（并排） | 跑步 | 连续 | Cole gives up a run, he's still a Prescott. | 9 |
+| 5 | Beckett → Isa | Beckett：只提条件 → 把自己的名字压上去（决定） | "Then it's on me. I'm the one telling them to start you." | 队长替 Isa 担了风险 | Sharks 球场外圈跑道（并排） | 跑步 | 连续 | Then it's on me. | 6 |
+| 6 | Isa → Beckett | Isa：被要一句"好" → 不答，改成比最后一段直道（推迟；代价：Beckett 压了名字没得到"好"） | 不说：理由 答应就等于认了摇头是错的；代价 Beckett 没得到"好" | Isa 用冲刺代替回答 | Sharks 球场外圈跑道（最后直道） | 跑步（冲刺） | 连续 | Isa 看着他，跑了几步，没有答。 | 3 |
+| 7 | Isa → Beckett | Isa：和队长并排 → 领先一个身位过线（得到） | — | 竞技回报：他赢了队长 | Sharks 球场外圈跑道（最后直道） | 跑步（冲刺） | 连续 | 两个人同时冲出去。 | 8 |
+| 8 | Tess → 观众 | 观众：刚看他赢 → 看见出赛板 CUT DAY — MONDAY 还在（信息） | — | 赢了一圈，周一还在 | Sharks 球场外圈跑道（白线、登记桌） | 跑步（过线） | 连续 | 场边登记桌，Tess 裹着外套，按停秒表 | 3 |
+| 9 | Cole → Isa、Beckett | Cole：在队伍里 → 看见队长和 Isa 一起冲线（信息） | 不说：理由 当着全队问就是承认被绕过；代价 Beckett 不知道他看见了 | Beckett 绕过 Cole 的代价落到 Cole 眼里 | Sharks 球场外圈跑道（白线） | 跑步（过线） | 连续 | Cole 跟着队伍慢跑到线前 | 3 |
+| 10 | — | 无（余韵：队伍跑进太阳，让这一圈的输赢停一下） | — | 用户要的"画面比较美丽唯美"；删掉少了一口气 | Sharks 球场外圈跑道 | 跑步 | 连续 | 队伍从他们身边跑过去，跑进刚出来的太阳里。 | 2 |
 
-| 段 | 地点（子空间） | 主要活动（类别；变化写括号） | 时间 | 谁在画面里 | 观众这段新看见什么 | 锚句（本段第一句动作行，逐字） | 估时 s |
-|---|---|---|---|---|---|---|---|
-| 1 | Sharks 球场外圈跑道（队伍最前面） | 跑步（全队慢跑，Beckett 倒跑点名） | — | 全队、Beckett | 白天、全队、队长当众点名 | 天刚亮，草上还有露水。 | 8 |
-| 2 | Sharks 球场外圈跑道（队伍最前面，并排） | 跑步（并排慢跑、谈话） | 连续 | Beckett、Isa（Cole 在后） | Isa 越过 Cole 上前；Game One 的路与条件；Isa 的怕；Beckett 压上名字 | 几个队友互相看了一眼。 | 32 |
-| 3 | Sharks 球场外圈跑道（最后直道） | 跑步（冲刺） | 连续 | Beckett、Isa、身后队伍 | Isa 赢一个身位 | 两个人同时冲出去。 | 8 |
-| 4 | Sharks 球场外圈跑道（白线、登记桌） | 跑步（过线、喘气；队伍跑进太阳） | 连续 | Tess、Beckett、Isa、Cole、全队 | 秒表、CUT DAY — MONDAY、Cole 一眼 | 场边登记桌，Tess 裹着外套，按停秒表，在出勤表上写下一个数字。 | 9 |
-| 5 | 牛棚（围栏内外） | 拉伸、等待 | 跳：几分钟后 | Isa、Diego、Beckett | Diego 已蹲好等他；Beckett 按一下肩走开；Isa 还坐着 | 几分钟后，牛棚边。 | 12 |
-
-总估时 ≈ 69 s（原稿节拍表"总窗口"）
+总估时 ≈ 54 s
 
 ## 剧本页
 
@@ -85,15 +88,6 @@ Beckett 冲过线，双手撑着膝盖，喘着笑了一声。Isa 转回来，�
 
 队伍从他们身边跑过去，跑进刚出来的太阳里。
 
-几分钟后，牛棚边。太阳已经完全出来了，队员散在草地上拉伸。Isa 坐在牛棚围栏外的草地上，左臂横过胸口，右手压着拉肩。
-
-围栏里，Diego 一个人坐在长凳上绑护腿，面罩放在旁边。他绑好最后一根扣带，走到本垒板后面蹲下，把手套口袋狠狠拍了两下，抬头看着围栏外的 Isa。
-
-Isa 看着他，手还压在肩上。
-
-Beckett 从 Isa 身后走过，在他肩上按了一下，没说话，走向休息区。
-
-Isa 还坐着。Diego 还蹲着，手套举在胸前。
 <!-- script-body:end -->
 
 ## 上下文承接

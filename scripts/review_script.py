@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""出稿后的剧本 review：对白连通、人物赌注、画面推进（film-creative 3.6.1）。
+"""出稿后的剧本 review：对白连通、事件轨（谁要什么、每一行变了什么）（film-creative 3.7.0）。
 
 用法:
   review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--json] [--full]
@@ -10,16 +10,16 @@
 读 `templates/script-scene.md` 格式的剧本页（`<!-- script-body:start/end -->` 之间；
 台词块为 `**NAME**` 或独立一行的角色名，下一行台词；括号行是表演/声音提示），
 只做可量化的部分：收件人链、来回（exchange）、句长分布、短句占比、连续无人接的句子、
-主谓宾完整度、画外标注、每句换人（一句一镜代理量）、潜台词支点（省略句依赖的设定前文有没有建立）；
-3.5.0 起另报"人物赌注"：读剧本页正文前的"## 本场赌注"卡，逐字核对卡上声明说出口的句子是否在正文里、
-是不是本人说的、有没有人接；不说的要有理由与代价；缺卡或全场无人说出口（未登记例外）判为问题。
-3.6.0 起另报"画面推进"：读正文前的"## 场面轨"（每段：地点 / 主要活动 / 时间 / 在场的人 / 观众新看见什么 / 锚句 / 估时），
-逐字核对锚句在正文动作行里且顺序一致；按文本估时（台词按语速，无台词段按动作句数）；估时 ≥30 s 的场缺轨、
-或全场只有一个"地点 × 活动"组合且无时间跳、未登记"本场单一画面：理由"判为问题；某一段画面不变 ≥40 s、自报估时偏小
-列为需模型复核。镜头与机位不在这里判——那是 film-director 的事。
-连通性、赌注与画面分开给结论（checks.dialogue / checks.stakes / checks.picture），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
-列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3 校准），
-在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S12）。
+主谓宾完整度、画外标注、每句换人（一句一镜代理量）、潜台词支点（省略句依赖的设定前文有没有建立）。
+3.7.0 起另报"事件轨"（合并 3.5.0 赌注卡与 3.6.0 场面轨）：读正文前的"## 事件轨"——人物清单（持续赌注 / 此刻向谁要什么 /
+怕 / 为什么是现在；主要说话人与每个变化主体都要在，含不说话的人）+ 每行一次变化的表（谁 → 对谁 / 变化：进 → 出（类别）/
+说出口或不说的理由与代价 / 删掉损失 / 地点 / 活动 / 时间 / 锚句 / 估时）。逐字核对锚句与说出口的句子在正文里、顺序一致、
+本人说、有人接；进出相同、同一人的"出"重演、换了地点或跳了时间却没有变化、变化主体不在人物里、≥30 s 只有 ≤1 次变化
+（未登记"本场静止：理由"）判为问题。推进只数变化，不数地点。换地点 / 跳时间 / 无台词 / 只改变观众所知的行，
+列出它的变化、删掉损失与同一人前几次的状态，交模型做删除测试；全场一个地点只列复核。镜头与机位不在这里判——那是 film-director 的事。
+对白与事件轨分开给结论（checks.dialogue / checks.events），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
+列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3、EP03 场 4 v3/v4/v4.1 校准），
+在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S13）。
 
 不改稿，不替用户采用；零外部依赖。退出码：0 = 通过或只有信号，1 = 有问题，2 = 输入无法解析。
 """
@@ -44,15 +44,17 @@ THRESHOLDS = {
     'orphan_run_min': 3,       # 连续多少句互不接话算一段
     'short_words': 4,
     'elliptical_words': 5,     # ≤ 此词数或被截断 / 以回应词起句的句子视为省略句（支点检查用）
-    'stake_min_lines': 3,      # 说了这么多句的人必须上赌注卡（主要说话人）
-    'min_voiced': 1,           # 全场至少几个人把自己的赌注说出口；卡上写"本场不说出口：理由"可登记例外
-    # 画面推进（3.6.0；按 THE ORDER EP02 场 1、EP03 场 1–4 的剧本估时与分镜实排校准，见 dialogue-review-sources.md §三）
+    'stake_min_lines': 3,      # 说了这么多句的人必须在事件轨"人物"里（主要说话人；不说话的变化主体另外也要在）
+    # 事件轨估时（3.6.0 起；按 THE ORDER EP02 场 1、EP03 场 1–4 的剧本估时与分镜实排校准，见 dialogue-review-sources.md §三）
     'wps': 4.0,                # 英文台词语速（词/秒；THE ORDER 用户定 4，`--wps` 可改）
     'cjk_cps': 4.5,            # 中文台词语速（字/秒）
     'action_s': 1.5,           # 无台词段里每个动作句的时长（秒；`--action-sec` 可改）
     'insert_max_sents': 2,     # 两句台词之间 ≤ 此数的动作句视为反应插入，与台词同步，不另计时
-    'picture_min_s': 30,       # 按文本估时 ≥ 此秒数的场才要场面轨、才判"全场一个画面"
-    'segment_review_s': 40,    # 一段画面（地点×活动×在场人物都不变）估时 ≥ 此秒数 → 需模型复核
+    'picture_min_s': 30,       # 按文本估时 ≥ 此秒数的场（或有对话的场）要事件轨；≥ 此秒数才判"变化太少"
+    'min_changes': 2,          # ≥30 s 的场至少几行有变化；少于此数须登记"本场静止：理由"（3.7.0）
+    'gap_review_s': 40,        # 观众等一次变化等了 ≥ 此秒数 → 需模型复核（3.6.0 的"同一段画面 ≥40 s"改按变化算）
+    'linger_review_s': 10,
+    'silent_review_s': 8,      # 无台词的变化行覆盖 ≥ 此秒数 → 列删除测试（短的反应行不列）     # 余韵（没有变化的行）合计 ≥ 此秒数 → 需模型复核（EP03 场 4 v4.1 牛棚段估 12 s、成片 16 s）
     'estimate_under': 0.85,    # 作者自报总估时 < 按文本估时 × 此比例 → 需模型复核（文本估时误差约 ±15%）
     'production_over': 1.2,    # 分镜实排 > 剧本估时 × 此比例 → 提醒用户（场面轨是告知不是锁定；回不回剧本层由用户定）
 }
@@ -480,16 +482,29 @@ def fixes_for(entry):
     return [f"{name}：{what.format(who=who, ref=ref, head=head)}；这场变成 {becomes}；影响后面 {after}" for name, what, becomes, after in FIX_TEMPLATES]
 
 
-# ---- 人物赌注：谁要什么、有没有说出口（3.5.0） ------------------------------------
-# 依据：Mamet 每场三问 WHO WANTS WHAT? / WHAT HAPPENS IF THEY DON'T GET IT? / WHY NOW?，"THE AUDIENCE WILL NOT TUNE IN
-# TO WATCH INFORMATION"（S6）；Mazin "Fear is our connection to a character"（S12）；说出口后有没有人接按相邻对（S1, S2）。
-# 脚本不判一句话"有没有欲望"（那会变成关键词表）：它只逐字核对作者写台词前填的卡与正文是否一致，
-# 语义（这句说的是不是卡上那件事）列为需模型复核。
-STAKES_HEAD = re.compile(r'^##\s*本场赌注[^\n]*$', re.M)
+# ---- 事件轨：谁要什么、每一行变了什么（3.7.0；合并 3.5.0 赌注卡与 3.6.0 场面轨） ----------------
+# 依据：Mamet 每场三问 WHO WANTS WHAT? / WHAT HAPPENS IF THEY DON'T GET IT? / WHY NOW?（S6）；Mazin "Fear is our
+# connection to a character"（S12）；说出口后有没有人接按相邻对（S1, S2）；地点与时长的问题（August 第 4、6 步，S13）。
+# 3.6 的"画面推进"数"地点 × 活动"组合：加一个没有事件的新地点就能通过（THE ORDER EP03 场 4 v4.1"几分钟后，牛棚边"，
+# 用户 2026-09-23 看成片问"这 16 s 存在的意义是？"）；无台词的人又不在赌注卡上。3.7.0 起两张卡合为一张事件轨：
+# 每行是一次变化（谁：进 → 出），地点、活动、时间只是这次变化的属性；推进只数变化，不数地点；
+# 变化的主体——包括不说话的人——都要在"人物"里写持续赌注与此刻要什么。
+# 脚本不判一句话、一个画面"有没有意义"（那会变成关键词表）：它只逐字核对作者写正文前填的轨与正文、比较同一人的
+# 前后状态、找出换地点却没有变化的行；变化是不是新的、删掉观众损失什么，列为需模型复核（删除测试，取向 5）。
+EVENTS_HEAD = re.compile(r'^##\s*事件轨[^\n]*$', re.M)
+LEGACY_HEAD = re.compile(r'^##\s*(本场赌注|场面轨)[^\n]*$', re.M)
 QUOTED = re.compile(r'[“"「]([^”"」]+)[”"」]')
-STAKE_COLS = (('name', '人物'), ('standing', '持续赌注'), ('want', '要什么'), ('fear', '怕'),
-              ('why_now', '为什么'), ('voiced', '说出口'), ('end', '场末'))
+EVENT_COLS = (('seg', '#'), ('who', '谁'), ('change', '变化'), ('voiced', '说出口'), ('loss', '删掉'),
+              ('loc', '地点'), ('act', '活动'), ('time', '时间'), ('anchor', '锚句'), ('est', '估时'))
+CATEGORIES = ('没得到', '得到', '推迟', '失去', '信息', '关系', '决定', '物件', '地位')
+LINGER = re.compile(r'^\s*(无|余韵)')
+AUDIENCE = {'观众'}
 EMPTY_CELL = {'', '—', '-', '无', '没有', '空', '未写', '__'}
+CONTINUOUS = {'连续', '接上', '同上', '紧接'}
+ACTION_SENT = re.compile(r'[。！？；!?]|(?<=[a-z])\.\s')
+PARENS = re.compile(r'[（(][^)）]*[)）]')
+TAIL_PAREN = re.compile(r'[（(]([^()（）]*)[)）]\s*$')
+ARROW = re.compile(r'\s*(?:→|->)\s*')
 
 
 def _cells(row):
@@ -510,160 +525,110 @@ def _field(cell, key):
     return None if val in EMPTY_CELL else val
 
 
-def stakes_card(text):
-    """剧本页正文前的"## 本场赌注"表。返回 None（无卡）或 {'rows': [...], 'exception': str|None}。"""
-    m = STAKES_HEAD.search(text)
-    if not m:
-        return None
-    sec = re.split(r'\n## ', text[m.end():], maxsplit=1)[0]
-    rows = [r for r in sec.splitlines() if r.strip().startswith('|')]
-    exc = re.search(r'本场不说出口\s*[:：]\s*(\S[^\n]*)', sec)
-    exception = exc.group(1).strip() if exc and exc.group(1).strip() not in EMPTY_CELL else None
-    if not rows:
-        return {'rows': [], 'exception': exception}
-    header = _cells(rows[0])
-    idx = {}
-    for key, word in STAKE_COLS:
-        idx[key] = next((i for i, h in enumerate(header) if word in h), None)
-    out = []
-    for r in rows[1:]:
-        cells = _cells(r)
-        if all(set(c) <= set('-: ') for c in cells):
-            continue
-        get = lambda k: cells[idx[k]] if idx[k] is not None and idx[k] < len(cells) else ''
-        name = get('name').strip('*').strip()
-        if not name or name in EMPTY_CELL:
-            continue
-        out.append({k: get(k) for k, _ in STAKE_COLS} | {'name': name})
-    return {'rows': out, 'exception': exception}
-
-
-def check_stakes(card, lines, names):
-    """逐字核对赌注卡与正文。返回 {'status', 'problems', 'review', 'voiced', 'terms'}。
-    status：n/a（安静戏 / 独角戏）、missing（无卡）、issues、excepted（无人说出口但登记了例外）、pass。"""
-    T = THRESHOLDS
-    speakers = [nm for nm in names if nm not in GROUP_SPEAKERS]
-    res = {'status': 'n/a', 'problems': [], 'review': [], 'voiced': [], 'terms': set()}
-    if len(lines) < T['min_lines'] or len(speakers) < 2:
-        return res
-    if card is None:
-        res['status'] = 'missing'
-        counts = {nm: sum(ln['speaker'] == nm for ln in lines) for nm in speakers}
-        ranked = sorted(counts.items(), key=lambda x: -x[1])
-        main = [f'{nm} {c} 句' for nm, c in ranked if c >= T['stake_min_lines']]
-        first = next(ln for ln in lines if ln['speaker'] == ranked[0][0])
-        res['problems'].append('没有"## 本场赌注"卡' + (f'（主要说话人：{"、".join(main)}）' if main else '')
-                               + f'，台词只能自证连通，如 {quote(first)[:48]}')
-        return res
-    by_name = {}
-    for row in card['rows']:
-        who = next((nm for nm in speakers if nm.lower() == norm_name(row['name']).lower()), row['name'])
-        by_name[who] = row
-    counts = {nm: sum(ln['speaker'] == nm for ln in lines) for nm in speakers}
-    for nm, c in counts.items():
-        if c >= T['stake_min_lines'] and nm not in by_name:
-            res['problems'].append(f'{nm} 说了 {c} 句，卡上没有他此刻要什么')
-    for who, row in by_name.items():
-        res['terms'] |= {_stem(t) for t in tokens(row['standing']) if len(t) >= 3}
-        quotes = QUOTED.findall(row['voiced'])
-        if quotes:
-            for q in quotes:
-                nq = _norm_quote(q)
-                hit = [k for k, ln in enumerate(lines) if nq and nq in _norm_quote(ln['text'])]
-                own = [k for k in hit if lines[k]['speaker'] == who]
-                if not hit:
-                    res['problems'].append(f'卡上 {who} 说出口的"{q}"不在正文里')
-                    continue
-                if not own:
-                    res['problems'].append(f'卡上记为 {who} 说出口的"{q}"，正文里是 {lines[hit[0]]["speaker"]} 说的')
-                    continue
-                k = own[0]
-                res['voiced'].append({'who': who, 'line': k, 'quote': quote(lines[k])})
-                res['terms'] |= {_stem(t) for t in tokens(q) if len(t) >= 3}
-                nxt = lines[k + 1] if k + 1 < len(lines) else None
-                if nxt and nxt['speaker'] != who and nxt['link_prev']:
-                    res['voiced'][-1]['reply'] = quote(nxt)
-                else:
-                    res['review'].append(f'{quote(lines[k])} 说出口后{"下一句 " + quote(nxt) + " 没有接它" if nxt else "没人再说话"}：'
-                                         f'是有意的不答吗？不答的人为什么不答，卡上有没有写')
-                res['review'].append(f'{who} 卡上的赌注是"{(row["want"] or row["standing"])[:30]}"，说出口的是 {quote(lines[k])}：'
-                                     f'这句说的是不是这件事（按取向 6：面对谁、刚发生什么、为什么此刻）')
-        else:
-            reason, cost = _field(row['voiced'], '理由'), _field(row['voiced'], '代价')
-            if not (reason and cost):
-                res['problems'].append(f'{who} 上了卡，但既没有说出口的台词，也没写不说的理由与代价'
-                                       f'（持续赌注：{row["standing"][:40] or "空"}）')
-            else:
-                res['review'].append(f'{who} 不说：{reason}；代价 {cost}——观众能从处境读出他在绕什么吗')
-        if not re.search(r'[（(][^)）]+[)）]', row['standing']):
-            res['review'].append(f'{who} 的持续赌注没写出处（ip.md / 故事 / 框架哪一行）')
-        end = row['end'].strip()
-        if not end or end in EMPTY_CELL:
-            res['review'].append(f'{who} 场末没写得到 / 没得到 / 推迟')
-        elif re.search(r'推迟|没得到|未得到|放下', end) and not _field(end, '代价'):
-            res['review'].append(f'{who} 场末"{end[:24]}"没写代价：欲望是不是被一句"That\'s fair / Okay"接住收掉了')
-    if res['problems']:
-        res['status'] = 'issues'
-    elif len({v['who'] for v in res['voiced']}) < T['min_voiced']:
-        if card['exception']:
-            res['status'] = 'excepted'
-            res['review'].insert(0, f'全场无人把赌注说出口，已登记例外：{card["exception"]}')
-        else:
-            res['status'] = 'issues'
-            res['problems'].append('全场没有一个人把自己的赌注说出口（卡上都是不说），也没有登记"本场不说出口：理由"')
-    else:
-        res['status'] = 'pass'
-    return res
-
-
-# ---- 画面推进（3.6.0） ----------------------------------------------------------
-TRACK_HEAD = re.compile(r'^##\s*场面轨[^\n]*$', re.M)
-TRACK_COLS = (('seg', '段'), ('loc', '地点'), ('act', '活动'), ('time', '时间'), ('who', '谁'),
-              ('new', '新看见'), ('anchor', '锚句'), ('est', '估时'))
-CONTINUOUS = {'连续', '接上', '同上', '紧接'}
-ACTION_SENT = re.compile(r'[。！？；!?]|(?<=[a-z])\.\s')
-PARENS = re.compile(r'[（(][^)）]*[)）]')
-
-
 def _plain(t):
-    return re.sub(r'\s+', '', re.sub(r'[“”"「」]', '', t))
+    return re.sub(r'\s+', '', re.sub(r'[“”"「」*]', '', t))
 
 
 def _combo_key(cell):
     return re.sub(r'\s+', '', PARENS.sub('', cell)).lower()
 
 
-def track_card(text):
-    """剧本页正文前的"## 场面轨"表。返回 None（无轨）或 {'rows', 'exception', 'total'}。"""
-    m = TRACK_HEAD.search(text)
+def _split_top(cell, sep='；'):
+    """按分隔符切，括号里的不切。"""
+    out, depth, cur = [], 0, ''
+    for ch in cell:
+        depth += ch in '（(' and 1 or 0
+        depth -= ch in '）)' and 1 or 0
+        if ch in sep and depth <= 0:
+            out.append(cur)
+            cur = ''
+        else:
+            cur += ch
+    out.append(cur)
+    return [c.strip() for c in out if c.strip()]
+
+
+def parse_change(cell):
+    """变化格：'Isa：没路 → 拿到路（信息）；Beckett：… → …（推迟；代价：…）' 或 '无（余韵：理由）'。
+    返回 {'linger': bool, 'reason', 'items': [{'who', 'from', 'to', 'cat', 'cost'}], 'bad': [原文]}。"""
+    cell = cell.strip()
+    if LINGER.match(cell):
+        m = re.search(r'余韵\s*[:：]?\s*([^)）]*)', cell)
+        return {'linger': True, 'reason': (m.group(1).strip() if m else '') or None, 'items': [], 'bad': []}
+    items, bad = [], []
+    for part in _split_top(cell):
+        m = re.match(r'^([^：:→]+)[：:]\s*(.*)$', part)
+        if not m or not ARROW.search(m.group(2)):
+            bad.append(part)
+            continue
+        who = norm_name(m.group(1).strip().strip('*'))
+        frm, to = ARROW.split(m.group(2), maxsplit=1)
+        tail = TAIL_PAREN.search(to)
+        meta = tail.group(1) if tail else ''
+        state = to[:tail.start()].strip() if tail else to.strip()
+        cat = next((c for c in CATEGORIES if meta.strip().startswith(c)), None)
+        items.append({'who': who, 'from': frm.strip(), 'to': state, 'cat': cat, 'cost': _field(meta, '代价')})
+    return {'linger': False, 'reason': None, 'items': items, 'bad': bad}
+
+
+def _cast_line(line):
+    """'- **Isa**｜持续赌注：…（出处）｜此刻向 Beckett 要：…｜怕：…｜为什么是现在：…'"""
+    parts = [p.strip() for p in re.split(r'[｜|]', line.lstrip('-* ').strip())]
+    if len(parts) < 2:
+        return None
+    row = {'name': norm_name(parts[0].strip('*').strip()), 'standing': '', 'want': '', 'fear': '', 'why_now': ''}
+    for p in parts[1:]:
+        for key, word in (('standing', '持续赌注'), ('want', '此刻向'), ('fear', '怕'), ('why_now', '为什么是现在')):
+            if p.startswith(word) and not row[key]:
+                row[key] = re.sub(r'^[^：:]*[：:]\s*', '', p, count=1) if key != 'want' else p
+    return row
+
+
+def events_card(text):
+    """剧本页正文前的"## 事件轨"：人物清单 + 变化表。返回 None（无轨）或
+    {'cast': {name: row}, 'rows': [...], 'withheld_ok', 'still', 'total'}。"""
+    m = EVENTS_HEAD.search(text)
     if not m:
         return None
     sec = re.split(r'\n## ', text[m.end():], maxsplit=1)[0]
-    rows = [r for r in sec.splitlines() if r.strip().startswith('|')]
-    exc = re.search(r'本场单一画面\s*[:：]\s*(\S[^\n]*)', sec)
-    exception = exc.group(1).strip() if exc and exc.group(1).strip().strip('_ ') not in EMPTY_CELL else None
-    tot = re.search(r'总估时\s*[≈约]?\s*(\d+(?:\.\d+)?)\s*s', sec)
-    out = []
-    if rows:
-        header = _cells(rows[0])
-        idx = {k: next((i for i, h in enumerate(header) if w in h), None) for k, w in TRACK_COLS}
-        for r in rows[1:]:
+    cast = {}
+    for ln in sec.splitlines():
+        if re.match(r'^\s*[-*]\s', ln):
+            row = _cast_line(ln)
+            if row and row['name'] not in EMPTY_CELL:
+                cast[row['name']] = row
+    table = [r for r in sec.splitlines() if r.strip().startswith('|')]
+    rows = []
+    if table:
+        header = _cells(table[0])
+        idx = {k: next((i for i, h in enumerate(header) if w in h), None) for k, w in EVENT_COLS}
+        for r in table[1:]:
             cells = _cells(r)
             if all(set(c) <= set('-: ') for c in cells):
                 continue
             get = lambda k: cells[idx[k]] if idx[k] is not None and idx[k] < len(cells) else ''
-            if not get('loc') or get('loc') in EMPTY_CELL:
+            row = {k: get(k) for k, _ in EVENT_COLS}
+            if not any(row[k].strip() for k in ('who', 'change', 'anchor')):
                 continue
-            out.append({k: get(k) for k, _ in TRACK_COLS})
+            actor = re.split(r'→|->', row['who'])[0].strip().strip('*')
+            row['actor'] = norm_name(actor) if actor and actor not in EMPTY_CELL else None
+            tgt = re.split(r'→|->', row['who'])[1].strip() if re.search(r'→|->', row['who']) else ''
+            row['targets'] = [norm_name(t.strip()) for t in re.split(r'[、,，/]', tgt) if t.strip() and t.strip() not in EMPTY_CELL]
+            row['parsed'] = parse_change(row['change'])
+            rows.append(row)
+    reg = lambda word: (lambda mm: mm.group(1).strip() if mm and mm.group(1).strip().strip('_ ') not in EMPTY_CELL else None)(
+        re.search(word + r'\s*[:：]\s*(\S[^\n]*)', sec))
+    tot = re.search(r'总估时\s*[≈约]?\s*(\d+(?:\.\d+)?)\s*s', sec)
     total = float(tot.group(1)) if tot else None
     if total is None:
-        nums = [re.search(r'\d+(?:\.\d+)?', r['est']) for r in out]
-        total = sum(float(n.group(0)) for n in nums if n) if out and all(nums) else None
-    return {'rows': out, 'exception': exception, 'total': total}
+        nums = [re.search(r'\d+(?:\.\d+)?', r['est']) for r in rows]
+        total = sum(float(n.group(0)) for n in nums if n) if rows and all(nums) else None
+    return {'cast': cast, 'rows': rows, 'withheld_ok': reg('本场不说出口'),
+            'still': reg('本场静止') or reg('本场单一画面'), 'total': total}
 
 
 def declared_total(text, card):
-    """作者自报的总估时：场面轨"总估时"或各段估时之和；旧稿回退到节拍表"总窗口 ≈ N s"。"""
+    """作者自报的总估时：事件轨"总估时"或各行估时之和；旧稿回退到节拍表"总窗口 ≈ N s"。"""
     if card and card['total'] is not None:
         return card['total']
     m = re.search(r'总窗口\s*[≈约]?\s*(\d+(?:\.\d+)?)\s*s', text)
@@ -700,76 +665,243 @@ def timeline(lines, actions):
     return {'action': act_s, 'line': line_s, 'total': round(sum(act_s) + sum(line_s), 1)}
 
 
-def check_picture(text, card, lines, actions, production_total=None):
-    """场面轨与正文核对。status：n/a（短场且无轨）、missing、issues、excepted（单一画面已登记理由）、pass。"""
+def _units(lines, actions):
+    """正文按出现顺序排成单元：('a', i) 动作段、('l', k) 台词。"""
+    order = []
+    for i in range(-1, len(actions)):
+        if i >= 0:
+            order.append(('a', i))
+        order.extend(('l', k) for k, ln in enumerate(lines) if ln['action_idx'] == i)
+    return order
+
+
+def _short(t, n=28):
+    t = t.strip()
+    return t if len(t) <= n else t[:n] + '…'
+
+
+def check_events(text, card, lines, actions, names, production_total=None):
+    """事件轨与正文核对。status：n/a（短场且台词少）、missing、issues、excepted（登记了不说出口 / 静止）、pass。"""
     T = THRESHOLDS
     tl = timeline(lines, actions)
+    speakers = [nm for nm in names if nm not in GROUP_SPEAKERS]
+    counts = {nm: sum(ln['speaker'] == nm for ln in lines) for nm in speakers}
     heading = next((a for a in actions if START_ACTION_RESET.match(a)), '')
-    res = {'status': 'n/a', 'problems': [], 'review': [], 'estimate': tl['total'], 'segments': [],
-           'declared': declared_total(text, card), 'combos': 0, 'jumps': 0}
+    res = {'status': 'n/a', 'problems': [], 'review': [], 'voiced': [], 'terms': set(), 'rows': [],
+           'estimate': tl['total'], 'declared': declared_total(text, card), 'changes': 0, 'places': [],
+           'jumps': 0, 'linger_s': 0.0, 'longest_gap': 0.0, 'ends': {}}
+    dialogue_scene = len(lines) >= T['min_lines'] and len(speakers) >= 2
     if res['declared'] and res['declared'] < tl['total'] * T['estimate_under']:
-        res['review'].append(f"自报总估时 {res['declared']:g} s，按文本估 ≈ {tl['total']:g} s：无台词段（越过、冲刺、过线、看一眼）"
+        res['review'].append(f"自报总估时 {res['declared']:g} s，按文本估 ≈ {tl['total']:g} s：无台词动作（越过、冲刺、过线、看一眼）"
                              f"有没有算进去（文本估时误差约 ±15%，[推论]）")
     if production_total and res['declared'] and production_total > res['declared'] * T['production_over']:
         res['production_over'] = round((production_total / res['declared'] - 1) * 100)
         res['review'].insert(0, f"分镜实排 {production_total:g} s，比剧本估时 {res['declared']:g} s 多 "
-                                f"{round((production_total / res['declared'] - 1) * 100)}%（≥{round((T['production_over'] - 1) * 100)}%）："
-                                f"提醒——多出来的时间观众在看什么，是不是同一个画面拉长了；要不要回剧本层重核场面轨由用户定")
+                                f"{res['production_over']}%（≥{round((T['production_over'] - 1) * 100)}%）："
+                                f"提醒——多出来的时间观众在看哪一行变化，还是同一个画面拉长了；要不要回剧本层由用户定")
     if card is None:
-        if tl['total'] >= T['picture_min_s']:
+        if dialogue_scene or tl['total'] >= T['picture_min_s']:
             res['status'] = 'missing'
-            place = heading.split('·')[1].strip() if heading.count('·') >= 2 else '（标题未写地点）'
-            res['place'] = place
-            res['problems'].append(f'没有"## 场面轨"，按文本估 ≈ {tl["total"]:g} s，只有场景标题的地点「{place}」，'
-                                   f'看不出这几十秒观众看到的地点、活动有没有变化')
+            res['place'] = heading.split('·')[1].strip() if heading.count('·') >= 2 else '（标题未写地点）'
+            main = [f'{nm} {c} 句' for nm, c in sorted(counts.items(), key=lambda x: -x[1]) if c >= T['stake_min_lines']]
+            legacy = LEGACY_HEAD.findall(text)
+            res['problems'].append(
+                '没有"## 事件轨"' + (f'（有旧格式"{"""、""".join(dict.fromkeys(legacy))}"：3.7.0 起合为事件轨，每行一次变化）' if legacy else '')
+                + (f'，主要说话人 {"、".join(main)}' if main else '')
+                + f'，只有场景标题的地点「{res["place"]}」，按文本估 ≈ {tl["total"]:g} s：看不出谁要什么、每一行变了什么')
         return res
-    # 锚句逐字在正文动作行里、按顺序
-    starts, last = [], -1
-    for k, row in enumerate(card['rows'], 1):
+
+    cast = card['cast']
+    rows = card['rows']
+    if not rows:
+        res['problems'].append('"## 事件轨"是空表')
+    # 人物：主要说话人与每个变化主体（含不说话的人）都要在清单里（3.5.0 的"≥3 句上卡"扩到无台词的变化主体）
+    for nm, c in counts.items():
+        if c >= T['stake_min_lines'] and nm not in cast:
+            res['problems'].append(f'{nm} 说了 {c} 句，"人物"里没有他此刻要什么')
+    for nm, row in cast.items():
+        res['terms'] |= {_stem(t) for t in tokens(row['standing']) if len(t) >= 3}
+        if not row['want'] or re.sub(r'^此刻向\S*\s*要\s*[:：]?', '', row['want']).strip() in EMPTY_CELL:
+            res['problems'].append(f'"人物"里 {nm} 没写此刻向谁要什么')
+        if not re.search(r'[（(][^)）]+[)）]', row['standing']):
+            res['review'].append(f'{nm} 的持续赌注没写出处（ip.md / 故事 / 框架哪一行）')
+    # 锚句：逐字在正文（动作行或台词）里、按顺序
+    units = _units(lines, actions)
+    utext = [actions[i] if kind == 'a' else lines[i]['text'] for kind, i in units]
+    usec = [tl['action'][i] if kind == 'a' else tl['line'][i] for kind, i in units]
+    pos, last = [], 0
+    for k, row in enumerate(rows, 1):
         a = _plain(row['anchor'])
         if not a or a in EMPTY_CELL:
-            res['problems'].append(f'第 {k} 段没写锚句（本段第一句动作行，逐字）')
-            starts.append(None)
+            res['problems'].append(f'第 {k} 行没写锚句（这次变化在正文里看得见的那一句，逐字）')
+            pos.append(None)
             continue
-        hit = next((i for i, act in enumerate(actions) if a in _plain(act)), None)
+        hit = next((u for u in range(last, len(units)) if a in _plain(utext[u])), None)
         if hit is None:
-            res['problems'].append(f'第 {k} 段锚句「{row["anchor"][:24]}」不在正文动作行里')
-        elif hit < last:
-            res['problems'].append(f'第 {k} 段锚句在正文里出现在上一段之前（场面轨顺序与正文不符）')
-        starts.append(hit)
+            before = next((u for u in range(0, last) if a in _plain(utext[u])), None)
+            res['problems'].append(f'第 {k} 行锚句「{_short(row["anchor"], 24)}」' +
+                                   ('在正文里出现在上一行之前（事件轨顺序与正文不符）' if before is not None else '不在正文里'))
+        pos.append(hit)
         if hit is not None:
-            last = max(last, hit)
-    if not card['rows']:
-        res['problems'].append('"## 场面轨"是空表')
-    combos = {(_combo_key(r['loc']), _combo_key(r['act'])) for r in card['rows']}
-    jumps = sum(1 for r in card['rows'][1:] if _combo_key(r['time']) and r['time'].strip() not in EMPTY_CELL
-                and not any(_combo_key(r['time']).startswith(c) for c in CONTINUOUS))
-    res['combos'], res['jumps'] = len(combos), jumps
-    # 逐段估时（锚句划界；第一段含锚句之前的开场）
-    if card['rows'] and all(s is not None for s in starts) and starts == sorted(starts):
-        bounds = [0] + starts[1:] + [len(actions)]
-        for k in range(len(starts)):
-            s, e = bounds[k], bounds[k + 1]
-            secs = sum(tl['action'][s:e]) + sum(t for ln, t in zip(lines, tl['line']) if s <= ln['action_idx'] < e)
-            res['segments'].append(round(secs, 1))
-        longest = max(range(len(res['segments'])), key=lambda i: res['segments'][i])
-        if res['segments'][longest] >= T['segment_review_s']:
-            row = card['rows'][longest]
-            res['review'].append(f"第 {longest + 1} 段（{row['loc']} · {row['act']}）按文本估 ≈ {res['segments'][longest]:g} s 画面不变，"
-                                 f"分镜只能靠机位变化：是有意的（压迫、等待、一镜到底），还是可以让地点、活动或在场的人变一次")
-    if len(combos) == 1 and not jumps and tl['total'] >= T['picture_min_s']:
-        r0 = card['rows'][0]
-        one = f'{PARENS.sub("", r0["loc"]).strip()} · {PARENS.sub("", r0["act"]).strip()}'
-        if card['exception']:
-            res['review'].insert(0, f'全场一个画面（{one}），已登记理由：{card["exception"]}——观众在这 '
-                                    f'{tl["total"]:g} s 里能看见处境在变吗')
-            res['status'] = 'excepted'
+            last = hit
+    # 逐行覆盖的正文与秒数：上一行锚句之后到本行锚句；第一行从开场起，最后一行含收尾
+    ok_pos = rows and all(p is not None for p in pos)
+    for k, row in enumerate(rows):
+        s = (pos[k - 1] + 1) if ok_pos and k else 0
+        e = (pos[k] + 1) if ok_pos else 0
+        if ok_pos and k == len(rows) - 1:
+            e = len(units)
+        cover = list(range(s, e))
+        row['secs'] = round(sum(usec[u] for u in cover), 1)
+        row['silent'] = ok_pos and not any(units[u][0] == 'l' for u in cover)
+        row['lines'] = [units[u][1] for u in cover if units[u][0] == 'l']
+    # 地点与时间：只是属性；记录换地点 / 跳时间，供"换了地点却没有变化"与删除测试复核
+    prev_loc = None
+    for k, row in enumerate(rows):
+        loc = _combo_key(row['loc']) if row['loc'].strip() not in EMPTY_CELL else prev_loc
+        t = _combo_key(row['time'])
+        row['jump'] = bool(k and t and row['time'].strip() not in EMPTY_CELL and not any(t.startswith(c) for c in CONTINUOUS))
+        row['moved'] = bool(k and loc and prev_loc and loc != prev_loc)
+        if loc and loc not in [_combo_key(p) for p in res['places']]:
+            res['places'].append(PARENS.sub('', row['loc']).strip())
+        res['jumps'] += row['jump']
+        prev_loc = loc or prev_loc
+    # 每一行的变化
+    last_state, history = {}, {}
+    for k, row in enumerate(rows, 1):
+        ch = row['parsed']
+        where = '、'.join(x for x in (f'换了地点（{PARENS.sub("", row["loc"]).strip()}）' if row['moved'] else '',
+                                     f'跳了时间（{row["time"].strip()}）' if row['jump'] else '') if x)
+        if not row['loss'].strip() or row['loss'].strip() in EMPTY_CELL:
+            res['problems'].append(f'第 {k} 行没写删掉损失（删掉这一行，观众少知道 / 少感到什么）')
+        if ch['linger']:
+            res['linger_s'] += row.get('secs', 0)
+            if where:
+                res['problems'].append(f'第 {k} 行{where}，却标为余韵、没有变化：把观众带到新地方，那里没有事发生'
+                                       f'（删掉损失：{_short(row["loss"], 30) or "空"}）')
+            continue
+        if ch['bad'] or not ch['items']:
+            res['problems'].append(f'第 {k} 行的变化没写成"谁：进 → 出（类别）"'
+                                   + (f'：「{_short(ch["bad"][0], 30)}」' if ch['bad'] else '') + '；没有变化就标"无（余韵：理由）"')
+            continue
+        real = False
+        for it in ch['items']:
+            who = it['who']
+            if who not in AUDIENCE and who not in cast:
+                res['problems'].append(f'第 {k} 行的变化主体 {who} 不在"人物"里'
+                                       f'{"（不说话的人也要写持续赌注与此刻要什么）" if not counts.get(who) else ""}')
+            if _plain(it['from']) == _plain(it['to']):
+                res['problems'].append(f'第 {k} 行 {who}「{_short(it["to"], 24)}」进出相同：这一行没有变化')
+                continue
+            if who in last_state and _plain(it['to']) in [_plain(x['to']) for x in history.get(who, [])]:
+                j = next(x['row'] for x in history[who] if _plain(x['to']) == _plain(it['to']))
+                res['problems'].append(f'第 {k} 行 {who} 的"出"「{_short(it["to"], 24)}」与第 {j} 行相同：同一状态再演一遍')
+                continue
+            if not it['cat']:
+                res['review'].append(f'第 {k} 行 {who} 的变化没标类别（{"/".join(CATEGORIES)}）')
+            if it['cat'] in ('推迟', '没得到') and not it['cost']:
+                res['review'].append(f'第 {k} 行 {who}「{it["cat"]}」没写代价：欲望是不是被一句"That\'s fair / Okay"接住收掉了')
+            real = True
+            prev = history.get(who, [])[-1] if history.get(who) else None
+            it['prev'] = prev
+            history.setdefault(who, []).append({'row': k, 'to': it['to'], 'cat': it['cat']})
+            last_state[who] = it['to']
+            if who not in AUDIENCE:
+                res['ends'][who] = f'{it["to"]}（{it["cat"] or "?"}，第 {k} 行）'
+        row['real'] = real
+        res['changes'] += real
+        # 删除测试（交模型）：换了地点 / 跳了时间、整行没有台词、或只改变观众所知的行
+        silent_long = row.get('silent') and row.get('secs', 0) >= T['silent_review_s']
+        if real and (where or silent_long or all(it['who'] in AUDIENCE for it in ch['items'])):
+            ctx = []
+            for it in ch['items']:
+                p = it.get('prev')
+                if p:
+                    same = '，同为「' + p['cat'] + '」' if p['cat'] and p['cat'] == it['cat'] else ''
+                    ctx.append(f'{it["who"]} 上一次在第 {p["row"]} 行「{_short(p["to"], 20)}」{same}')
+            for tg in row['targets']:
+                asked = [(j, r) for j, r in enumerate(rows[:k - 1], 1) if tg in r['targets'] and r['actor'] != row['actor']]
+                if asked:
+                    j, r = asked[-1]
+                    ctx.append(f'{tg} 作为对象的上一行是第 {j} 行 {r["actor"] or "?"}（{_short(r["change"], 24)}）')
+            tags = '、'.join(x for x in (where, '无台词' if silent_long else '') if x)
+            res['review'].append(f'第 {k} 行（{tags or "只改变观众所知"}，≈ {row.get("secs", 0):g} s）：变化「{_short(row["change"], 36)}」，'
+                                 f'删掉损失「{_short(row["loss"], 30)}」' + ('；' + '；'.join(ctx) if ctx else '')
+                                 + '——删除测试：删掉这一行，观众少知道 / 少感到的，前面哪一行没给过')
+    # 说出口：逐字、本人说、有人接（3.5.0 的赌注核对，挪到事件轨的行上）
+    voiced_by, withheld = set(), {}
+    for k, row in enumerate(rows, 1):
+        who = row['actor']
+        withholding = bool(re.match(r'^\s*不说', row['voiced']))
+        quotes = [] if withholding else QUOTED.findall(row['voiced'])
+        if quotes:
+            for q in quotes:
+                nq = _norm_quote(q)
+                hit = [i for i, ln in enumerate(lines) if nq and nq in _norm_quote(ln['text'])]
+                own = [i for i in hit if lines[i]['speaker'] == who]
+                if not hit:
+                    res['problems'].append(f'第 {k} 行 {who} 说出口的"{_short(q, 30)}"不在正文里')
+                    continue
+                if not own:
+                    res['problems'].append(f'第 {k} 行记为 {who} 说出口的"{_short(q, 30)}"，正文里是 {lines[hit[0]]["speaker"]} 说的')
+                    continue
+                i = own[0]
+                voiced_by.add(who)
+                res['voiced'].append({'who': who, 'line': i, 'row': k, 'quote': quote(lines[i])})
+                res['terms'] |= {_stem(t) for t in tokens(q) if len(t) >= 3}
+                nxt = lines[i + 1] if i + 1 < len(lines) else None
+                if nxt and nxt['speaker'] != who and nxt['link_prev']:
+                    res['voiced'][-1]['reply'] = quote(nxt)
+                else:
+                    res['review'].append(f'{quote(lines[i])} 说出口后{"下一句 " + quote(nxt) + " 没有接它" if nxt else "没人再说话"}：'
+                                         f'是有意的不答吗？不答的人为什么不答，事件轨上有没有写')
+                want = cast.get(who, {}).get('want', '')
+                res['review'].append(f'{who} 此刻要的是"{_short(want, 30)}"，说出口的是 {quote(lines[i])}：'
+                                     f'这句说的是不是这件事（按取向 6：面对谁、刚发生什么、为什么此刻）')
+        elif withholding and who:
+            withheld.setdefault(who, []).append((_field(row['voiced'], '理由'), _field(row['voiced'], '代价')))
+    for nm in cast:
+        if nm in voiced_by:
+            continue
+        ok = [(r, c) for r, c in withheld.get(nm, []) if r and c]
+        if ok:
+            res['review'].append(f'{nm} 不说：{ok[0][0]}；代价 {ok[0][1]}——观众能从处境读出他在绕什么吗')
         else:
-            res['problems'].append(f'场面轨 {len(card["rows"])} 段都是同一个地点 × 活动（{one}），没有时间跳，'
-                                   f'按文本估 ≈ {tl["total"]:g} s，也没有登记"本场单一画面：理由"')
+            res['problems'].append(f'{nm} 在"人物"里，但哪一行都没说出口，也没写不说的理由与代价'
+                                   f'（持续赌注：{_short(cast[nm]["standing"], 30) or "空"}）')
+    if dialogue_scene and not voiced_by:
+        if card['withheld_ok']:
+            res['review'].insert(0, f'全场无人把赌注说出口，已登记例外：{card["withheld_ok"]}')
+        else:
+            res['problems'].append('全场没有一个人把自己要的说出口，也没有登记"本场不说出口：理由"')
+    # 推进：只数变化，不数地点（3.7.0）
+    gaps = [r.get('secs', 0) for r in rows if r.get('real')]
+    res['longest_gap'] = max(gaps) if gaps else 0.0
+    if rows and res['longest_gap'] >= T['gap_review_s']:
+        k = next(i for i, r in enumerate(rows, 1) if r.get('real') and r.get('secs', 0) == res['longest_gap'])
+        res['review'].append(f"第 {k} 行之前观众等了 ≈ {res['longest_gap']:g} s 才看到这次变化：是有意的压迫 / 等待 / 一镜到底，"
+                             f"还是中间缺一次变化")
+    if rows and res['linger_s'] >= T['linger_review_s']:
+        res['review'].append(f"余韵合计 ≈ {res['linger_s']:g} s（没有变化的行）：是在让刚发生的结果停留，还是在拖；"
+                             f"交给分镜时不要把它扩成独立的一条")
+    still = rows and tl['total'] >= T['picture_min_s'] and res['changes'] < T['min_changes']
+    if still:
+        if card['still']:
+            res['review'].insert(0, f"全场只有 {res['changes']} 次变化，已登记理由：{card['still']}——观众在这 "
+                                    f"{tl['total']:g} s 里看见处境怎么变")
+        else:
+            res['problems'].append(f"按文本估 ≈ {tl['total']:g} s，只有 {res['changes']} 行有变化，也没有登记"
+                                   f'"本场静止：理由"（余韵戏、有意一镜到底、对峙 / 等待的压迫感）')
+    if rows and tl['total'] >= T['picture_min_s'] and len(res['places']) == 1 and not res['jumps'] \
+            and len({_combo_key(r['act']) for r in rows if r['act'].strip() not in EMPTY_CELL}) <= 1:
+        res['review'].append(f"全场一个地点、一种活动（{res['places'][0]} · {PARENS.sub('', rows[0]['act']).strip() or '?'}，"
+                             f"≈ {tl['total']:g} s，{res['changes']} 次变化）：这些变化观众看得见，还是都在台词里——"
+                             f"缺的是事件、人还是信息；只是画面单调、事件不缺时交分镜处理，不为换景加段")
     if res['problems']:
         res['status'] = 'issues'
-    elif res['status'] != 'excepted':
+    elif (dialogue_scene and not voiced_by and card['withheld_ok']) or (still and card['still']):
+        res['status'] = 'excepted'
+    else:
         res['status'] = 'pass'
     return res
 
@@ -779,31 +911,18 @@ def quote(ln):
     return f"{ln['speaker']}「{ln['text']}」"
 
 
-def judge(lines, actions, stats, candidates=(), planted=(), declared=(), stakes=None, picture=None):
+def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=None):
     """返回 issues（问题）、signals（信号，不判定）、review_needed（需模型复核）。"""
     T = THRESHOLDS
     issues, signals, review = [], [], []
     n = stats['lines']
-    if stakes and stakes['status'] in ('missing', 'issues'):
-        # 赌注排第一：连通只说明有人接话，赌注说明这场谁要什么（3.5.0）
-        issues.append({
-            'key': 'stakes',
-            'title': '缺本场赌注卡' if stakes['status'] == 'missing' else '人物赌注没落到台词',
-            'evidence': '；'.join(stakes['problems']),
-            'why': '观众不为信息收看；知道人物此刻要什么、怕失去什么才会担心。承接只约束不能抵触什么，不该占掉台词。',
-            'sources': ['S6', 'S12', 'S1'],
-            'basis': '三问与"fear"有来源（S6, S12）；逐字核对、"≥3 句上卡""至少一人说出口"是[推论]，可登记例外',
-        })
-    if stakes:
-        review.extend(stakes['review'])
+    if events and events['status'] in ('missing', 'issues'):
+        # 事件轨排第一：连通只说明有人接话，事件轨说明这场谁要什么、每一段变了什么（3.5.0 / 3.7.0）
+        issues.append(EVENTS_ISSUE(events))
+    if events:
+        review.extend(events['review'])
     if n < T['min_lines']:
         signals.append(f'台词只有 {n} 句，统计判断不适用；按安静戏人工读。')
-        if picture and picture['status'] in ('missing', 'issues'):
-            issues.append({'key': 'picture', 'compact': picture['status'] == 'missing', 'title': '缺场面轨' if picture['status'] == 'missing' else '画面没有推进',
-                           'evidence': '；'.join(picture['problems']), 'why': '无台词场更依赖观众看见的画面在变。',
-                           'sources': ['S13'], 'basis': '地点问题有来源（S13）；阈值与估时是[推论]'})
-        if picture:
-            review.extend(picture['review'])
         return issues, signals, review
     # (a) 来回
     no_pair = stats['longest_exchange'] < T['longest_exchange_min']
@@ -886,18 +1005,6 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), stakes=
             'fixes': fixes_for(c),
         })
 
-    # (e) 画面推进（3.6.0）：独立于对白，排在对白问题之后；状态总在总判断里报
-    if picture and picture['status'] in ('missing', 'issues'):
-        issues.append({
-            'key': 'picture', 'compact': picture['status'] == 'missing',  # 缺轨只在总判断里报一句，不占 ≤3 个问题的位置
-            'title': '缺场面轨' if picture['status'] == 'missing' else '画面没有推进',
-            'evidence': '；'.join(picture['problems']),
-            'why': '剧本层要交代观众在哪里看见什么、随时间怎么变；整场一个地点一种活动，分镜只能靠机位轮换补变化，时长也会被低估（EP03 场 4 v4：剧本估 57 s，分镜排出 74 s，四种跟拍轮换）。',
-            'sources': ['S13'],
-            'basis': '"最显而易见的地点通常最无趣"与"这场长还是短"有来源（S13）；30 s、地点×活动组合、按文本估时是[推论]，可登记"本场单一画面：理由"',
-        })
-    if picture:
-        review.extend(picture['review'])
     # 信号（不判定）
     fresh = [e for e in planted if not e.get('stake')]
     if fresh:
@@ -926,54 +1033,67 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), stakes=
     return issues, signals, review
 
 
-SOURCE_LEGEND = '来源编号 S1–S13 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题；赌注卡的语义（那句说的是不是那件事）由模型复核'
+def EVENTS_ISSUE(events):
+    missing = events['status'] == 'missing'
+    return {
+        'key': 'events',
+        'title': '缺事件轨' if missing else '事件轨有问题',
+        'evidence': '；'.join(events['problems']),
+        'why': '观众不为信息、也不为换了背景收看：谁此刻要什么、每一行变了什么，他们才会看下去；地点只是变化的属性（EP03 场 4 v4.1 牛棚 16 s 没有事发生）。',
+        'sources': ['S6', 'S12', 'S13', 'S1'],
+        'basis': '三问与地点问题有来源（S6, S12, S13）；逐字核对与各阈值是[推论]，可登记例外',
+    }
+
+
+SOURCE_LEGEND = '来源编号 S1–S13 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题；说出口的是不是那件事、变化是不是新的由模型复核'
 
 
 def _count(text):
     return len(re.sub(r'\s', '', text))
 
 
-STAKES_TXT = {'n/a': '不适用', 'missing': '缺卡', 'issues': '有问题', 'excepted': '无人说出口（已登记例外）'}
-PICTURE_TXT = {'n/a': '短场不要求场面轨', 'missing': '缺场面轨', 'issues': '有问题', 'excepted': '一个画面（已登记理由）'}
+EVENTS_TXT = {'n/a': '不适用', 'missing': '缺事件轨', 'issues': '有问题'}
 
 
-def picture_phrase(picture):
-    if not picture:
+def events_phrase(ev):
+    if not ev:
         return ''
-    st = picture['status']
-    head = (f"{len(picture['segments']) or '?'} 段、{picture['combos']} 个地点×活动" + (f"、{picture['jumps']} 次时间跳" if picture['jumps'] else '')
-            if st == 'pass' else PICTURE_TXT[st])
-    place = f"「{picture['place']}」" if st == 'missing' and picture.get('place') else '按文本估'
-    back = (f"；分镜实排比剧本估时多 {picture['production_over']}%（提醒，是否回剧本层由用户定）"
-            if picture.get('production_over') else '')
-    return f"；画面：{head}（{place} ≈ {picture['estimate']:g} s）{back}"
+    st = ev['status']
+    if st in EVENTS_TXT and st != 'issues':
+        head = EVENTS_TXT[st]
+    else:
+        head = (f"{ev['changes']} 次变化" + (f"、{len(ev['places'])} 处地点" if ev['places'] else '')
+                + (f"、{ev['jumps']} 次时间跳" if ev['jumps'] else '') + f"（按文本估 ≈ {ev['estimate']:g} s）")
+        if st == 'issues':
+            head = '有问题——' + head
+        elif st == 'excepted':
+            head += '，已登记例外'
+        if ev['voiced']:
+            head += '；说出口——' + '、'.join(f"{v['who']}「{v['quote'].split('「', 1)[1][:30]}" + ('（有人接）' if v.get('reply') else '（没人接）')
+                                         for v in ev['voiced'][:2])
+    back = (f"；分镜实排比剧本估时多 {ev['production_over']}%（提醒，是否回剧本层由用户定）"
+            if ev.get('production_over') else '')
+    return f"；事件轨：{head}{back}"
 
 
-def render(path, stats, issues, signals, review, full=False, limit=800, stakes=None, picture=None):
-    """一句总判断（对白连通 / 人物赌注分开）+ ≤3 个问题 + 信号 + 需模型复核 + 交接提示。
+def render(path, stats, issues, signals, review, full=False, limit=800, events=None):
+    """一句总判断（对白连通 / 事件轨分开）+ ≤3 个问题 + 信号 + 需模型复核 + 交接提示。
     默认 ≤ limit 字（不计空白）：超出先减复核条目，再减信号。"""
     n = stats['lines']
-    stakes = stakes or {'status': 'n/a', 'voiced': []}
-    if stakes['status'] == 'pass':
-        st = '说出口——' + '、'.join(f"{v['who']}「{v['quote'].split('「', 1)[1][:36]}" + ('（有人接）' if v.get('reply') else '（没人接）')
-                                  for v in stakes['voiced'][:3])
-    else:
-        st = STAKES_TXT[stakes['status']]
-    dialogue_issues = [i for i in issues if i['key'] not in ('stakes', 'picture')]
-    pic = picture_phrase(picture)
+    dialogue_issues = [i for i in issues if i['key'] != 'events']
+    ev = events_phrase(events)
     if n < THRESHOLDS['min_lines']:
-        verdict = f'{path.name}：台词 {n} 句，材料太少，不做统计判断{pic}。'
+        verdict = f'{path.name}：台词 {n} 句，材料太少，不做对白统计{ev}。'
     elif not dialogue_issues:
         verdict = (f"{path.name}：对白连通通过——{n} 句 / {stats['speakers']} 人，最长来回 {stats['longest_exchange']} 轮、"
                    f"{int(stats['conversation_share'] * 100)}% 台词有人接"
                    + (f"，平均 {stats['mean_words']} 词/句" if stats['mean_words'] is not None else '')
-                   + f"，画外 {len(stats['offscreen_lines'])} 句；人物赌注：{st}{pic}。")
+                   + f"，画外 {len(stats['offscreen_lines'])} 句{ev}。")
     else:
-        verdict = f"{path.name}：对白连通有问题；人物赌注：{st}{pic}。"
+        verdict = f"{path.name}：对白连通有问题{ev}。"
     if issues:
-        listed = [i['title'] for i in issues if not i.get('compact')]  # 缺场面轨已在"画面："里
-        verdict += f"问题：{'、'.join(listed)}。" if listed else ''
-    shown = [i for i in issues if not i.get('compact')][:3]
+        verdict += f"问题：{'、'.join(i['title'] for i in issues)}。"
+    shown = issues[:3]
     def head_lines(with_why=True):
         out = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。" + (it['why'] if with_why else '') + f"（{it['basis']}）"
                            for i, it in enumerate(shown, 1)]
@@ -1031,26 +1151,24 @@ def review_file(path, full=False, context=None, production_total=None):
     names = sorted({ln['speaker'] for ln in lines})
     stats = analyse(lines, actions, names)
     ledger = ledger_text(text)
-    stakes = check_stakes(stakes_card(text), lines, names)
-    picture = check_picture(text, track_card(text), lines, actions, production_total)
-    candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger, stakes['terms'])
+    events = check_events(text, events_card(text), lines, actions, names, production_total)
+    candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger, events['terms'])
     stats['unanchored'] = [e['line'] for e in candidates]
     stats['planted'] = [e['line'] for e in planted]
     stats['declared'] = [e['line'] for e in declared]
-    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, stakes, picture)
-    dialogue_ok = not [i for i in issues if i['key'] not in ('stakes', 'picture')]
+    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, events)
+    dialogue_ok = not [i for i in issues if i['key'] != 'events']
     return {
         'file': str(path), 'context': [str(c) for c in (context or [])],
         'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
         'anchoring': {'candidates': candidates, 'planted': planted, 'declared': declared},
-        'verdict': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('issues' if issues else 'pass'),
+        'verdict': 'issues' if issues else ('insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else 'pass'),
         'checks': {'dialogue': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('pass' if dialogue_ok else 'issues'),
-                   'stakes': stakes['status'], 'picture': picture['status']},
-        'stakes': {k: v for k, v in stakes.items() if k != 'terms'},
-        'picture': picture,
+                   'events': events['status']},
+        'events': {k: v for k, v in events.items() if k != 'terms'},
         'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation', 'presupposed')} for ln in lines],
         'thresholds': THRESHOLDS,
-        'text': render(Path(path), stats, issues, signals, review, full=full, stakes=stakes, picture=picture),
+        'text': render(Path(path), stats, issues, signals, review, full=full, events=events),
     }
 
 
