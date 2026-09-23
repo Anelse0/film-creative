@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **3.5.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **3.6.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,12 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 3.6.0 更新
+
+- 写正文前的第二张卡"场面轨"（`references/stage-3c-script.md` §3c.0c）：按观众看见的变化分段——地点（子空间）、主要活动、时间（连续 / 跳）、谁在画面里、观众这段新看见什么、锚句（逐字）、估时（台词 + 无台词动作）。只写观众在哪里看见谁在做什么，不写镜头。全场一个"地点 × 活动"、无时间跳、≥30 s 时先试推进一次，仍要留在原地的登记"本场单一画面：理由"。
+- `SKILL.md`：画面推进划归剧本层（镜头与 clip 仍属生产层）；取向 8 补场内版本；交接契约加回流条件——分镜实排比场面轨总估时多 20% 以上时回到本 skill 重核。改稿后内容或估时变 ≥20% 时重做场面轨（§3c.7）。
+- `scripts/review_script.py` 总判断另报第三项"画面"：锚句逐字核对、缺轨 / 全场一个画面未登记理由判问题、一段画面 ≥40 s 与自报估时偏小列复核；按文本估时（`--wps`、`--action-sec`）；`--production-total` 核回流条件。来源：John August 2007 第 4、6 步（S13）。用 THE ORDER EP03 场 4 v3 / v4（整场跑道）与 v4.1（过线后换到牛棚）校准，估时用已出分镜的 5 场校准。
 
 ## 3.5.0 更新
 
@@ -88,7 +94,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/project-state.md` + `scripts/project_check.py` | 已保存项目：版本、恢复、依赖失效、正典 |
 | `templates/*.md` | 概念 / 故事 / 剧本页 / ip 骨架 |
 | `scripts/validate_concept.py` | 概念选定落盘后跑；只查格式与完整性，不判断创意 |
-| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：人物赌注卡与正文的逐字核对 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项列需模型复核；来源与阈值登记 |
+| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：人物赌注卡与场面轨各自与正文的逐字核对、按文本估时 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项列需模型复核；来源与阈值登记 |
 | `scripts/route_check.py` | S2 结构化决策校验：仅执行 S3a–S3c/save_only；不解释自然语言，旧自由文本 CLI 返回 2 |
 | `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓 |
 | `scripts/baseline_snapshot.py` | Git / 非 Git 版本目录的归档与完整性检查 |

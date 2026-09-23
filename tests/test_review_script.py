@@ -1,5 +1,6 @@
 """3.3.0: 出稿后对白 review——THE ORDER EP02 场 1 v1 必须判为有问题，v3 对白连通必须通过；安静戏与有理由的短句不误判。
-3.5.0: 人物赌注与连通分开判；这些旧样本没有赌注卡，整体 verdict 为 issues、checks.stakes = missing。"""
+3.5.0: 人物赌注与连通分开判；这些旧样本没有赌注卡，整体 verdict 为 issues、checks.stakes = missing。
+3.6.0: 画面推进另判；旧样本估时都 ≥30 s 且没有场面轨，checks.picture = missing（只在总判断里报一句）。"""
 import io
 import json
 import re
@@ -51,13 +52,14 @@ class RealSampleTests(unittest.TestCase):
         self.assertIn("Not in this shirt", r['text'])
         self.assertIn('交接 film-director', r['text'])
         self.assertLessEqual(chars(r['text']), 800)
-        self.assertLessEqual(len(r['issues']), 3)
+        self.assertLessEqual(len([i for i in r['issues'] if not i.get('compact')]), 3)  # 3.6.0：缺场面轨只在总判断里报
 
     def test_v3_passes_and_is_clearly_better(self):
         r1, r3 = rs.review_file(V1), rs.review_file(V3)
         self.assertEqual(r3['checks']['dialogue'], 'pass')
         self.assertEqual(r3['checks']['stakes'], 'missing')
-        self.assertEqual([i['key'] for i in r3['issues']], ['stakes'])
+        self.assertEqual([i['key'] for i in r3['issues']], ['stakes', 'picture'])  # 3.6.0：旧样本也缺场面轨
+        self.assertEqual(r3['checks']['picture'], 'missing')
         self.assertEqual(r3['stats']['offscreen_lines'], [])
         self.assertGreaterEqual(r3['stats']['longest_exchange'], 5)
         self.assertGreater(r3['stats']['conversation_share'], r1['stats']['conversation_share'] + 0.4)
@@ -260,7 +262,7 @@ class StakesTests(unittest.TestCase):
 
     def test_positive_scene_passes_both_checks(self):
         r = review_text(POSITIVE)
-        self.assertEqual(r['checks'], {'dialogue': 'pass', 'stakes': 'pass'}, r['text'])
+        self.assertEqual(r['checks'], {'dialogue': 'pass', 'stakes': 'pass', 'picture': 'n/a'}, r['text'])  # 11.5 s 短场不要求场面轨
         self.assertEqual(r['verdict'], 'pass')
         self.assertEqual({v['who'] for v in r['stakes']['voiced']}, {'Maya', 'Jon'})
         self.assertTrue(all(v.get('reply') for v in r['stakes']['voiced']))
@@ -326,6 +328,132 @@ class StakesTests(unittest.TestCase):
         self.assertIn('2026-09-23', ledger)
         skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
         self.assertIn('本场赌注', skill)
+
+
+EP03_S4_V3_TRACK = FIX / 'theorder-ep03-s04-v3-track.md'
+EP03_S4_V4_TRACK = FIX / 'theorder-ep03-s04-v4-track.md'
+EP03_S4_V41_TRACK = FIX / 'theorder-ep03-s04-v4.1-track.md'
+TRACK_HEAD = ('## 场面轨\n\n| 段 | 地点（子空间） | 主要活动 | 时间 | 谁在画面里 | 观众这段新看见什么 | 锚句（逐字） | 估时 s |\n'
+              '|---|---|---|---|---|---|---|---|\n')
+LONG_BODY = ('天台，风很大。两个人靠着栏杆，楼下是整条街的车灯。她把外套拉紧，他把烟掐了又点上。远处有警笛，一辆接一辆开过去。\n\n'
+             + ''.join(f'**MAYA**\nI keep thinking about the list they posted on Friday morning, number {i}.\n\n'
+                       f'**JON**\nI keep thinking about it too, and I still do not know what to say, number {i}.\n\n' for i in range(4))
+             + '她转身走向楼梯口。他没有跟。楼梯间的灯一盏一盏亮下去。门在她身后关上。风把他的烟吹灭了。\n')
+
+
+def one_place_track(exception=''):
+    return (TRACK_HEAD + '| 1 | 天台（栏杆边） | 靠栏杆说话 | — | Maya、Jon | 两人与街景 | 天台，风很大。 | 20 |\n'
+            '| 2 | 天台（楼梯口） | 靠栏杆说话（她离开） | 连续 | Maya、Jon | 她走、他不跟 | 她转身走向楼梯口。 | 12 |\n\n'
+            + (f'本场单一画面：{exception}\n\n' if exception else '') + '总估时 ≈ 40 s\n\n')
+
+
+class PictureTests(unittest.TestCase):
+    """3.6.0: 画面推进——写正文前的场面轨与正文逐字核对；EP03 场 4 v3 / v4（整场跑道）为问题样本，v4.1（过线后换到牛棚）为对照。"""
+
+    def test_v3_and_v4_one_picture_are_flagged(self):
+        for f in (EP03_S4_V3_TRACK, EP03_S4_V4_TRACK):
+            r = rs.review_file(f)
+            self.assertEqual(r['checks']['picture'], 'issues', f.name)
+            self.assertEqual((r['picture']['combos'], r['picture']['jumps']), (1, 0))
+            pic = next(i for i in r['issues'] if i['key'] == 'picture')
+            self.assertEqual(pic['title'], '画面没有推进')
+            self.assertIn('Sharks 球场外圈跑道 · 跑步', pic['evidence'])
+            self.assertIn('S13', pic['sources'])
+            self.assertIn('[推论]', pic['basis'])
+            self.assertIn('画面：有问题', r['text'])
+
+    def test_v41_bullpen_passes(self):
+        r = rs.review_file(EP03_S4_V41_TRACK)
+        self.assertEqual(r['checks']['picture'], 'pass', r['text'])
+        self.assertEqual((r['picture']['combos'], r['picture']['jumps']), (2, 1))
+        self.assertEqual(len(r['picture']['segments']), 5)
+        self.assertNotIn('picture', {i['key'] for i in r['issues']})
+        self.assertIn('画面：5 段、2 个地点×活动、1 次时间跳', r['text'])
+
+    def test_text_estimate_is_closer_than_draft_estimate(self):
+        """剧本自报 57 / 69 s，分镜实排 74 / 88 s；文本估时落在两者之间、误差 ≤ 16%（[推论]，5 场校准见 dialogue-review-sources.md §三）。"""
+        for f, declared, produced in ((EP03_S4_V4_TRACK, 57, 74), (EP03_S4_V41_TRACK, 69, 88)):
+            p = rs.review_file(f)['picture']
+            self.assertEqual(p['declared'], declared)
+            self.assertGreater(p['estimate'], declared)
+            self.assertLess(abs(p['estimate'] / produced - 1), 0.16)
+
+    def test_production_overrun_sends_back_to_script(self):
+        r = rs.review_file(EP03_S4_V41_TRACK, production_total=88)
+        self.assertEqual(r['picture']['production_over'], 28)
+        self.assertIn('回剧本层重核场面轨', r['text'].splitlines()[0])
+        self.assertIn('多出来的时间观众在看什么', r['picture']['review'][0])
+        r2 = rs.review_file(EP03_S4_V4_TRACK, production_total=74)
+        self.assertEqual(r2['picture']['production_over'], 30)
+        ok = rs.review_file(EP03_S4_V41_TRACK, production_total=80)  # +16%：在 20% 以内，不回流
+        self.assertNotIn('production_over', ok['picture'])
+        with redirect_stdout(io.StringIO()):
+            rs.main([str(EP03_S4_V41_TRACK), '--production-total', '88'])
+
+    def test_missing_track_only_for_scenes_of_30s_or_more(self):
+        r = rs.review_file(EP03_S4)
+        self.assertEqual(r['checks']['picture'], 'missing')
+        self.assertIn('画面：缺场面轨（「Sharks 球场外圈跑道」', r['text'])
+        self.assertTrue(next(i for i in r['issues'] if i['key'] == 'picture')['compact'])
+        self.assertEqual(review_text(POSITIVE)['checks']['picture'], 'n/a')  # 11.5 s
+
+    def test_single_picture_needs_registered_reason(self):
+        r = review_text(one_place_track() + scene(LONG_BODY))
+        self.assertGreaterEqual(r['picture']['estimate'], 30)
+        self.assertEqual(r['checks']['picture'], 'issues')
+        self.assertIn('天台 · 靠栏杆说话', r['issues'][-1]['evidence'] if r['issues'][-1]['key'] == 'picture'
+                      else next(i for i in r['issues'] if i['key'] == 'picture')['evidence'])
+        r2 = review_text(one_place_track('有意一镜到底：两人谁都不肯先走') + scene(LONG_BODY))
+        self.assertEqual(r2['checks']['picture'], 'excepted')
+        self.assertNotIn('picture', {i['key'] for i in r2['issues']})
+        self.assertIn('已登记理由：有意一镜到底', ' '.join(r2['review_needed']))
+
+    def test_anchor_must_be_verbatim_and_in_order(self):
+        bad = one_place_track().replace('她转身走向楼梯口。', '她走了。')
+        r = review_text(bad + scene(LONG_BODY))
+        self.assertIn('第 2 段锚句「她走了。」不在正文动作行里', r['picture']['problems'][0])
+        swapped = (TRACK_HEAD + '| 1 | 天台 | 说话 | — | 两人 | 离开 | 她转身走向楼梯口。 | 10 |\n'
+                   '| 2 | 楼梯间 | 下楼 | 跳：稍后 | 两人 | 街景 | 天台，风很大。 | 10 |\n\n')
+        r2 = review_text(swapped + scene(LONG_BODY))
+        self.assertIn('顺序与正文不符', ' '.join(r2['picture']['problems']))
+
+    def test_long_unchanged_segment_goes_to_model_review(self):
+        long_body = ('天台，风很大。\n\n' + ''.join(f'**MAYA**\nI keep thinking about the list they posted on Friday morning, again and again, {i}.\n\n'
+                                                 f'**JON**\nI keep thinking about it too, and I still do not know what I should say to you, {i}.\n\n' for i in range(10))
+                     + '几分钟后，街角便利店。她站在冰柜前，他在门口。店员抬头看了他们一眼。收银机响了一声。\n')
+        track = (TRACK_HEAD + '| 1 | 天台 | 说话 | — | 两人 | 两人 | 天台，风很大。 | 45 |\n'
+                 '| 2 | 便利店 | 买东西 | 跳：几分钟后 | 两人、店员 | 店员看他们 | 几分钟后，街角便利店。 | 6 |\n\n')
+        r = review_text(track + scene(long_body))
+        self.assertEqual(r['checks']['picture'], 'pass', r['text'])
+        self.assertTrue(any('画面不变' in x and '第 1 段' in x for x in r['picture']['review']))
+
+    def test_wps_and_action_sec_are_parameters(self):
+        saved = dict(rs.THRESHOLDS)
+        try:
+            base = rs.review_file(EP03_S4_V4_TRACK)['picture']['estimate']
+            with redirect_stdout(io.StringIO()):
+                rs.main([str(EP03_S4_V4_TRACK), '--wps', '2.5', '--action-sec', '2'])
+            slow = rs.review_file(EP03_S4_V4_TRACK)['picture']['estimate']
+            self.assertGreater(slow, base)
+        finally:
+            rs.THRESHOLDS.clear()
+            rs.THRESHOLDS.update(saved)
+
+    def test_docs_make_the_track_a_pre_body_artifact_and_handoff(self):
+        tpl = (ROOT / 'templates' / 'script-scene.md').read_text(encoding='utf-8')
+        self.assertLess(tpl.index('## 本场赌注'), tpl.index('## 场面轨'))
+        self.assertLess(tpl.index('## 场面轨'), tpl.index('## 剧本页'))
+        s3c = (ROOT / 'references' / 'stage-3c-script.md').read_text(encoding='utf-8')
+        self.assertLess(s3c.index('3c.0c'), s3c.index('3c.1 '))
+        self.assertIn('场面轨', s3c)
+        skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
+        self.assertIn('场面轨', skill)
+        self.assertIn('20%', skill)  # 交接回流条件
+        self.assertNotIn('镜头与 clip 属于生产层，本 skill 不推导。', skill)
+        src = (ROOT / 'references' / 'dialogue-review-sources.md').read_text(encoding='utf-8')
+        self.assertRegex(src, r'\| S13 \|')
+        ledger = (ROOT / 'references' / 'preference-ledger.md').read_text(encoding='utf-8')
+        self.assertIn('整个场 4 都是球场跑步', ledger)
 
 
 if __name__ == '__main__':
