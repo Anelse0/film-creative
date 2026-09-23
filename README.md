@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **3.4.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **3.5.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,11 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 3.5.0 更新
+
+- 写台词前必须先填剧本页的"本场赌注"卡（`references/stage-3c-script.md` §3c.0b）：本场说 ≥3 句的人各一行——持续赌注（出处）、此刻向谁要什么、怕失去什么、为什么是现在、说出口的那句（逐字）或不说的理由与代价、场末。承接清单降为"不能矛盾"的约束，台词先分给欲望。
+- `scripts/review_script.py` 分开报"人物赌注"与"对白连通"：逐字核对卡与正文，缺卡或全场无人说出口（未登记例外）即报问题；语义交模型复核。来源：Mamet 三问（S6）、Scriptnotes 403（S12）。用 THE ORDER EP03 场 4 v3 校准。
 
 ## 3.4.0 更新
 
@@ -83,7 +88,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/project-state.md` + `scripts/project_check.py` | 已保存项目：版本、恢复、依赖失效、正典 |
 | `templates/*.md` | 概念 / 故事 / 剧本页 / ip 骨架 |
 | `scripts/validate_concept.py` | 概念选定落盘后跑；只查格式与完整性，不判断创意 |
-| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项列需模型复核；来源与阈值登记 |
+| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：人物赌注卡与正文的逐字核对 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项列需模型复核；来源与阈值登记 |
 | `scripts/route_check.py` | S2 结构化决策校验：仅执行 S3a–S3c/save_only；不解释自然语言，旧自由文本 CLI 返回 2 |
 | `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓 |
 | `scripts/baseline_snapshot.py` | Git / 非 Git 版本目录的归档与完整性检查 |

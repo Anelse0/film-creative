@@ -1,6 +1,6 @@
 # 出稿后对白 review 的一手来源与阈值
 
-`scripts/review_script.py` 每条判断引用的来源编号（S1–S11）在此登记。访问核对：2026-09-21 两次（建档 + 逐条复核）。S1–S6、S8–S11 为本次实际读取的原文（PDF / PMC 全文 / 官方文字稿 / 转载全文）；S7 本次访问被拒（HTTP 403），沿用 `context-creativity-sources.md` 3.0.0 的登记，标 `[本次未重读]`。未读到原文的书目不列入。来源只支撑"这项检查为什么值得做"，不提供可机械套用的对错标准；具体人物、语域与用户锁定内容始终优先。
+`scripts/review_script.py` 每条判断引用的来源编号（S1–S12）在此登记。访问核对：2026-09-21 两次（建档 + 逐条复核）；2026-09-23 重读 S6 并新增 S12（人物赌注检查）。S1–S6、S8–S11 为本次实际读取的原文（PDF / PMC 全文 / 官方文字稿 / 转载全文）；S7 本次访问被拒（HTTP 403），沿用 `context-creativity-sources.md` 3.0.0 的登记，标 `[本次未重读]`。未读到原文的书目不列入。来源只支撑"这项检查为什么值得做"，不提供可机械套用的对错标准；具体人物、语域与用户锁定内容始终优先。
 
 ## 一、来源清单
 
@@ -11,11 +11,12 @@
 | S3 | Levinson & Torreira, "Timing in turn-taking and its implications for processing models of language", *Frontiers in Psychology* 6:731, 2015。[PMC4464110](https://pmc.ncbi.nlm.nih.gov/articles/PMC4464110/) `[一手 / 综述 + Switchboard 语料数据]` | Switchboard 语料的平均轮次（按停顿间单位近似）约 1680 ms；轮次间隔平均约 200 ms；30.1% 的换手带有重叠；日常说话是"phrasal or clausal unit"的短爆发，可长可短。 | **(b) 标语化**：平均句长基线——1.7 s 一轮，按 4 词/s 约 6–7 词 `[推论：语速换算]`；重叠 / 打断在真实会话里常见，因此"被打断"是自然特征（信号），但不是必需。 |
 | S4 | LDC, Switchboard-1 Release 2 目录页（含 Switchboard Dialog Act Corpus 统计：1155 段 5 分钟对话，205,000 个话语单位，1.4 百万词）。[catalog.ldc.upenn.edu/LDC97S62](https://catalog.ldc.upenn.edu/LDC97S62) `[官方 / 语料统计]` | 1.4M / 205k ≈ 6.8 词 / 话语单位 `[推论：由官方数字相除]`；这是对话行为标注的"utterance"，切分比说话轮更细，按轮算的均值只会更高；电话闲聊语料，不是剧本；分布很宽，均值只是参照。 | **(b)** `mean_words_min` 阈值的锚点：屏幕对白比闲聊更紧，取 4 词为下限 `[推论]`。 |
 | S5 | John August & Craig Mazin, *Scriptnotes* Episode 609 "Dialogue and Character Voice" 官方文字稿，2023-09-06。[johnaugust.com](https://johnaugust.com/2023/scriptnotes-episode-609-dialogue-and-character-voice-transcript) `[一手 / 职业编剧方法]` | 对白的第一要求是"characters talking to each other, with each other, and not just intersecting monologues"；好对白像 Velcro，两片是为彼此设计的；"The thing I say influences the thing that you say back to me"；写台词要"说一句，立刻跳到对方身上去听"；"what's more / so"这类连接词是接住上一句的痕迹；有强烈风格的作者（Mamet、Tarantino、Sorkin）仍为不同人物分出差异。 | **(a)** "交错独白"就是本次 v1 的病名——`orphan_runs`、`link_prev` 里的回应词起句与词汇回声直接对应"Velcro"。**反向保护**：风格化 ≠ 错误。 |
-| S6 | David Mamet 致 *The Unit* 编剧备忘录（2005），No Film School 转载全文。[nofilmschool.com](https://nofilmschool.com/2010/10/david-mamet-drama-a-memo-the-unit-writers) `[一手备忘录 / 第三方转载，本次已读转载页；无官方原件]` | 每场三问：WHO WANTS WHAT? WHAT HAPPENS IF THEY DON'T GET IT? WHY NOW?；观众不为信息收看。 | **需模型复核**清单的判断框架：一句短话成不成立，看他要什么、对谁、为什么此刻（对应 SKILL.md 取向 6）。备忘录语气绝对，只取三问，不采用其禁令。 |
+| S6 | David Mamet 致 *The Unit* 编剧备忘录（2005），No Film School 转载全文。[nofilmschool.com](https://nofilmschool.com/2010/10/david-mamet-drama-a-memo-the-unit-writers) `[一手备忘录 / 第三方转载，本次已读转载页；无官方原件]` | 每场三问："1) WHO WANTS WHAT? 2) WHAT HAPPENS IF [THEY] DON'T GET IT? 3) WHY NOW?"；"THE AUDIENCE WILL NOT TUNE IN TO WATCH INFORMATION."（2026-09-23 重读转载页逐字核对） | **需模型复核**清单的判断框架：一句短话成不成立，看他要什么、对谁、为什么此刻（对应 SKILL.md 取向 6）。**(e) 人物赌注**（3.5.0）：三问成为剧本页"本场赌注"卡的三栏（此刻向谁要什么 / 怕失去什么 / 为什么是现在）；"观众不为信息收看"是"承接与埋点不该占掉整场台词"的依据。备忘录语气绝对，只取三问与这一句，不采用其禁令。 |
 | S7 | Céline Sciamma, BAFTA Screenwriters' Lecture 2019 官方文字稿。[bafta.org](https://www.bafta.org/media-centre/press-releases/screenwriters-lecture-series-2019-celine-sciamma/) `[一手讲稿 / 本次未重读：403]` | "没有冲突不等于没有张力"；想拍的场景与剧情需要的场景。 | **反向保护**：安静戏、少台词、靠近型场景不因台词少或短被判错——`min_lines` 以下不做统计判断；短句有理由（回答、喊名、齐喊）就豁免。 |
 | S8 | David Bordwell, "Where did the two-shot go? Here." *Observations on film art*, 2013-10-07。[davidbordwell.net](https://www.davidbordwell.net/blog/2013/10/07/where-did-the-two-shot-go-here/) `[一手 / 电影学者博客]` | 主流美国片的常见做法是"Cut a lot and move the camera instead of moving the actors"；持续的双人镜头可以承载长段对白，让"action and reaction"在同一固定机位里完成；双人镜头常只用来引出正反打。 | **(c) 一句一镜**：连续台词若在同一画面里的两个人之间来回，分镜可以用双人镜头或正反打承载；每句换到互不接话的第三个人，就只能一句一镜 `[推论：从调度观察到剧本层代理量 third_party_jump_share]`。 |
 | S9 | Tim J. Smith, "The Attentional Theory of Cinematic Continuity", *Projections* 6(1), 2012, doi:10.3167/proj.2012.060102；本次读的是作者预印本（[UAL 开放 PDF](https://ualresearchonline.arts.ac.uk/id/eprint/21187/2/6679.pdf)，页码与期刊版不同）`[一手 / 眼动实验 + 理论]` | 无剪辑长镜头里，"Shifts in conversation are followed by clustering gaze on the speaker's face then gradual shifts back to the listener"；正反打序列先用建立镜头交代所有人位置，再"alternates between shots favoring each character in turn, typically while they are speaking"；视线不匹配时观众要反向搜索说话人。 | **(c) 画外句配在别人脸上**：观众的注意力默认落在说话人的脸上，画外句叠在第三人脸上与这一默认相反——`offscreen_lines` 判为问题的依据；同框 / 收件人不明的句子列为需模型复核。 |
 | S10 | Clark & Brennan, "Grounding in Communication", in Resnick, Levine & Teasley (eds.), *Perspectives on Socially Shared Cognition*, APA, 1991, pp. 127–149。[Stanford 开放 PDF](https://web.stanford.edu/~clark/1990s/Clark,%20H.H.%20_%20Brennan,%20S.E.%20_Grounding%20in%20communication_%201991.pdf) `[一手 / 心理语言学]` | p. 127：协作者"cannot even begin to coordinate on content without assuming a vast amount of shared information or common ground—that is, mutual knowledge, mutual beliefs, and mutual assumptions"；共同基础逐句累积更新。 | **(d) 潜台词支点**：一句话省略得掉的部分，是说者假定在双方共同基础里的；观众的共同基础只来自已播出的文本，所以省略句依赖的设定必须在前文建立过 `[推论：把"共同基础"从对话双方移到观众]`。脚本用"前文（本场 + `--context` 前几场）出现过"近似"在观众的共同基础里"。 |
+| S12 | Craig Mazin, *Scriptnotes* Episode 403 "How to Write a Movie" 官方文字稿，2019。[johnaugust.com](https://johnaugust.com/2019/scriptnotes-ep-403-how-to-write-a-movie-transcript) `[一手 / 职业编剧方法；2026-09-23 已读]` | "Fear is our connection to a character."；"I feel for characters when I fear with them. It is vulnerability."；人物要自己做选择——"They have to make the choices or you're making it for them." 讲的是整部电影的人物弧，不是单场对白规则。 | **(e) 人物赌注**：卡上"怕失去什么"一栏的依据——观众与人物的连接来自他怕什么；从整片人物弧移到单场一栏是 `[推论]`。 |
 | S11 | John August & Craig Mazin, *Scriptnotes* Episode 693 "Setups That Don't Feel Like Setups" 官方文字稿，2025。[johnaugust.com](https://johnaugust.com/2025/scriptnotes-episode-693-setups-that-dont-feel-like-setups-transcript) `[一手 / 职业编剧方法]` | 设定"just out of the blue … is going to feel weird and forced"；铺垫的做法是找"the present-tense need of the scene that brings up this idea"，让信息"is the point of a moment"（Mazin：像魔术师手里真的握着一枚硬币）；另一种"not objectionable"的做法是让人物当场问一句（"What happened to that church?"）。 | **(d)** 三种改法的来源：用当场需要 / 动作引出（Mazin 首选）、让第三人替观众问（"not objectionable"）、直说来历（本 skill 补的第三项，`[推论]`）。改法只作选项，按 SKILL.md"批评已有稿、改法未定"契约交付，不改稿。 |
 
 ## 二、哪些检查有来源、哪些是本 skill 的推论
@@ -30,6 +31,7 @@
 | 画外句 | `offscreen_lines` | S9（视线落在说话人脸上）、S2（面对面提问看着对方） | 只识别括号里的画外 / O.S. / V.O. 标注；剧本没标但分镜会变画外的句子，脚本判不了，交给"需模型复核"与 film-director |
 | 自然会话特征（犹豫、打断、口头填充、追问） | `hesitation_marks`、`questions` | S3（重叠 30.1%）、S5（连接词是听见的痕迹） | 只作信号不判错：没有这些不等于不自然（`character-scene-development.md` §七 误用信号：不为自然强制"嗯、那个"） |
 | 潜台词支点 | `presupposed`、`anchoring.candidates / planted / declared` | S10（共同基础）、S1 p.727（收件人设计）、S11（凭空出现 / 当场需要 / 当场问） | "省略句 + 当作已知的新指称（你的 X / 那个 X / 你有 X / 还 X）+ 接下来没人问"作为"看不懂"的代理量是 `[推论]`；指称抽取是英文启发式；中文动作行无法与英文指称对齐，只能引用交模型复核；`this / these`、"right here"视为指画面里的东西；账本（模板头部与"上下文承接"）里声明过的指称降为复核项。三种改法的措辞是模板，具体改什么由模型按本场填 |
+| 人物赌注（3.5.0） | `checks.stakes`、`stakes.voiced / problems / review` | S6（三问；观众不为信息收看）、S12（fear）、S1 / S2（说出口后有没有人接） | 脚本**不判**一句话有没有欲望（那需要关键词表，会误报）；只逐字核对作者写台词前填的卡：卡上说出口的句子在不在正文、是不是本人说、下一句有没有接；不说的有没有"理由""代价"；场末"推迟 / 没得到"有没有代价。"本场说 ≥3 句的人必须上卡"（`stake_min_lines = 3`）、"全场至少一人说出口"（`min_voiced = 1`，卡下可登记"本场不说出口：理由"作例外）是 `[推论]` 阈值，后者按用户 2026-09-23 确认的偏好设为问题而非信号。"那句说的是不是卡上那件事"一律列为需模型复核。卡上声明过的赌注词不再报"潜台词无支点"——人物说出自己的赌注是表态，不是待铺垫的旧梗 |
 | 安静戏保护 | `min_lines` | S1（轮次长短不固定）；S7 只作旁证（本次未重读） | `min_lines = 4` 以下不做统计判断；是否"有理由的短句"最终由模型按上下文判（SKILL.md 取向 6） |
 
 ## 三、阈值校准（全部 `[推论]`，请用户调）
@@ -49,6 +51,16 @@
 
 两版之间空隙很大，阈值放在中间偏保守一侧；只有两组样本，不能声称阈值有普遍性。改阈值在 `scripts/review_script.py` 的 `THRESHOLDS`。
 
+人物赌注（3.5.0）用 THE ORDER EP03 场 4 v3（用户 2026-09-23 否决："没有突出人物自身的压力和希望'出道'的情绪，更多是在平铺说话"）校准：
+
+| 样本 | 3.4.0 结论 | 3.5.0 结论 |
+|---|---|---|
+| `theorder-ep03-s04-v3.md`（原稿，无卡） | 只报"潜台词无支点"（"That's the job." 的 job，属误报） | 人物赌注：缺卡（Diego 4 句、Isa 3 句）排第一 |
+| `theorder-ep03-s04-v3-card.md`（按原稿自己的"两侧 / 上下文承接"栏如实回填一张卡，正文不动） | 同上 | Isa 上卡（全额奖学金、Cup 先发）却没有说出口的台词、也没写不说的理由与代价 → 问题；Diego 那句逐字在正文、本人说 → 兑现，但说完无人接 → 复核；Isa 场末"推迟"无代价 → 复核 |
+| 探针：原稿 "That's fair." 换成 Isa「Not my scholarship.」 | 判"潜台词无支点"，改法是"直说来历 / 第三人问"——把人物的表态推回解释 | 卡上有出处时不报；无卡时仍报（观众确实不知道那份奖学金） |
+
+只有一个真实否决样本加合成正反例，阈值没有普遍性；"效果提升"须用重写后的场 4 与原稿对照才能说。
+
 ## 四、复核记录（2026-09-21 第二次）
 
 逐条复核结论——按"可回访 / 一手 / 本次已读 / 支持的检查是否直接"四项：
@@ -66,6 +78,8 @@
 | S9 | UAL 开放预印本 | 一手研究 | 是 | 直接：视线跟说话人；**间接**：→ 画外句判为问题（`[推论]`） | 保留，推论部分标注 |
 | S10 | Stanford 开放 PDF | 一手研究 | 是（p. 127 核对） | 直接：共同基础定义；**间接**：→ 观众的共同基础（`[推论]`） | 保留，推论部分标注 |
 | S11 | 官方文字稿 | 一手创作方法 | 是 | 直接：凭空出现生硬、当场需要、当场问 | 保留；"直说来历"为本 skill 补项 |
+| S6（2026-09-23 重读） | 第三方转载 | 一手备忘录 | 是（转载页，三问与"information"句逐字核对） | 直接：三问 → 卡的三栏；**间接**：卡与正文逐字核对作为检查方式（`[推论]`） | 由复核框架升为赌注卡结构依据 |
+| S12 | 官方文字稿 | 一手创作方法 | 是（2026-09-23） | 间接：整片人物弧 → 单场"怕失去什么"栏（`[推论]`） | 新增 |
 
 脚本输出（终端与 `--json` 的 `basis` 字段）对每个问题同步标注：判断依据哪几条来源、阈值与代理量属于 `[推论]`。
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""出稿后的剧本对白 review（film-creative 3.4.0）。
+"""出稿后的剧本对白 review（film-creative 3.5.0）。
 
 用法:
   review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--json] [--full]
@@ -8,9 +8,12 @@
 读 `templates/script-scene.md` 格式的剧本页（`<!-- script-body:start/end -->` 之间；
 台词块为 `**NAME**` 或独立一行的角色名，下一行台词；括号行是表演/声音提示），
 只做可量化的部分：收件人链、来回（exchange）、句长分布、短句占比、连续无人接的句子、
-主谓宾完整度、画外标注、每句换人（一句一镜代理量）、潜台词支点（省略句依赖的设定前文有没有建立）。语义判断不冒充已判定，
+主谓宾完整度、画外标注、每句换人（一句一镜代理量）、潜台词支点（省略句依赖的设定前文有没有建立）；
+3.5.0 起另报"人物赌注"：读剧本页正文前的"## 本场赌注"卡，逐字核对卡上声明说出口的句子是否在正文里、
+是不是本人说的、有没有人接；不说的要有理由与代价；缺卡或全场无人说出口（未登记例外）判为问题。
+连通性与赌注分开给结论（checks.dialogue / checks.stakes），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
 列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3 校准），
-在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S9）。
+在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S12）。
 
 不改稿，不替用户采用；零外部依赖。退出码：0 = 通过或只有信号，1 = 有问题，2 = 输入无法解析。
 """
@@ -35,6 +38,8 @@ THRESHOLDS = {
     'orphan_run_min': 3,       # 连续多少句互不接话算一段
     'short_words': 4,
     'elliptical_words': 5,     # ≤ 此词数或被截断 / 以回应词起句的句子视为省略句（支点检查用）
+    'stake_min_lines': 3,      # 说了这么多句的人必须上赌注卡（主要说话人）
+    'min_voiced': 1,           # 全场至少几个人把自己的赌注说出口；卡上写"本场不说出口：理由"可登记例外
 }
 
 START_ACTION_RESET = re.compile(r'^场\s*\d+')
@@ -395,9 +400,10 @@ def has_imperative_or_decision(ln):
         bool(re.search(r"\b(i'm gonna|i'll|let's|go|come|take|bring|keep|give)\b", ln['text'], re.I))
 
 
-def anchoring(lines, actions, context_text='', ledger_text=''):
+def anchoring(lines, actions, context_text='', ledger_text='', stake_terms=frozenset()):
     """逐句检查省略句里当作已知的指称是否在前文建立过。返回 candidates（无支点）、planted（本句明说的新设定）、declared（账本已声明不交代）。
-    ledger_text = 剧本页正文之外的文字（修订账本 / 上下文承接 / 对白审阅）：指称出现在那里，视为作者已声明的决定，降为复核项。"""
+    ledger_text = 剧本页正文之外的文字（修订账本 / 上下文承接 / 对白审阅）：指称出现在那里，视为作者已声明的决定，降为复核项。
+    stake_terms = 赌注卡上声明的持续赌注与说出口句子里的词：人物说出自己的赌注是表态，不是待铺垫的旧梗，不报无支点（3.5.0）。"""
     established = {_stem(t) for t in tokens(context_text) if len(t) >= 3}
     declared_terms = {_stem(t) for t in tokens(ledger_text) if len(t) >= 3}
     declared = []
@@ -431,7 +437,8 @@ def anchoring(lines, actions, context_text='', ledger_text=''):
                 'next': quote(nxt[0]) if nxt else '（无人接）',
             }
             visible = bool(DEICTIC.search(ln['text']))  # "my phone's right here"：指着画面里的东西，本句即支点
-            if ell and not asked and not visible:
+            entry['stake'] = all(h in stake_terms for h, _ in new_refs)
+            if ell and not asked and not visible and not entry['stake']:
                 if all(h in declared_terms for h, _ in new_refs):
                     declared.append(entry)
                 else:
@@ -458,16 +465,164 @@ def fixes_for(entry):
     return [f"{name}：{what.format(who=who, ref=ref, head=head)}；这场变成 {becomes}；影响后面 {after}" for name, what, becomes, after in FIX_TEMPLATES]
 
 
+# ---- 人物赌注：谁要什么、有没有说出口（3.5.0） ------------------------------------
+# 依据：Mamet 每场三问 WHO WANTS WHAT? / WHAT HAPPENS IF THEY DON'T GET IT? / WHY NOW?，"THE AUDIENCE WILL NOT TUNE IN
+# TO WATCH INFORMATION"（S6）；Mazin "Fear is our connection to a character"（S12）；说出口后有没有人接按相邻对（S1, S2）。
+# 脚本不判一句话"有没有欲望"（那会变成关键词表）：它只逐字核对作者写台词前填的卡与正文是否一致，
+# 语义（这句说的是不是卡上那件事）列为需模型复核。
+STAKES_HEAD = re.compile(r'^##\s*本场赌注[^\n]*$', re.M)
+QUOTED = re.compile(r'[“"「]([^”"」]+)[”"」]')
+STAKE_COLS = (('name', '人物'), ('standing', '持续赌注'), ('want', '要什么'), ('fear', '怕'),
+              ('why_now', '为什么'), ('voiced', '说出口'), ('end', '场末'))
+EMPTY_CELL = {'', '—', '-', '无', '没有', '空', '未写', '__'}
+
+
+def _cells(row):
+    return [c.strip() for c in row.strip().strip('|').split('|')]
+
+
+def _norm_quote(t):
+    t = t.replace('’', "'").replace('‘', "'").replace('…', '...').lower()
+    return re.sub(r'\s+', ' ', re.sub(r'[.!?,;:—\-]+$', '', t.strip()))
+
+
+def _field(cell, key):
+    """cell 里"理由：…""代价：…"一类字段的内容；没有该字段或内容为空 / 无 → None。"""
+    m = re.search(key + r'\s*[:：]?\s*([^；;|]*)', cell)
+    if not m:
+        return None
+    val = m.group(1).strip(' ，,。')
+    return None if val in EMPTY_CELL else val
+
+
+def stakes_card(text):
+    """剧本页正文前的"## 本场赌注"表。返回 None（无卡）或 {'rows': [...], 'exception': str|None}。"""
+    m = STAKES_HEAD.search(text)
+    if not m:
+        return None
+    sec = re.split(r'\n## ', text[m.end():], maxsplit=1)[0]
+    rows = [r for r in sec.splitlines() if r.strip().startswith('|')]
+    exc = re.search(r'本场不说出口\s*[:：]\s*(\S[^\n]*)', sec)
+    exception = exc.group(1).strip() if exc and exc.group(1).strip() not in EMPTY_CELL else None
+    if not rows:
+        return {'rows': [], 'exception': exception}
+    header = _cells(rows[0])
+    idx = {}
+    for key, word in STAKE_COLS:
+        idx[key] = next((i for i, h in enumerate(header) if word in h), None)
+    out = []
+    for r in rows[1:]:
+        cells = _cells(r)
+        if all(set(c) <= set('-: ') for c in cells):
+            continue
+        get = lambda k: cells[idx[k]] if idx[k] is not None and idx[k] < len(cells) else ''
+        name = get('name').strip('*').strip()
+        if not name or name in EMPTY_CELL:
+            continue
+        out.append({k: get(k) for k, _ in STAKE_COLS} | {'name': name})
+    return {'rows': out, 'exception': exception}
+
+
+def check_stakes(card, lines, names):
+    """逐字核对赌注卡与正文。返回 {'status', 'problems', 'review', 'voiced', 'terms'}。
+    status：n/a（安静戏 / 独角戏）、missing（无卡）、issues、excepted（无人说出口但登记了例外）、pass。"""
+    T = THRESHOLDS
+    speakers = [nm for nm in names if nm not in GROUP_SPEAKERS]
+    res = {'status': 'n/a', 'problems': [], 'review': [], 'voiced': [], 'terms': set()}
+    if len(lines) < T['min_lines'] or len(speakers) < 2:
+        return res
+    if card is None:
+        res['status'] = 'missing'
+        counts = {nm: sum(ln['speaker'] == nm for ln in lines) for nm in speakers}
+        ranked = sorted(counts.items(), key=lambda x: -x[1])
+        main = [f'{nm} {c} 句' for nm, c in ranked if c >= T['stake_min_lines']]
+        first = next(ln for ln in lines if ln['speaker'] == ranked[0][0])
+        res['problems'].append('没有"## 本场赌注"卡' + (f'（主要说话人：{"、".join(main)}）' if main else '')
+                               + f'，台词只能自证连通，如 {quote(first)[:48]}')
+        return res
+    by_name = {}
+    for row in card['rows']:
+        who = next((nm for nm in speakers if nm.lower() == norm_name(row['name']).lower()), row['name'])
+        by_name[who] = row
+    counts = {nm: sum(ln['speaker'] == nm for ln in lines) for nm in speakers}
+    for nm, c in counts.items():
+        if c >= T['stake_min_lines'] and nm not in by_name:
+            res['problems'].append(f'{nm} 说了 {c} 句，卡上没有他此刻要什么')
+    for who, row in by_name.items():
+        res['terms'] |= {_stem(t) for t in tokens(row['standing']) if len(t) >= 3}
+        quotes = QUOTED.findall(row['voiced'])
+        if quotes:
+            for q in quotes:
+                nq = _norm_quote(q)
+                hit = [k for k, ln in enumerate(lines) if nq and nq in _norm_quote(ln['text'])]
+                own = [k for k in hit if lines[k]['speaker'] == who]
+                if not hit:
+                    res['problems'].append(f'卡上 {who} 说出口的"{q}"不在正文里')
+                    continue
+                if not own:
+                    res['problems'].append(f'卡上记为 {who} 说出口的"{q}"，正文里是 {lines[hit[0]]["speaker"]} 说的')
+                    continue
+                k = own[0]
+                res['voiced'].append({'who': who, 'line': k, 'quote': quote(lines[k])})
+                res['terms'] |= {_stem(t) for t in tokens(q) if len(t) >= 3}
+                nxt = lines[k + 1] if k + 1 < len(lines) else None
+                if nxt and nxt['speaker'] != who and nxt['link_prev']:
+                    res['voiced'][-1]['reply'] = quote(nxt)
+                else:
+                    res['review'].append(f'{quote(lines[k])} 说出口后{"下一句 " + quote(nxt) + " 没有接它" if nxt else "没人再说话"}：'
+                                         f'是有意的不答吗？不答的人为什么不答，卡上有没有写')
+                res['review'].append(f'{who} 卡上的赌注是"{(row["want"] or row["standing"])[:30]}"，说出口的是 {quote(lines[k])}：'
+                                     f'这句说的是不是这件事（按取向 6：面对谁、刚发生什么、为什么此刻）')
+        else:
+            reason, cost = _field(row['voiced'], '理由'), _field(row['voiced'], '代价')
+            if not (reason and cost):
+                res['problems'].append(f'{who} 上了卡，但既没有说出口的台词，也没写不说的理由与代价'
+                                       f'（持续赌注：{row["standing"][:40] or "空"}）')
+            else:
+                res['review'].append(f'{who} 不说：{reason}；代价 {cost}——观众能从处境读出他在绕什么吗')
+        if not re.search(r'[（(][^)）]+[)）]', row['standing']):
+            res['review'].append(f'{who} 的持续赌注没写出处（ip.md / 故事 / 框架哪一行）')
+        end = row['end'].strip()
+        if not end or end in EMPTY_CELL:
+            res['review'].append(f'{who} 场末没写得到 / 没得到 / 推迟')
+        elif re.search(r'推迟|没得到|未得到|放下', end) and not _field(end, '代价'):
+            res['review'].append(f'{who} 场末"{end[:24]}"没写代价：欲望是不是被一句"That\'s fair / Okay"接住收掉了')
+    if res['problems']:
+        res['status'] = 'issues'
+    elif len({v['who'] for v in res['voiced']}) < T['min_voiced']:
+        if card['exception']:
+            res['status'] = 'excepted'
+            res['review'].insert(0, f'全场无人把赌注说出口，已登记例外：{card["exception"]}')
+        else:
+            res['status'] = 'issues'
+            res['problems'].append('全场没有一个人把自己的赌注说出口（卡上都是不说），也没有登记"本场不说出口：理由"')
+    else:
+        res['status'] = 'pass'
+    return res
+
+
 # ---- 判断 --------------------------------------------------------------------
 def quote(ln):
     return f"{ln['speaker']}「{ln['text']}」"
 
 
-def judge(lines, actions, stats, candidates=(), planted=(), declared=()):
+def judge(lines, actions, stats, candidates=(), planted=(), declared=(), stakes=None):
     """返回 issues（问题）、signals（信号，不判定）、review_needed（需模型复核）。"""
     T = THRESHOLDS
     issues, signals, review = [], [], []
     n = stats['lines']
+    if stakes and stakes['status'] in ('missing', 'issues'):
+        # 赌注排第一：连通只说明有人接话，赌注说明这场谁要什么（3.5.0）
+        issues.append({
+            'key': 'stakes',
+            'title': '缺本场赌注卡' if stakes['status'] == 'missing' else '人物赌注没落到台词',
+            'evidence': '；'.join(stakes['problems']),
+            'why': '观众不为信息收看；知道人物此刻要什么、怕失去什么才会担心。承接只约束不能抵触什么，不该占掉台词。',
+            'sources': ['S6', 'S12', 'S1'],
+            'basis': '三问与"fear"有来源（S6, S12）；逐字核对、"≥3 句上卡""至少一人说出口"是[推论]，可登记例外',
+        })
+    if stakes:
+        review.extend(stakes['review'])
     if n < T['min_lines']:
         signals.append(f'台词只有 {n} 句，统计判断不适用；按安静戏人工读。')
         return issues, signals, review
@@ -526,11 +681,12 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=()):
             'sources': ['S9'],
             'basis': '视线跟随说话人有来源（S9）；由此判画外句为问题是[推论]',
         }
-        if len(off) >= 2 and issues:
-            # 与来回问题同根因（没人对着谁说），合并进第一条，不另立
-            issues[0]['evidence'] += f'；其中 {len(off)} 句标为画外（{ev}）'
-            issues[0]['sources'] = sorted(set(issues[0]['sources']) | {'S9'})
-            issues[0]['basis'] += '；画外句判为问题依据 S9，属[推论]'
+        host = next((i for i in issues if i['key'] == 'no_exchange'), None)
+        if len(off) >= 2 and host:
+            # 与来回问题同根因（没人对着谁说），合并进该条，不另立
+            host['evidence'] += f'；其中 {len(off)} 句标为画外（{ev}）'
+            host['sources'] = sorted(set(host['sources']) | {'S9'})
+            host['basis'] += '；画外句判为问题依据 S9，属[推论]'
         else:
             issues.append(item)
     elif no_pair or weak_link:
@@ -552,8 +708,9 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=()):
         })
 
     # 信号（不判定）
-    if planted:
-        signals.append('本句明说的新设定（可作后文支点）：' + '、'.join(f"{e['quote'].split('「')[0]}—{e['refs'][0]}" for e in planted[:4]) + '。')
+    fresh = [e for e in planted if not e.get('stake')]
+    if fresh:
+        signals.append('本句明说的新设定（可作后文支点）：' + '、'.join(f"{e['quote'].split('「')[0]}—{e['refs'][0]}" for e in fresh[:4]) + '。')
     if stats['questions']:
         signals.append(f"问句 {stats['questions']} 个，被下一位接住 {stats['questions_answered']} 个。")
     else:
@@ -578,29 +735,46 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=()):
     return issues, signals, review
 
 
-SOURCE_LEGEND = '来源编号 S1–S11 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题'
+SOURCE_LEGEND = '来源编号 S1–S12 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题；赌注卡的语义（那句说的是不是那件事）由模型复核'
 
 
 def _count(text):
     return len(re.sub(r'\s', '', text))
 
 
-def render(path, stats, issues, signals, review, full=False, limit=800):
-    """一句总判断 + ≤3 个问题 + 信号 + 需模型复核 + 交接提示。默认 ≤ limit 字（不计空白）：超出先减复核条目，再减信号。"""
+STAKES_TXT = {'n/a': '不适用', 'missing': '缺卡', 'issues': '有问题', 'excepted': '无人说出口（已登记例外）'}
+
+
+def render(path, stats, issues, signals, review, full=False, limit=800, stakes=None):
+    """一句总判断（对白连通 / 人物赌注分开）+ ≤3 个问题 + 信号 + 需模型复核 + 交接提示。
+    默认 ≤ limit 字（不计空白）：超出先减复核条目，再减信号。"""
     n = stats['lines']
+    stakes = stakes or {'status': 'n/a', 'voiced': []}
+    if stakes['status'] == 'pass':
+        st = '说出口——' + '、'.join(f"{v['who']}「{v['quote'].split('「', 1)[1][:36]}" + ('（有人接）' if v.get('reply') else '（没人接）')
+                                  for v in stakes['voiced'][:3])
+    else:
+        st = STAKES_TXT[stakes['status']]
+    dialogue_issues = [i for i in issues if i['key'] != 'stakes']
     if n < THRESHOLDS['min_lines']:
         verdict = f'{path.name}：台词 {n} 句，材料太少，不做统计判断。'
-    elif not issues:
-        verdict = (f"{path.name}：通过——{n} 句 / {stats['speakers']} 人，最长来回 {stats['longest_exchange']} 轮、"
+    elif not dialogue_issues:
+        verdict = (f"{path.name}：对白连通通过——{n} 句 / {stats['speakers']} 人，最长来回 {stats['longest_exchange']} 轮、"
                    f"{int(stats['conversation_share'] * 100)}% 台词有人接"
                    + (f"，平均 {stats['mean_words']} 词/句" if stats['mean_words'] is not None else '')
-                   + f"，画外 {len(stats['offscreen_lines'])} 句。")
+                   + f"，画外 {len(stats['offscreen_lines'])} 句；人物赌注：{st}。")
     else:
-        verdict = f"{path.name}：有问题——{'、'.join(i['title'] for i in issues)}。"
-    head = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。{it['why']}（{it['basis']}）" for i, it in enumerate(issues[:3], 1)]
-    for it in issues[:3]:
-        if it.get('fixes'):
-            head.append('改法（改法未定时供选，不改稿）：' + ' '.join(f'({i}) {f}' for i, f in enumerate(it['fixes'], 1)))
+        verdict = f"{path.name}：对白连通有问题；人物赌注：{st}。"
+    if issues:
+        verdict += f"问题：{'、'.join(i['title'] for i in issues)}。"
+    def head_lines(with_why=True):
+        out = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。" + (it['why'] if with_why else '') + f"（{it['basis']}）"
+                           for i, it in enumerate(issues[:3], 1)]
+        for it in issues[:3]:
+            if it.get('fixes'):
+                out.append('改法（改法未定时供选，不改稿）：' + ' '.join(f'({i}) {f}' for i, f in enumerate(it['fixes'], 1)))
+        return out
+    head = head_lines()
     tail = []
     if stats['offscreen_lines']:
         tail.append(f"交接 film-director：画外句 {len(stats['offscreen_lines'])} 句，分镜时核对声画对位。")
@@ -619,6 +793,8 @@ def render(path, stats, issues, signals, review, full=False, limit=800):
             k -= 1
         elif signals:
             signals = []
+        elif head == head_lines():
+            head = head_lines(with_why=False)  # 最后一步：问题只留证据与依据，去掉"为什么"
         else:
             return text
 
@@ -648,19 +824,24 @@ def review_file(path, full=False, context=None):
     names = sorted({ln['speaker'] for ln in lines})
     stats = analyse(lines, actions, names)
     ledger = ledger_text(text)
-    candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger)
+    stakes = check_stakes(stakes_card(text), lines, names)
+    candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger, stakes['terms'])
     stats['unanchored'] = [e['line'] for e in candidates]
     stats['planted'] = [e['line'] for e in planted]
     stats['declared'] = [e['line'] for e in declared]
-    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared)
+    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, stakes)
+    dialogue_ok = not [i for i in issues if i['key'] != 'stakes']
     return {
         'file': str(path), 'context': [str(c) for c in (context or [])],
         'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
         'anchoring': {'candidates': candidates, 'planted': planted, 'declared': declared},
         'verdict': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('issues' if issues else 'pass'),
+        'checks': {'dialogue': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('pass' if dialogue_ok else 'issues'),
+                   'stakes': stakes['status']},
+        'stakes': {k: v for k, v in stakes.items() if k != 'terms'},
         'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation', 'presupposed')} for ln in lines],
         'thresholds': THRESHOLDS,
-        'text': render(Path(path), stats, issues, signals, review, full=full),
+        'text': render(Path(path), stats, issues, signals, review, full=full, stakes=stakes),
     }
 
 
