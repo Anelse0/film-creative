@@ -378,14 +378,17 @@ class PictureTests(unittest.TestCase):
             self.assertGreater(p['estimate'], declared)
             self.assertLess(abs(p['estimate'] / produced - 1), 0.16)
 
-    def test_production_overrun_sends_back_to_script(self):
+    def test_production_overrun_is_a_reminder_not_a_return(self):
+        """3.6.1：场面轨对 film-director 是告知不是锁定；超 20% 只提醒，回不回剧本层由用户定。"""
         r = rs.review_file(EP03_S4_V41_TRACK, production_total=88)
         self.assertEqual(r['picture']['production_over'], 28)
-        self.assertIn('回剧本层重核场面轨', r['text'].splitlines()[0])
+        self.assertIn('多 28%（提醒，是否回剧本层由用户定）', r['text'].splitlines()[0])
         self.assertIn('多出来的时间观众在看什么', r['picture']['review'][0])
+        self.assertIn('由用户定', r['picture']['review'][0])
+        self.assertNotIn('picture', {i['key'] for i in r['issues']})  # 提醒不是问题
         r2 = rs.review_file(EP03_S4_V4_TRACK, production_total=74)
         self.assertEqual(r2['picture']['production_over'], 30)
-        ok = rs.review_file(EP03_S4_V41_TRACK, production_total=80)  # +16%：在 20% 以内，不回流
+        ok = rs.review_file(EP03_S4_V41_TRACK, production_total=80)  # +16%：在 20% 以内，不提醒
         self.assertNotIn('production_over', ok['picture'])
         with redirect_stdout(io.StringIO()):
             rs.main([str(EP03_S4_V41_TRACK), '--production-total', '88'])
@@ -448,7 +451,9 @@ class PictureTests(unittest.TestCase):
         self.assertIn('场面轨', s3c)
         skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
         self.assertIn('场面轨', skill)
-        self.assertIn('20%', skill)  # 交接回流条件
+        self.assertIn('20%', skill)  # 交接时长提醒
+        self.assertIn('告知，不锁定', skill)
+        self.assertNotIn('台词与场景是生产侧的锁定输入', skill)
         self.assertNotIn('镜头与 clip 属于生产层，本 skill 不推导。', skill)
         src = (ROOT / 'references' / 'dialogue-review-sources.md').read_text(encoding='utf-8')
         self.assertRegex(src, r'\| S13 \|')

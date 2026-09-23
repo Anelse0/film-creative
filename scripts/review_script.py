@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""出稿后的剧本 review：对白连通、人物赌注、画面推进（film-creative 3.6.0）。
+"""出稿后的剧本 review：对白连通、人物赌注、画面推进（film-creative 3.6.1）。
 
 用法:
   review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--json] [--full]
                    [--wps 4] [--action-sec 1.5] [--production-total 88]
   --context：按 story-context 指认的前几场，只用来建立"前文已出现过的设定"，不 review 它们。
-  --production-total：film-director 分镜实排的场总时长；比剧本估时多 20% 以上时提示回到剧本层重核场面轨。
+  --production-total：film-director 分镜实排的场总时长；比剧本估时多 20% 以上时提醒（不退回，是否回剧本层由用户定）。
 
 读 `templates/script-scene.md` 格式的剧本页（`<!-- script-body:start/end -->` 之间；
 台词块为 `**NAME**` 或独立一行的角色名，下一行台词；括号行是表演/声音提示），
@@ -54,7 +54,7 @@ THRESHOLDS = {
     'picture_min_s': 30,       # 按文本估时 ≥ 此秒数的场才要场面轨、才判"全场一个画面"
     'segment_review_s': 40,    # 一段画面（地点×活动×在场人物都不变）估时 ≥ 此秒数 → 需模型复核
     'estimate_under': 0.85,    # 作者自报总估时 < 按文本估时 × 此比例 → 需模型复核（文本估时误差约 ±15%）
-    'production_over': 1.2,    # 分镜实排 > 剧本估时 × 此比例 → 回到剧本层重核场面轨（交接回流条件）
+    'production_over': 1.2,    # 分镜实排 > 剧本估时 × 此比例 → 提醒用户（场面轨是告知不是锁定；回不回剧本层由用户定）
 }
 
 START_ACTION_RESET = re.compile(r'^场\s*\d+')
@@ -714,7 +714,7 @@ def check_picture(text, card, lines, actions, production_total=None):
         res['production_over'] = round((production_total / res['declared'] - 1) * 100)
         res['review'].insert(0, f"分镜实排 {production_total:g} s，比剧本估时 {res['declared']:g} s 多 "
                                 f"{round((production_total / res['declared'] - 1) * 100)}%（≥{round((T['production_over'] - 1) * 100)}%）："
-                                f"回到剧本层重核场面轨——多出来的时间观众在看什么，是不是同一个画面拉长了")
+                                f"提醒——多出来的时间观众在看什么，是不是同一个画面拉长了；要不要回剧本层重核场面轨由用户定")
     if card is None:
         if tl['total'] >= T['picture_min_s']:
             res['status'] = 'missing'
@@ -944,7 +944,7 @@ def picture_phrase(picture):
     head = (f"{len(picture['segments']) or '?'} 段、{picture['combos']} 个地点×活动" + (f"、{picture['jumps']} 次时间跳" if picture['jumps'] else '')
             if st == 'pass' else PICTURE_TXT[st])
     place = f"「{picture['place']}」" if st == 'missing' and picture.get('place') else '按文本估'
-    back = (f"；分镜实排比剧本估时多 {picture['production_over']}%，回剧本层重核场面轨"
+    back = (f"；分镜实排比剧本估时多 {picture['production_over']}%（提醒，是否回剧本层由用户定）"
             if picture.get('production_over') else '')
     return f"；画面：{head}（{place} ≈ {picture['estimate']:g} s）{back}"
 
@@ -1063,7 +1063,7 @@ def main(argv=None):
     ap.add_argument('--wps', type=float, help=f"英文台词语速（词/秒，默认 {THRESHOLDS['wps']:g}）")
     ap.add_argument('--action-sec', type=float, help=f"无台词段每个动作句的秒数（默认 {THRESHOLDS['action_s']:g}）")
     ap.add_argument('--production-total', type=float,
-                    help='film-director 分镜实排的场总时长（秒）：比剧本估时多 20%% 以上时提示回到剧本层重核场面轨')
+                    help='film-director 分镜实排的场总时长（秒）：比剧本估时多 20%% 以上时提醒用户（不退回）')
     args = ap.parse_args(argv)
     if args.wps:
         THRESHOLDS['wps'] = args.wps
