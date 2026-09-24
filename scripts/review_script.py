@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""出稿后的剧本 review：对白连通、事件轨（谁要什么、每一行变了什么）（film-creative 3.7.0）。
+"""出稿后的剧本 review：对白连通、台词经济（接住之外带来了什么）、事件轨（谁要什么、每一行变了什么）（film-creative 3.8.0）。
 
 用法:
-  review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--json] [--full]
+  review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--later scene-04.md] [--json] [--full]
                    [--wps 4] [--action-sec 1.5] [--production-total 88]
-  --context：按 story-context 指认的前几场，只用来建立"前文已出现过的设定"，不 review 它们。
+  --context：按 story-context 指认的前几场，只用来建立"前文已出现过的设定"、查"前文说过"，不 review 它们。
+  --later：后几场，只用来查候选台词在后文有没有回扣（可能是铺垫），不 review 它们。
   --production-total：film-director 分镜实排的场总时长；比剧本估时多 20% 以上时提醒（不退回，是否回剧本层由用户定）。
 
 读 `templates/script-scene.md` 格式的剧本页（`<!-- script-body:start/end -->` 之间；
@@ -17,7 +18,11 @@
 本人说、有人接；进出相同、同一人的"出"重演、换了地点或跳了时间却没有变化、变化主体不在人物里、≥30 s 只有 ≤1 次变化
 （未登记"本场静止：理由"）判为问题。推进只数变化，不数地点。换地点 / 跳时间 / 无台词 / 只改变观众所知的行，
 列出它的变化、删掉损失与同一人前几次的状态，交模型做删除测试；全场一个地点只列复核。镜头与机位不在这里判——那是 film-director 的事。
-对白与事件轨分开给结论（checks.dialogue / checks.events），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
+3.8.0 起另报"台词经济"：接住上一句只是必要条件。脚本判不了一句是不是废话（10 场盲评标注上表面规则精确率 0.32），
+只列候选（重复 / 接话 / 递话问句 / 截断）与低信息段，附"前文哪里说过 / 后文哪里回扣"交删除测试与压缩测试；
+判为问题的只有：缺剧本页"### 删除测试"记录、记录与正文不符。总判断不再报"有人接的台词占比""最长来回"，
+不再输出"全场没有一个问句"——它们推着作者补接话。
+对白、台词经济与事件轨分开给结论（checks.dialogue / checks.economy / checks.events），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
 列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3、EP03 场 4 v3/v4/v4.1 校准），
 在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S13）。
 
@@ -53,8 +58,11 @@ THRESHOLDS = {
     'picture_min_s': 30,       # 按文本估时 ≥ 此秒数的场（或有对话的场）要事件轨；≥ 此秒数才判"变化太少"
     'min_changes': 2,          # ≥30 s 的场至少几行有变化；少于此数须登记"本场静止：理由"（3.7.0）
     'gap_review_s': 40,        # 观众等一次变化等了 ≥ 此秒数 → 需模型复核（3.6.0 的"同一段画面 ≥40 s"改按变化算）
-    'linger_review_s': 10,
-    'silent_review_s': 8,      # 无台词的变化行覆盖 ≥ 此秒数 → 列删除测试（短的反应行不列）     # 余韵（没有变化的行）合计 ≥ 此秒数 → 需模型复核（EP03 场 4 v4.1 牛棚段估 12 s、成片 16 s）
+    'linger_review_s': 10,     # 余韵（没有变化的行）合计 ≥ 此秒数 → 需模型复核（EP03 场 4 v4.1 牛棚段估 12 s、成片 16 s）
+    'silent_review_s': 8,      # 无台词的变化行覆盖 ≥ 此秒数 → 列删除测试（短的反应行不列）
+    # 台词经济（3.8.0；候选规则只是复核线索，按 10 场 219 句盲评标注：精确率约 0.32、召回约 0.68，见 dialogue-review-sources.md §三）
+    'run_min': 4,              # 低信息段：至少几句
+    'run_new_max': 0.75,       # 低信息段：平均每句新实词不超过此数
     'estimate_under': 0.85,    # 作者自报总估时 < 按文本估时 × 此比例 → 需模型复核（文本估时误差约 ±15%）
     'production_over': 1.2,    # 分镜实排 > 剧本估时 × 此比例 → 提醒用户（场面轨是告知不是锁定；回不回剧本层由用户定）
 }
@@ -470,7 +478,7 @@ def anchoring(lines, actions, context_text='', ledger_text='', stake_terms=froze
 FIX_TEMPLATES = (
     ('直说来历', '{who} 把"{ref}"说成一句完整的话再接现在这句', '明说，默契感减一层', '后场不必再交代，新事实进 ip.md'),
     ('用当场动作引出', '让"{ref}"由本场此刻的需要带出——被用到、被交接、被当场撞见，而不是只被提到或指到', '多一个动作节拍', '物件或事件的初末态与前场要核'),
-    ('让第三人替观众问', '在场另一人问一句"What {head}?"，答一句', '多一来一回，旁人知情', '知情范围扩大，"只限两人"的设定会变'),
+    ('让在场的人当场问', '在场另一人带着自己的立场问（怀疑、起哄、护短），不是替观众递一句"What {head}?"；答一句', '多一来一回，旁人知情，问的人也露出自己的态度', '知情范围扩大，"只限两人"的设定会变'),
 )
 
 
@@ -853,8 +861,8 @@ def check_events(text, card, lines, actions, names, production_total=None):
                 if nxt and nxt['speaker'] != who and nxt['link_prev']:
                     res['voiced'][-1]['reply'] = quote(nxt)
                 else:
-                    res['review'].append(f'{quote(lines[i])} 说出口后{"下一句 " + quote(nxt) + " 没有接它" if nxt else "没人再说话"}：'
-                                         f'是有意的不答吗？不答的人为什么不答，事件轨上有没有写')
+                    res['review'].append(f'{quote(lines[i])} 说出口后对方没有用台词接：对方用什么接的（动作、沉默、转开），'
+                                         f'正文里看得见吗——不需要为它补一句接话')
                 want = cast.get(who, {}).get('want', '')
                 res['review'].append(f'{who} 此刻要的是"{_short(want, 30)}"，说出口的是 {quote(lines[i])}：'
                                      f'这句说的是不是这件事（按取向 6：面对谁、刚发生什么、为什么此刻）')
@@ -906,12 +914,204 @@ def check_events(text, card, lines, actions, names, production_total=None):
     return res
 
 
+# ---- 台词经济：接住之外，还要带来东西（3.8.0） -----------------------------------
+# 依据：S5 Scriptnotes 609 的后半——"if the audience hears it once, don't make them hear it twice"、重复的台词
+# "you have to eliminate those"、uh-huh / yeah 这类接话在剧本里"rare"、"you may not put every utterance … in the dialogue"；
+# 它称赞的 "what's more" 是"接住 + 往上加"。S2–S4 是真实会话语料，真实会话满是接话，屏幕对白要压缩，不能拿它们当目标。
+# 脚本判不了一句是不是废话：按 THE ORDER / reckless 10 场 219 句的盲评标注校准，下面的表面规则精确率约 0.32、召回约 0.68
+# （讨价还价、回扣、调情、嘴硬都长得像接话或重复）。所以它只做两件事：列出候选并给出"真实剧情"里的证据
+# （前文哪里说过、后文哪里回扣），以及核对作者写下的删除测试记录；删不删由删除测试 / 压缩测试决定。
+ACK_OPENER = re.compile(r"^\W*(okay|ok|oh|yeah|yes|yep|right|sure|fine|alright|i know|i heard|that's|good|got it|hey)\b", re.I)
+YES_NO = {'yes', 'no', 'yeah', 'nope', 'yep', 'sure', 'nah'}
+DELETION_HEAD = re.compile(r'^#{2,3}\s*删除测试[^\n]*$', re.M)
+DECISION = re.compile(r'^\s*(?:[-*]\s*)?(删|并|留|压缩)\s*[:：]\s*(.*)$')
+ECO_GENERIC = {'know', 'look', 'said', 'back', 'right', 'just', 'like', 'want', 'think', 'thing', 'going', 'gonna', 'really',
+               'well', 'come', 'would', 'could', 'should', 'there', 'where', 'here', 'what', 'then', 'than', 'about', 'with',
+               'from', 'into', 'them', 'they', 'your', 'you', "i'm", "it's", "don't", "that's", 'didn', 'doesn', 'said',
+               'tell', 'talk', 'talking', 'take', 'give', 'make', 'need', 'still', 'even', 'much', 'more', 'some', 'something',
+               'anything', 'nothing', 'everything', 'yeah', 'okay', 'say', 'before', 'after', 'past', 'half', 'over'}
+ECO_KINDS = {'重复': '本场或前文说过的内容再说一遍', '接话': '确认 / 附和 / 回应词', '递话问句': '答案下一句就给、问句本身不带立场',
+             '截断': '被打断前只说了半句'}
+
+
+def scene_lines(paths):
+    """[(标签, lines)]：前后场只取台词，用来查"前文说过 / 后文回扣"。解析失败的文件跳过。"""
+    out = []
+    for p in paths or ():
+        p = Path(p)
+        try:
+            lines, _ = parse(p.read_text(encoding='utf-8'))
+        except (ValueError, OSError):
+            continue
+        out.append((f'{p.parent.parent.name}/{p.stem}' if p.parent.name == '03_script' else p.stem, lines))
+    return out
+
+
+def economy(lines, names, context=(), later=()):
+    """候选（重复 / 接话 / 递话问句 / 截断）与低信息段；每个候选附前文出处与后文回扣。"""
+    T = THRESHOLDS
+    nm = {x.lower() for x in names}
+    freq = {}
+    for _, L in list(context) + [('', lines)] + list(later):
+        for ln in L:
+            for w in content_words(ln['text']):
+                freq[w] = freq.get(w, 0) + 1
+    specific = lambda ws: sorted((w for w in ws if w not in ECO_GENERIC and w not in nm and freq.get(w, 0) <= 4),
+                                 key=lambda w: (freq.get(w, 0), w))
+    seen = {}  # 词 → 第一次出现在哪
+    for label, L in context:
+        for ln in L:
+            for w in content_words(ln['text']):
+                seen.setdefault(w, f'{label} {quote(ln)[:48]}')
+    ahead = {}
+    for label, L in later:
+        for ln in L:
+            for w in content_words(ln['text']):
+                ahead.setdefault(w, f'{label} {quote(ln)[:48]}')
+    cands, newc = [], []
+    for k, ln in enumerate(lines):
+        cw = content_words(ln['text'])
+        new = cw - set(seen) - nm
+        toks = words(ln['text'])
+        w = len(toks) if not ln['cjk'] else len(CJK.findall(ln['text'])) // 2
+        prev = lines[k - 1] if k else None
+        nxt = lines[k + 1] if k + 1 < len(lines) else None
+        answers_q = bool(prev and prev['speaker'] != ln['speaker'] and prev['text'].rstrip()[-1:] in '?？')
+        vocative_only = 0 < len(toks) <= 2 and all(t.lower() in nm for t in toks)
+        asks = ln['text'].rstrip()[-1:] in '?？'
+        kind = None
+        if ln['is_group'] or vocative_only:
+            pass
+        elif answers_q and toks and toks[0].lower() in YES_NO and w <= 4:
+            pass  # 对问句的是 / 否：回答本身
+        elif not new and cw and w >= 5:
+            kind = '重复'
+        elif len(new) <= 1 and ACK_OPENER.match(ln['text']):
+            kind = '接话'
+        elif not new and w <= 5:
+            kind = '递话问句' if asks else '接话'
+        elif asks and w <= 7 and len(new) <= 1 and nxt and nxt['speaker'] != ln['speaker'] \
+                and content_words(nxt['text']) - set(seen) - cw:
+            kind = '递话问句'
+        elif ln['text'].rstrip().endswith(('—', '-')) and w <= 4:
+            kind = '截断'
+        if kind:
+            rep_w = specific(cw & set(seen))[:2]
+            pay_w = specific(cw & set(ahead))[:1]
+            before = [f'"{x}" ← {seen[x]}' for x in rep_w]
+            payoff = [f'"{x}" → {ahead[x]}' for x in pay_w]
+            cands.append({'line': k, 'kind': kind, 'quote': quote(ln), 'said_before': before, 'later': payoff})
+        newc.append(len(new))
+        for x in cw:
+            seen.setdefault(x, f'本场 {quote(ln)[:48]}')
+    runs, k, n = [], 0, len(lines)
+    while k < n:  # 低信息段：≥ run_min 句，平均每句新实词 ≤ run_new_max，首尾都是低信息句
+        best = None
+        for j in range(k + T['run_min'] - 1, n):
+            seg = newc[k:j + 1]
+            if sum(seg) <= len(seg) * T['run_new_max'] and newc[k] <= 1 and newc[j] <= 1:
+                best = j
+        if best is not None:
+            runs.append({'from': k, 'to': best, 'lines': best - k + 1, 'new_words': sum(newc[k:best + 1])})
+            k = best + 1
+        else:
+            k += 1
+    return {'candidates': cands, 'runs': runs, 'new_words': newc}
+
+
+def deletion_record(text):
+    """剧本页"删除测试"一节：删 / 并 / 留 / 压缩，每条带逐字引号。没有这一节返回 None。"""
+    m = DELETION_HEAD.search(text)
+    if not m:
+        return None
+    sec = re.split(r'\n#{1,3} ', text[m.end():], maxsplit=1)[0]
+    rec = {'删': [], '并': [], '留': [], '压缩': [], 'none': False}
+    for line in sec.splitlines():
+        d = DECISION.match(line)
+        if not d:
+            continue
+        kind, rest = d.group(1), d.group(2)
+        qs = QUOTED.findall(rest)
+        if not qs and kind == '删' and rest.strip().strip('。') in ('无', '没有'):
+            rec['none'] = True
+            continue
+        reason = re.split(r'[—–]{1,2}|\s-\s', QUOTED.sub('', rest), maxsplit=1)
+        rec[kind].append({'quotes': qs, 'reason': (reason[-1] if len(reason) > 1 else '').strip(' ：:。')})
+    return rec
+
+
+def check_economy(text, eco, lines):
+    """核对删除测试记录与正文；候选与低信息段没被记录覆盖的列为复核。status：n/a / missing / issues / pass。"""
+    T = THRESHOLDS
+    res = {'status': 'n/a', 'problems': [], 'review': [], 'candidates': eco['candidates'], 'runs': eco['runs'], 'record': None}
+    if len(lines) < T['min_lines']:
+        return res
+    rec = deletion_record(text)
+    res['record'] = rec
+    body_q = [_norm_quote(ln['text']) for ln in lines]
+    in_body = lambda q: any(_norm_quote(q) and _norm_quote(q) in b for b in body_q)
+    covered = set()
+    if rec is None:
+        res['status'] = 'missing'
+        kinds = {}
+        for c in eco['candidates']:
+            kinds[c['kind']] = kinds.get(c['kind'], 0) + 1
+        res['problems'].append('没有"删除测试"记录（剧本页"对白审阅"下：逐句删掉观众少什么、逐段最少几句）'
+                               + (f"；脚本候选 {len(eco['candidates'])} 句（" + ' / '.join(f'{k} {v}' for k, v in kinds.items()) + '）'
+                                  if eco['candidates'] else '')
+                               + (f"，低信息段 {len(eco['runs'])} 段" if eco['runs'] else '')
+                               + (f"，如 {eco['candidates'][0]['quote'][:40]}" if eco['candidates']
+                                  else f"，如 {quote(lines[eco['runs'][0]['from']])[:40]}…" if eco['runs'] else ''))
+    else:
+        for kind in ('删', '并'):
+            for item in rec[kind]:
+                if item['quotes'] and in_body(item['quotes'][0]):
+                    res['problems'].append(f'删除测试记为"{kind}"的「{_short(item["quotes"][0], 30)}」还在正文里')
+        for item in rec['留']:
+            for q in item['quotes'][:1]:
+                if not in_body(q):
+                    res['problems'].append(f'删除测试记为"留"的「{_short(q, 30)}」不在正文里')
+            if not item['reason']:
+                res['problems'].append(f'「{_short((item["quotes"] or ["?"])[0], 30)}」记为"留"但没写它带来什么')
+        quoted = [_norm_quote(q) for kind in ('删', '并', '留', '压缩') for it in rec[kind] for q in it['quotes']]
+        for i, b in enumerate(body_q):
+            if any(q and q in b for q in quoted):
+                covered.add(i)
+        res['status'] = 'issues' if res['problems'] else 'pass'
+    for c in eco['candidates']:
+        if c['line'] in covered:
+            continue
+        ev = ('；前文：' + ' / '.join(c['said_before'])) if c['said_before'] else ''
+        ev += ('；后文回扣：' + c['later'][0]) if c['later'] else ''
+        res['review'].append(f"{c['quote']}（{c['kind']}候选{ev}）：删掉它观众少知道 / 少感到什么；"
+                             + ('后文有回扣时先确认它是不是铺垫' if c['later'] else '答不出就删，或并进下一句 / 一个动作'))
+    for run in eco['runs']:
+        if run['from'] in covered or run['to'] in covered:
+            continue
+        res['review'].append(f"{quote(lines[run['from']])[:40]}…{quote(lines[run['to']])[:40]}：{run['lines']} 句只多了 "
+                             f"{run['new_words']} 个新实词——压缩测试：这段要改变的一件事是什么、最少几句能做到、"
+                             f"每一回合有没有人的立场或压力在变（讨价还价、调情、回扣是在变，复述和确认不是）")
+    return res
+
+
+def ECONOMY_ISSUE(eco):
+    missing = eco['status'] == 'missing'
+    return {
+        'key': 'economy', 'compact': missing,  # 缺记录只在总判断里报一句，不占 ≤3 个问题的位置
+        'title': '缺删除测试' if missing else '删除测试记录与正文不符',
+        'evidence': '；'.join(eco['problems']),
+        'why': '接住上一句只是必要条件：观众已经听过、看过的不再说，简单的事一两句说完；每句多出来的秒数都要带来信息、要求、关系或笑点。',
+        'sources': ['S5'],
+        'basis': '"听过一次不再听第二次""重复的台词要删""接话在剧本里很少"有来源（S5）；候选规则与低信息段阈值是[推论]，只作复核线索',
+    }
+
+
 # ---- 判断 --------------------------------------------------------------------
 def quote(ln):
     return f"{ln['speaker']}「{ln['text']}」"
 
 
-def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=None):
+def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=None, econ=None):
     """返回 issues（问题）、signals（信号，不判定）、review_needed（需模型复核）。"""
     T = THRESHOLDS
     issues, signals, review = [], [], []
@@ -921,6 +1121,8 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=
         issues.append(EVENTS_ISSUE(events))
     if events:
         review.extend(events['review'])
+    if econ:
+        review.extend(econ['review'])
     if n < T['min_lines']:
         signals.append(f'台词只有 {n} 句，统计判断不适用；按安静戏人工读。')
         return issues, signals, review
@@ -938,7 +1140,7 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=
             'title': '台词没有形成来回',
             'evidence': f"{n} 句 / {stats['speakers']} 个说话人，最长两人来回 {stats['longest_exchange']} 轮，"
                         f"能看出有人接或在接别人的台词只有 {int(stats['conversation_share'] * 100)}%；" + '；'.join(ev),
-            'why': '每句都在对谁说、下一句接不接住，是会话成立的最小条件；观众听到的是各丢一句，没人对着谁说。',
+            'why': '每句都在对谁说、下一句接不接住，是会话成立的最小条件；观众听到的是各丢一句，没人对着谁说。补的应是对方的立场、要求或反应（可以是动作），不是 Okay / I know 这类接话。',
             'sources': ['S1', 'S5'],
             'basis': '相邻对与交错独白有来源（S1, S5）；"三轮才算来回""50%"是[推论]阈值',
         })
@@ -1009,11 +1211,7 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=
     fresh = [e for e in planted if not e.get('stake')]
     if fresh:
         signals.append('本句明说的新设定（可作后文支点）：' + '、'.join(f"{e['quote'].split('「')[0]}—{e['refs'][0]}" for e in fresh[:4]) + '。')
-    if stats['questions']:
-        signals.append(f"问句 {stats['questions']} 个，被下一位接住 {stats['questions_answered']} 个。")
-    else:
-        signals.append('全场没有一个问句。')
-    signals.append(f"犹豫 / 打断 / 口头填充标记 {stats['hesitation_marks']} 句（有无都不判错）。")
+    # 3.8.0：不再输出"全场没有一个问句""犹豫 / 口头填充 N 句"——它们把问句和填充当成要补的东西；数值仍在 JSON stats 里
     # 需模型复核
     for e in candidates[:3]:
         review.append(f"{e['quote']}：\"{e['refs'][0]}\"是有意不交代的旧梗，还是观众需要的设定？{'（前置中文动作行：' + e['preceding_action'][:30] + '…）' if e['action_is_cjk'] else ''}")
@@ -1023,6 +1221,8 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=
         ln = lines[k]
         act = actions[ln['action_idx']] if ln['action_idx'] >= 0 else '（无前置动作行）'
         review.append(f"{quote(ln)} 收件人不明（前置动作行「{act[:40]}…」）：对谁说、对方在不在同一画面。")
+    if econ and econ['status'] in ('missing', 'issues'):
+        issues.append(ECONOMY_ISSUE(econ))
     for k, ln in enumerate(lines):
         if ln['addressee'] and ln['action_idx'] >= 0 and not ln['offscreen']:
             act = actions[ln['action_idx']]
@@ -1069,31 +1269,47 @@ def events_phrase(ev):
         elif st == 'excepted':
             head += '，已登记例外'
         if ev['voiced']:
-            head += '；说出口——' + '、'.join(f"{v['who']}「{v['quote'].split('「', 1)[1][:30]}" + ('（有人接）' if v.get('reply') else '（没人接）')
-                                         for v in ev['voiced'][:2])
+            head += '；说出口——' + '、'.join(f"{v['who']}「{v['quote'].split('「', 1)[1][:30]}" for v in ev['voiced'][:2])
     back = (f"；分镜实排比剧本估时多 {ev['production_over']}%（提醒，是否回剧本层由用户定）"
             if ev.get('production_over') else '')
     return f"；事件轨：{head}{back}"
 
 
-def render(path, stats, issues, signals, review, full=False, limit=800, events=None):
+ECONOMY_TXT = {'n/a': '不适用', 'missing': '缺删除测试', 'issues': '记录与正文不符'}
+
+
+def economy_phrase(econ):
+    if not econ:
+        return ''
+    st = econ['status']
+    if st == 'pass':
+        rec = econ['record']
+        head = '删除测试已做（' + ' '.join(f"{k} {len(rec[k])}" for k in ('删', '并', '压缩', '留') if rec[k]) + '）' \
+            if any(rec[k] for k in ('删', '并', '压缩', '留')) else '删除测试已做（删：无）'
+    else:
+        head = ECONOMY_TXT[st]
+    left = sum(1 for r in econ['review'])
+    return f"；台词经济：{head}" + (f"，待复核 {left} 处" if left and st != 'n/a' else '')
+
+
+def render(path, stats, issues, signals, review, full=False, limit=800, events=None, econ=None):
     """一句总判断（对白连通 / 事件轨分开）+ ≤3 个问题 + 信号 + 需模型复核 + 交接提示。
     默认 ≤ limit 字（不计空白）：超出先减复核条目，再减信号。"""
     n = stats['lines']
-    dialogue_issues = [i for i in issues if i['key'] != 'events']
-    ev = events_phrase(events)
+    dialogue_issues = [i for i in issues if i['key'] not in ('events', 'economy')]
+    ev = economy_phrase(econ) + events_phrase(events)
     if n < THRESHOLDS['min_lines']:
         verdict = f'{path.name}：台词 {n} 句，材料太少，不做对白统计{ev}。'
     elif not dialogue_issues:
-        verdict = (f"{path.name}：对白连通通过——{n} 句 / {stats['speakers']} 人，最长来回 {stats['longest_exchange']} 轮、"
-                   f"{int(stats['conversation_share'] * 100)}% 台词有人接"
-                   + (f"，平均 {stats['mean_words']} 词/句" if stats['mean_words'] is not None else '')
-                   + f"，画外 {len(stats['offscreen_lines'])} 句{ev}。")
+        # 3.8.0：总判断不再报"X% 台词有人接""最长来回 N 轮""平均词数"——它们把接话和轮数当成越多越好；数值在 JSON stats 里
+        verdict = (f"{path.name}：对白连通通过（{n} 句 / {stats['speakers']} 人，画外 {len(stats['offscreen_lines'])} 句；"
+                   f"连通只说明有人对着人说，不说明每句有用）{ev}。")
     else:
         verdict = f"{path.name}：对白连通有问题{ev}。"
-    if issues:
-        verdict += f"问题：{'、'.join(i['title'] for i in issues)}。"
-    shown = issues[:3]
+    listed = [i for i in issues if not i.get('compact')]  # 缺删除测试只在总判断的"台词经济"里报
+    if listed:
+        verdict += f"问题：{'、'.join(i['title'] for i in listed)}。"
+    shown = listed[:3]
     def head_lines(with_why=True):
         out = [verdict] + [f"{i}. {it['title']}：{it['evidence']}。" + (it['why'] if with_why else '') + f"（{it['basis']}）"
                            for i, it in enumerate(shown, 1)]
@@ -1145,30 +1361,32 @@ def context_text(paths):
     return '\n'.join(parts)
 
 
-def review_file(path, full=False, context=None, production_total=None):
+def review_file(path, full=False, context=None, production_total=None, later=None):
     text = Path(path).read_text(encoding='utf-8')
     lines, actions = parse(text)
     names = sorted({ln['speaker'] for ln in lines})
     stats = analyse(lines, actions, names)
     ledger = ledger_text(text)
     events = check_events(text, events_card(text), lines, actions, names, production_total)
+    econ = check_economy(text, economy(lines, names, scene_lines(context), scene_lines(later)), lines)
     candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger, events['terms'])
     stats['unanchored'] = [e['line'] for e in candidates]
     stats['planted'] = [e['line'] for e in planted]
     stats['declared'] = [e['line'] for e in declared]
-    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, events)
-    dialogue_ok = not [i for i in issues if i['key'] != 'events']
+    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, events, econ)
+    dialogue_ok = not [i for i in issues if i['key'] not in ('events', 'economy')]
     return {
-        'file': str(path), 'context': [str(c) for c in (context or [])],
+        'file': str(path), 'context': [str(c) for c in (context or [])], 'later': [str(c) for c in (later or [])],
         'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
         'anchoring': {'candidates': candidates, 'planted': planted, 'declared': declared},
         'verdict': 'issues' if issues else ('insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else 'pass'),
         'checks': {'dialogue': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('pass' if dialogue_ok else 'issues'),
-                   'events': events['status']},
+                   'economy': econ['status'], 'events': events['status']},
+        'economy': econ,
         'events': {k: v for k, v in events.items() if k != 'terms'},
         'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation', 'presupposed')} for ln in lines],
         'thresholds': THRESHOLDS,
-        'text': render(Path(path), stats, issues, signals, review, full=full, events=events),
+        'text': render(Path(path), stats, issues, signals, review, full=full, events=events, econ=econ),
     }
 
 
@@ -1177,7 +1395,8 @@ def main(argv=None):
     ap.add_argument('scenes', nargs='+')
     ap.add_argument('--json', action='store_true', help='输出 JSON（含逐句特征与阈值）')
     ap.add_argument('--full', action='store_true', help='不截到 800 字，复核清单全列')
-    ap.add_argument('--context', nargs='*', default=[], help='前几场剧本页：只用来建立前文已出现的设定，不 review')
+    ap.add_argument('--context', nargs='*', default=[], help='前几场剧本页：建立前文已出现的设定、查"前文说过"，不 review')
+    ap.add_argument('--later', nargs='*', default=[], help='后几场剧本页：查候选台词在后文有没有回扣（可能是铺垫），不 review')
     ap.add_argument('--wps', type=float, help=f"英文台词语速（词/秒，默认 {THRESHOLDS['wps']:g}）")
     ap.add_argument('--action-sec', type=float, help=f"无台词段每个动作句的秒数（默认 {THRESHOLDS['action_s']:g}）")
     ap.add_argument('--production-total', type=float,
@@ -1190,7 +1409,8 @@ def main(argv=None):
     results = []
     for p in args.scenes:
         try:
-            results.append(review_file(p, full=args.full, context=args.context, production_total=args.production_total))
+            results.append(review_file(p, full=args.full, context=args.context, production_total=args.production_total,
+                                       later=args.later))
         except (ValueError, OSError) as e:
             print(f'{p}: 无法解析（{e}）', file=sys.stderr)
             return 2

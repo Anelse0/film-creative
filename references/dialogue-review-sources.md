@@ -1,6 +1,6 @@
-# 出稿后剧本 review（对白 · 赌注 · 画面）的一手来源与阈值
+# 出稿后剧本 review（对白连通 · 台词经济 · 事件轨）的一手来源与阈值
 
-`scripts/review_script.py` 每条判断引用的来源编号（S1–S13）在此登记。访问核对：2026-09-21 两次（建档 + 逐条复核）；2026-09-23 重读 S6 并新增 S12（人物赌注检查）；同日重读 John August 2007 并登记为 S13（画面推进检查）。S1–S6、S8–S11 为本次实际读取的原文（PDF / PMC 全文 / 官方文字稿 / 转载全文）；S7 本次访问被拒（HTTP 403），沿用 `context-creativity-sources.md` 3.0.0 的登记，标 `[本次未重读]`。未读到原文的书目不列入。来源只支撑"这项检查为什么值得做"，不提供可机械套用的对错标准；具体人物、语域与用户锁定内容始终优先。
+`scripts/review_script.py` 每条判断引用的来源编号（S1–S13）在此登记。访问核对：2026-09-21 两次（建档 + 逐条复核）；2026-09-23 重读 S6 并新增 S12（人物赌注检查）；同日重读 John August 2007 并登记为 S13（画面推进检查）；2026-09-24 重读 S5 官方文字稿全文，补登它反对重复与接话的后半（台词经济检查）。S1–S6、S8–S11 为本次实际读取的原文（PDF / PMC 全文 / 官方文字稿 / 转载全文）；S7 本次访问被拒（HTTP 403），沿用 `context-creativity-sources.md` 3.0.0 的登记，标 `[本次未重读]`。未读到原文的书目不列入。来源只支撑"这项检查为什么值得做"，不提供可机械套用的对错标准；具体人物、语域与用户锁定内容始终优先。
 
 ## 一、来源清单
 
@@ -10,7 +10,7 @@
 | S2 | Stivers et al., "Universals and cultural variation in turn-taking in conversation", *PNAS* 106(26), 2009, pp. 10587–10592。[PMC2705608](https://pmc.ncbi.nlm.nih.gov/articles/PMC2705608/) `[一手 / 十种语言的问答语料]` | 十种语言的自然会话中，问句之后的回应里"answers"占 64%（韩语）到 87%（荷兰语、Yélî Dnye）；所有语言都避免重叠、把轮次间沉默压到最短；9/10 种语言里提问者看着对方时回应更快。 | **(a)** 问句默认得到回答——`questions` / `questions_answered`；问了没人接是需要理由的例外。**(c-画外)** 面对面提问与回应的默认是看着对方——支持"说话人与听者能否同框"作为检查项 `[推论：从面对面语料到镜头语言]`。 |
 | S3 | Levinson & Torreira, "Timing in turn-taking and its implications for processing models of language", *Frontiers in Psychology* 6:731, 2015。[PMC4464110](https://pmc.ncbi.nlm.nih.gov/articles/PMC4464110/) `[一手 / 综述 + Switchboard 语料数据]` | Switchboard 语料的平均轮次（按停顿间单位近似）约 1680 ms；轮次间隔平均约 200 ms；30.1% 的换手带有重叠；日常说话是"phrasal or clausal unit"的短爆发，可长可短。 | **(b) 标语化**：平均句长基线——1.7 s 一轮，按 4 词/s 约 6–7 词 `[推论：语速换算]`；重叠 / 打断在真实会话里常见，因此"被打断"是自然特征（信号），但不是必需。 |
 | S4 | LDC, Switchboard-1 Release 2 目录页（含 Switchboard Dialog Act Corpus 统计：1155 段 5 分钟对话，205,000 个话语单位，1.4 百万词）。[catalog.ldc.upenn.edu/LDC97S62](https://catalog.ldc.upenn.edu/LDC97S62) `[官方 / 语料统计]` | 1.4M / 205k ≈ 6.8 词 / 话语单位 `[推论：由官方数字相除]`；这是对话行为标注的"utterance"，切分比说话轮更细，按轮算的均值只会更高；电话闲聊语料，不是剧本；分布很宽，均值只是参照。 | **(b)** `mean_words_min` 阈值的锚点：屏幕对白比闲聊更紧，取 4 词为下限 `[推论]`。 |
-| S5 | John August & Craig Mazin, *Scriptnotes* Episode 609 "Dialogue and Character Voice" 官方文字稿，2023-09-06。[johnaugust.com](https://johnaugust.com/2023/scriptnotes-episode-609-dialogue-and-character-voice-transcript) `[一手 / 职业编剧方法]` | 对白的第一要求是"characters talking to each other, with each other, and not just intersecting monologues"；好对白像 Velcro，两片是为彼此设计的；"The thing I say influences the thing that you say back to me"；写台词要"说一句，立刻跳到对方身上去听"；"what's more / so"这类连接词是接住上一句的痕迹；有强烈风格的作者（Mamet、Tarantino、Sorkin）仍为不同人物分出差异。 | **(a)** "交错独白"就是本次 v1 的病名——`orphan_runs`、`link_prev` 里的回应词起句与词汇回声直接对应"Velcro"。**反向保护**：风格化 ≠ 错误。 |
+| S5 | John August & Craig Mazin, *Scriptnotes* Episode 609 "Dialogue and Character Voice" 官方文字稿，2023-09-06。[johnaugust.com](https://johnaugust.com/2023/scriptnotes-episode-609-dialogue-and-character-voice-transcript) `[一手 / 职业编剧方法]` | 对白的第一要求是"characters talking to each other, with each other, and not just intersecting monologues"；好对白像 Velcro，两片是为彼此设计的；"The thing I say influences the thing that you say back to me"；写台词要"说一句，立刻跳到对方身上去听"；"what's more / so"这类连接词是接住上一句的痕迹——Mazin 的原意是"agreeing with it, tacitly. And now you're adding"，接住**并往上加**；有强烈风格的作者（Mamet、Tarantino、Sorkin）仍为不同人物分出差异。**同一期的后半（2026-09-24 逐字核对，3.3.0 建档时漏取）**：Mazin "Simple rule of thumb is if the audience hears it once, don't make them hear it twice"，"certainly you don't want to repeat anything ever"；"if you have any sense that thoughts or lines are vaguely repeating, that's a writing problem for sure. And you have to eliminate those"；August 说 uh-huh / yeah 这类 acknowledgment "that's rare"，"you may not put every utterance of a person in the dialogue of your script"，每句台词"should only kind of be possible in that one moment"。 | **(a)** "交错独白"就是本次 v1 的病名——`orphan_runs`、`link_prev` 里的回应词起句与词汇回声直接对应"Velcro"。**反向保护**：风格化 ≠ 错误。**(g) 台词经济**（3.8.0）："接住"只是前半；听过一次的不再说、重复的删、接话很少——删除测试与压缩测试的依据。3.3.0–3.7.0 只取了前半，`link_prev` 把回应词起句与词汇回声直接当成"接住"，又没有任何一项问这句带来了什么，是"设计废话"的来源之一。 |
 | S6 | David Mamet 致 *The Unit* 编剧备忘录（2005），No Film School 转载全文。[nofilmschool.com](https://nofilmschool.com/2010/10/david-mamet-drama-a-memo-the-unit-writers) `[一手备忘录 / 第三方转载，本次已读转载页；无官方原件]` | 每场三问："1) WHO WANTS WHAT? 2) WHAT HAPPENS IF [THEY] DON'T GET IT? 3) WHY NOW?"；"THE AUDIENCE WILL NOT TUNE IN TO WATCH INFORMATION."（2026-09-23 重读转载页逐字核对）；不同时推进剧情又自身成立的场 "IS EITHER SUPERFLUOUS, OR INCORRECTLY WRITTEN."（2026-09-23 第二次读转载页核对） | **需模型复核**清单的判断框架：一句短话成不成立，看他要什么、对谁、为什么此刻（对应 SKILL.md 取向 6）。**(e) 人物赌注**（3.5.0）：三问成为剧本页"本场赌注"卡的三栏（此刻向谁要什么 / 怕失去什么 / 为什么是现在）；"观众不为信息收看"是"承接与埋点不该占掉整场台词"的依据。**(g) 事件轨**（3.7.0）："不推进剧情的场是多余的"是事件轨"每行一次变化、删掉损失必填"的依据；原话管的是整场，挪到场内每一行是本 skill 的 `[推论]`。备忘录语气绝对，只取三问与这两句，不采用其禁令。 |
 | S7 | Céline Sciamma, BAFTA Screenwriters' Lecture 2019 官方文字稿。[bafta.org](https://www.bafta.org/media-centre/press-releases/screenwriters-lecture-series-2019-celine-sciamma/) `[一手讲稿 / 本次未重读：403]` | "没有冲突不等于没有张力"；想拍的场景与剧情需要的场景。 | **反向保护**：安静戏、少台词、靠近型场景不因台词少或短被判错——`min_lines` 以下不做统计判断；短句有理由（回答、喊名、齐喊）就豁免。 |
 | S8 | David Bordwell, "Where did the two-shot go? Here." *Observations on film art*, 2013-10-07。[davidbordwell.net](https://www.davidbordwell.net/blog/2013/10/07/where-did-the-two-shot-go-here/) `[一手 / 电影学者博客]` | 主流美国片的常见做法是"Cut a lot and move the camera instead of moving the actors"；持续的双人镜头可以承载长段对白，让"action and reaction"在同一固定机位里完成；双人镜头常只用来引出正反打。 | **(c) 一句一镜**：连续台词若在同一画面里的两个人之间来回，分镜可以用双人镜头或正反打承载；每句换到互不接话的第三个人，就只能一句一镜 `[推论：从调度观察到剧本层代理量 third_party_jump_share]`。 |
@@ -33,6 +33,7 @@
 | 自然会话特征（犹豫、打断、口头填充、追问） | `hesitation_marks`、`questions` | S3（重叠 30.1%）、S5（连接词是听见的痕迹） | 只作信号不判错：没有这些不等于不自然（`character-scene-development.md` §七 误用信号：不为自然强制"嗯、那个"） |
 | 潜台词支点 | `presupposed`、`anchoring.candidates / planted / declared` | S10（共同基础）、S1 p.727（收件人设计）、S11（凭空出现 / 当场需要 / 当场问） | "省略句 + 当作已知的新指称（你的 X / 那个 X / 你有 X / 还 X）+ 接下来没人问"作为"看不懂"的代理量是 `[推论]`；指称抽取是英文启发式；中文动作行无法与英文指称对齐，只能引用交模型复核；`this / these`、"right here"视为指画面里的东西；账本（模板头部与"上下文承接"）里声明过的指称降为复核项。三种改法的措辞是模板，具体改什么由模型按本场填 |
 | 事件轨（3.7.0，合并 3.5.0 人物赌注与 3.6.0 画面推进） | `checks.events`、`events.voiced / changes / places / jumps / linger_s / longest_gap / ends / estimate / declared` | S6（三问；不推进剧情的场是多余的）、S12（fear）、S13（先问地点、再问长短）、S1 / S2（说出口后有没有人接） | 脚本**不判**一句话有没有欲望、一个画面有没有意义（那需要关键词表，会误报）；只核对作者写正文前填的事件轨：人物清单齐不齐（说 ≥3 句的人 `stake_min_lines = 3`，以及每行变化的主体，含不说话的人）；锚句与说出口的句子逐字在正文、顺序一致、本人说、下一句有没有接；不说的有没有"理由""代价"；每行"谁：进 → 出"——进出相同、同一人的"出"重演判问题；**换了地点或跳了时间的行标为余韵或没有变化判问题**；删掉损失空判问题；≥30 s 少于 `min_changes = 2` 次变化且未登记"本场静止：理由"（3.6 的"本场单一画面：理由"仍认）判问题；全场无人说出口且未登记"本场不说出口：理由"判问题。**推进只数变化，不数地点**：全场一个地点只列复核（先诊断缺什么）。换地点 / 跳时间 / 无台词且覆盖 ≥`silent_review_s = 8` s / 只改变观众所知的行，列出变化、删掉损失、同一人上一次的状态、同一对象上一行，交模型做删除测试；余韵合计 ≥`linger_review_s = 10` s、观众等一次变化 ≥`gap_review_s = 40` s、自报总估时 < 文本估时 × 0.85（`estimate_under`）列复核；`--production-total` 比剧本估时多 20% 以上（`production_over`）在总判断里提醒（不退回）。文本估时：台词按语速（`wps` 4 词/秒；中文 4.5 字/秒），无台词段每句 `action_s` 1.5 秒，台词之间 ≤2 句的反应插入不另计。人物清单声明过的赌注词不再报"潜台词无支点"。全部阈值 `[推论]`，校准见 §三 |
+| 台词经济（3.8.0） | `checks.economy`、`economy.candidates / runs / record` | S5 后半（听过一次不再听第二次；重复要删；接话很少；不是每句该说的都写进对白） | 脚本**不判**一句是不是废话——10 场盲评标注上，表面规则（全是已出现过的实词 / 回应词起句且新词 ≤1 / ≤5 词无新词 / 答案下一句就给的短问句 / 被截断的半句）精确率 0.32、召回 0.68，讨价还价、回扣、嘴硬、调情都长得像接话。所以候选只附证据列复核：前文哪里说过（本场、`--context` 前几场，按具体词、不按 know / look 这类常用词）、后文哪里回扣（`--later`，可能是铺垫）。判为问题的只有两种：缺删除测试记录（只在总判断里报一句）、记录与正文不符（记为删 / 并的还在正文、记为留的不在正文或没写带来什么）。低信息段（≥4 句、平均每句新实词 ≤0.75）交压缩测试。总判断不再报"有人接的台词占比""最长来回""平均词数"，不再输出"全场没有一个问句""口头填充 N 句"，说出口的行不再标"（没人接）"——它们推着作者补接话和问句；数值仍在 JSON。潜台词无支点的第三种改法从"让第三人替观众问"改为"让在场的人带着自己的立场问" |
 | 安静戏保护 | `min_lines` | S1（轮次长短不固定）；S7 只作旁证（本次未重读） | `min_lines = 4` 以下不做统计判断；是否"有理由的短句"最终由模型按上下文判（SKILL.md 取向 6） |
 
 ## 三、阈值校准（全部 `[推论]`，请用户调）
@@ -86,6 +87,23 @@
 
 3.6 的"地点 × 活动"判据把问题标错了位置：v4 行行有事却被判问题，v4.1 加了一段没有事件的新地点反而通过，改法于是落到了"加地点"上（用户看成片："这 16 s 存在的意义是？"）。牛棚段按 v4.1 自己的卡回填是余韵——Isa 场末仍是"推迟"，卡上只在后面接了"Diego 在牛棚里蹲着等他，他还坐着"这个画面。**已知边界**：作者若为牛棚写出一个变化（如"Diego：绑护腿 → 蹲在本垒板后等 Isa"并把 Diego 加进人物清单），脚本放行，只把这一行连同"Isa 作为对象的上一行"交模型做删除测试（`test_bullpen_with_stated_change_goes_to_deletion_test_with_evidence`）——"这个变化是不是前面已经给过"是语义判断，脚本不猜。只有一个真实反例；"效果提升"要等新流程写出的场与旧稿对照、最好盲评才能说。
 
+台词经济（3.8.0）用 `tests/fixtures/economy/` 的 10 场（2026-09-24 快照）与 `labels-2026-09-24.json` 校准。标注者是不知道假设的独立子代理，对每句做删除测试，标签 信息 / 要或拒 / 关系 / 笑点或性格 / 纯接话 / 功能性调度；不是用户标注，也不是改稿前后的盲评对照。
+
+| 样本 | 台词 | 纯接话（标注） | 脚本候选 | 其中命中 | 低信息段 |
+|---|---|---|---|---|---|
+| THE ORDER EP02 场 1 | 39 | 9 | 11 | 6 | 0 |
+| EP02 场 2 | 19 | 3 | 10 | 2 | 1 |
+| EP02 场 3 | 17 | 0 | 4 | 0 | 0 |
+| EP03 场 1 | 53 | 9 | 17 | 6 | 3 |
+| EP03 场 2 | 26 | 5 | 12 | 5 | 1 |
+| EP03 场 3 | 11 | 3 | 5 | 2 | 1 |
+| EP03 场 4（写于赌注卡之后） | 13 | **0** | 4 | 0 | 1 |
+| reckless EP02 场 1 | 8 | 2 | 1 | 1 | 0 |
+| reckless EP02 场 2 | 12 | **0** | 2 | 0 | 0 |
+| reckless EP02 场 3 | 21 | 3 | 5 | 1 | 1 |
+
+合计 219 句、纯接话 34 句（15.5%，占台词词数 9.2%）；候选 71 句，命中 23：精确率 0.32、召回 0.68。漏掉的多是"复述画面刚演过的事"（"She's not picking up." / "Round two. Marsh." / "You're late."），动作行是中文，脚本对不上，只能靠模型的删除测试。标注者同时列出"看似废话其实有作用"的句子（讨价还价 "Candles are at half past." / "Lena." / "Five."，回扣 "It's her cake."，信条 "I don't throw a curve with a guy on second."，嘴硬 "I know where it is."）——这些都会进候选，由"留：带来什么"放行。场 4 与 reckless 场 2 为 0，说明问题不在"对话多"，而在没有一项要求每句带来东西；阈值 `run_min` 4、`run_new_max` 0.75 是 `[推论]`。
+
 ## 四、复核记录（2026-09-21 第二次）
 
 逐条复核结论——按"可回访 / 一手 / 本次已读 / 支持的检查是否直接"四项：
@@ -97,6 +115,7 @@
 | S3 | PMC 开放全文 | 一手数据 + 综述 | 是 | 直接：平均轮次时长、重叠比例；**间接**：秒 → 词换算（`[推论]`） | 保留，换算标推论 |
 | S4 | LDC 官方目录 | 官方统计 | 是 | 间接：utterance ≠ turn；只作阈值锚点 | 降为锚点，不作判据 |
 | S5 | 官方文字稿 | 一手创作方法 | 是 | 直接：交错独白 / Velcro | 保留 |
+| S5（2026-09-24 重读） | 官方文字稿（johnaugust.com，curl 取全文逐字检索） | 一手创作方法 | 是 | 直接：听过一次不再听第二次、重复要删、接话很少、不是每句都写进对白、"what's more"是接住并往上加；**间接**：→ 候选规则与低信息段阈值（`[推论]`） | 补登后半，3.3.0 漏取 |
 | S6 | 第三方转载 | 一手备忘录 | 是（转载页） | 间接：只作复核框架，不进脚本判定 | 保留为框架 |
 | S7 | 官方页（本次 403） | 一手讲稿 | **否** | 间接：安静戏不判错已由 S1 覆盖 | 降为旁证 |
 | S8 | 作者博客 | 一手观察（学者） | 是 | 间接：调度观察 → 剧本层代理量（`[推论]`） | 保留，代理量标推论 |
@@ -115,4 +134,5 @@
 - Grice, "Logic and Conversation" (1975)：公开 PDF 访问失败，本次未读；"下一句与上一句相关"已由 S1 §4.8 覆盖。
 - Clark & Marshall 1981（定语指称与共有知识）、Levinson 1983 *Pragmatics* 第 4 章（预设触发语）：未读原文；"你的 X / 那个 X / 还"这组触发语只按 S10 的共同基础原理列为 `[推论]`，不引用这两本。
 - BBC Writersroom 格式指南：未取得官方 PDF；O.S. / 画外标注按剧本页模板的括号约定识别，不引用格式规范。
+- S2–S4 是真实会话语料（电话闲聊、日常问答）：只用来防"一人一句人设短句"这一头，不作屏幕对白的目标——真实会话满是接话与复述，屏幕对白要压缩（S5 后半）。
 - 没有中文会话语料的句长数据；中文台词只做来回 / 收件人 / 画外统计，句长与主谓宾指标不计算（脚本会在信号里说明）。

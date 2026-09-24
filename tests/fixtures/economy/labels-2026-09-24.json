@@ -1,0 +1,1379 @@
+{
+ "_about": "3.8.0 校准：10 场 219 句台词的逐句功能标注。标注者是不知道假设的独立子代理（2026-09-24），方法是删除测试；标签：信息 / 要/拒 / 关系 / 笑点/性格 / 纯接话 / 功能性调度。维护者未改动标签。样本是 2026-09-24 的剧本快照（与本目录同名 .md 一一对应）。非用户标注，不是盲测对照。",
+ "scenes": [
+  {
+   "file": "theorder-ep02-s01.md",
+   "scene": "THE ORDER EP02 场1〈干的那一圈〉",
+   "lines": [
+    {
+     "speaker": "DIEGO",
+     "text": "Cup drops, you drink. That's the rule.",
+     "label": "信息",
+     "loss": "杯子游戏的规则；后面\"掉杯被按着喝\"失去因由"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "What are you guys doing up there? Everybody else is in.",
+     "label": "要/拒",
+     "loss": "本场目标\"把干的那圈拉下水\"的提出"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Somebody has to watch you.",
+     "label": "关系",
+     "loss": "Isa 用损 Diego 的方式拒绝下水，两人的熟"
+    },
+    {
+     "speaker": "MACK",
+     "text": "I'm on drinks tonight. Don't look at me.",
+     "label": "笑点/性格",
+     "loss": "Mack 自封\"管酒\"、把自己放在服务位"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Nobody put you on drinks, Mack.",
+     "label": "信息",
+     "loss": "点明差事是她自己揽的（Tess\"Not you\"的前提）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Somebody has to be.",
+     "label": "笑点/性格",
+     "loss": "\"总得有人\"的反射第一次出自 Mack，给 Tess 截断做铺垫"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Cole. Come on, man.",
+     "label": "要/拒",
+     "loss": "邀请转向 Cole"
+    },
+    {
+     "speaker": "COLE",
+     "text": "I'm not getting this shirt wet.",
+     "label": "要/拒",
+     "loss": "Cole 拒绝下水、在意体面"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "He's not going in. He ironed it.",
+     "label": "关系",
+     "loss": "Beckett 替 Cole 答、知道他熨了衬衫——两人的熟"
+    },
+    {
+     "speaker": "COLE",
+     "text": "I did iron it.",
+     "label": "笑点/性格",
+     "loss": "Cole 面不改色认下，被 Beckett 打趣不恼"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Okay. Okay, fine.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Sorry— excuse me.",
+     "label": "功能性调度",
+     "loss": "他穿过干区的通行口令"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Oh— yeah, go ahead.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Sloane, you might want to step back.",
+     "label": "笑点/性格",
+     "loss": "恶作剧前的\"预警\"包袱；敢这样逗会长"
+    },
+    {
+     "speaker": "SLOANE",
+     "text": "Why would I—",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Cannonball!",
+     "label": "功能性调度",
+     "loss": "起跳口令"
+    },
+    {
+     "speaker": "来宾",
+     "text": "Oh my god. Sloane— are you okay? Here, let me—",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "SLOANE",
+     "text": "I'm fine. Can you hold this a second?",
+     "label": "功能性调度",
+     "loss": "递杯腾手脱鞋的由头"
+    },
+    {
+     "speaker": "来宾",
+     "text": "What are you doing?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "SLOANE",
+     "text": "I'm already wet. Somebody count me down.",
+     "label": "要/拒",
+     "loss": "她决定下水、把尴尬转成主场"
+    },
+    {
+     "speaker": "众人",
+     "text": "Three! Two! One!",
+     "label": "功能性调度",
+     "loss": "应她的要求倒数，起跳节拍"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Tess! Tess, get in here!",
+     "label": "功能性调度",
+     "loss": "把 Tess 叫进场"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Your makeup form is still sitting on my desk, you know that?",
+     "label": "信息",
+     "loss": "Diego 的补测申请还压在 Tess 手里"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "So bring the desk.",
+     "label": "笑点/性格",
+     "loss": "Diego 用玩笑把正事带过"
+    },
+    {
+     "speaker": "TESS",
+     "text": "That's not how it works.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Come on. You've been carrying cups all night.",
+     "label": "要/拒",
+     "loss": "Tess 看见 Mack 整晚伺候人，要拉她出来"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Because somebody has to—",
+     "label": "笑点/性格",
+     "loss": "\"somebody has to\"第三次出现、被截断"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Not you. Not tonight. Hey— take these.",
+     "label": "关系",
+     "loss": "Tess 替 Mack 卸掉服务位；两人新友谊的起点"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Tess, I'm still holding— okay! Okay.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Beckett! Did you really get a hit off Cole?",
+     "label": "信息",
+     "loss": "引出 Beckett 打中了 Cole"
+    },
+    {
+     "speaker": "TESS",
+     "text": "He did. Then he swung at air against Isa. I have it in writing.",
+     "label": "信息",
+     "loss": "Beckett 打中 Cole、对 Isa 挥空的对比；Tess 凡事留档"
+    },
+    {
+     "speaker": "ISA",
+     "text": "So it's just us.",
+     "label": "关系",
+     "loss": "Isa 对 Lena 的第一次开口，把\"只剩两人\"说成两人的事"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I'm not going in. My phone's right here, my bag's open—",
+     "label": "要/拒",
+     "loss": "她拒绝，理由是手里的工具（旁观者位置）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "I didn't say go in. Just watch this.",
+     "label": "要/拒",
+     "loss": "把跳水变成只给她看的表演"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I'm watching.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "ISA",
+     "text": "That was a ten. That was a perfect ten.",
+     "label": "笑点/性格",
+     "loss": "砸了之后先自嘲"
+    },
+    {
+     "speaker": "LENA",
+     "text": "That was not a ten.",
+     "label": "关系",
+     "loss": "她接住他的玩笑、开始参与"
+    },
+    {
+     "speaker": "LENA",
+     "text": "That was maybe a six.",
+     "label": "关系",
+     "loss": "下水泼水后的回马枪，调情收尾"
+    },
+    {
+     "speaker": "ISA",
+     "text": "A six?",
+     "label": "纯接话",
+     "loss": "无"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep02-s02.md",
+   "scene": "THE ORDER EP02 场2〈他不是任何人的陪同〉",
+   "lines": [
+    {
+     "speaker": "ISA",
+     "text": "Okay, what did I miss?",
+     "label": "关系",
+     "loss": "引出 Diego/Cole 的私人笑话（删掉则下两句无来由）"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Nothing.",
+     "label": "关系",
+     "loss": "与 Cole 同时反向作答：两人有了外人进不去的笑话"
+    },
+    {
+     "speaker": "COLE",
+     "text": "Everything.",
+     "label": "关系",
+     "loss": "同上；Cole 在 Diego 面前松下来"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Those are two very different answers.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "It's a long story. I'll be right back.",
+     "label": "功能性调度",
+     "loss": "Diego 离场；顺手把 Isa 挡在笑话外"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Your paperwork's with me. The coaches see it Monday.",
+     "label": "信息",
+     "loss": "补测申请转到 Beckett 手里、周一教练看"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Monday. Okay.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Hey, Isa! They like you!",
+     "label": "关系",
+     "loss": "自己挂着 UNDER REVIEW，先替 Isa 高兴；Isa 没听见"
+    },
+    {
+     "speaker": "LENA",
+     "text": "You know why it went wrong, right? You looked at me before you jumped.",
+     "label": "关系",
+     "loss": "她承认一直在看他，也看见他看她"
+    },
+    {
+     "speaker": "ISA",
+     "text": "\"You looked at me before you jumped—\"",
+     "label": "笑点/性格",
+     "loss": "夸张学她（连手势），\"hand thing\"包袱的来源"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I don't do that.",
+     "label": "关系",
+     "loss": "嘴硬否认；\"do that\"来回的起点（落点是 #15）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "You do that. You do the thing with your hand.",
+     "label": "笑点/性格",
+     "loss": "点出手势，为她当场\"犯\"做铺垫"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I don't do a thing with my—",
+     "label": "笑点/性格",
+     "loss": "否认时手正划到一半，当场被抓"
+    },
+    {
+     "speaker": "ISA",
+     "text": "You do that.",
+     "label": "笑点/性格",
+     "loss": "被推下水仍坚持，回扣"
+    },
+    {
+     "speaker": "LENA",
+     "text": "…Okay. I do that.",
+     "label": "关系",
+     "loss": "她认输、承认被看穿；随后他坐近半个人"
+    },
+    {
+     "speaker": "ISA",
+     "text": "What?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Nothing. I just— nothing.",
+     "label": "关系",
+     "loss": "她看见 Sloane 那一愣，不对 Isa 说"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Lena! Get over here, we need a judge!",
+     "label": "功能性调度",
+     "loss": "把 Lena 叫走（\"judge\"接上打分）"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Coming!",
+     "label": "功能性调度",
+     "loss": "离场"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep02-s03.md",
+   "scene": "THE ORDER EP02 场3〈熟到不用问的两个人〉",
+   "lines": [
+    {
+     "speaker": "BECKETT",
+     "text": "This is like the lake house all over—",
+     "label": "关系",
+     "loss": "两人共有、外人不知道的旧事"
+    },
+    {
+     "speaker": "COLE",
+     "text": "—Don't. Do not.",
+     "label": "关系",
+     "loss": "Cole 抢断，对那件事心照不宣"
+    },
+    {
+     "speaker": "COLE",
+     "text": "I'm gonna head back.",
+     "label": "功能性调度",
+     "loss": "Cole 要走，触发 Beckett 交代衣物"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Your grey hoodie's in my bag, by the way. And half my stuff is still at your place.",
+     "label": "关系",
+     "loss": "两人东西混放的生活准入"
+    },
+    {
+     "speaker": "COLE",
+     "text": "So go get it. You have a key.",
+     "label": "信息",
+     "loss": "Beckett 有 Cole 住处的钥匙"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Wait— why does Beckett have your key?",
+     "label": "信息",
+     "loss": "外人注意到钥匙，引出\"一年级起\""
+    },
+    {
+     "speaker": "COLE",
+     "text": "He's had it since first year.",
+     "label": "信息",
+     "loss": "钥匙的年头"
+    },
+    {
+     "speaker": "MACK",
+     "text": "That's… kind of married.",
+     "label": "关系",
+     "loss": "外人把这份亲密说破"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "It's just a key, Mack.",
+     "label": "关系",
+     "loss": "Beckett 当众淡化（并收起钥匙）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Okay, everybody, listen. Day six is my birthday. Cake at the stand after we close, and then we all go out. All of you.",
+     "label": "信息",
+     "loss": "第 6 日生日、摊位蛋糕、全员出门的计划"
+    },
+    {
+     "speaker": "MACK",
+     "text": "And you— you're not working it. No interviews. No wandering off looking for somebody.",
+     "label": "要/拒",
+     "loss": "给 Lena 立条件：不工作、不去找人"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I'll be there. I promise.",
+     "label": "要/拒",
+     "loss": "承诺（EP03 被打破的那一个）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "I'll be there too.",
+     "label": "要/拒",
+     "loss": "Isa 的承诺，引出 Mack 对他的不信"
+    },
+    {
+     "speaker": "MACK",
+     "text": "You I'll believe when you're there.",
+     "label": "关系",
+     "loss": "Mack 对 Isa 的保留"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Day six, after close. I've got it written down.",
+     "label": "笑点/性格",
+     "loss": "Tess 什么都记（前半句是复述）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "You don't have to write down my birthday.",
+     "label": "关系",
+     "loss": "Mack 把\"记下来\"当成被在乎，推一下"
+    },
+    {
+     "speaker": "TESS",
+     "text": "I write everything down.",
+     "label": "笑点/性格",
+     "loss": "记录癖说出口，也把\"特意\"挡回去"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep03-s01.md",
+   "scene": "THE ORDER EP03 场1〈今晚本来不是关于他们〉",
+   "lines": [
+    {
+     "speaker": "MACK",
+     "text": "You came.",
+     "label": "关系",
+     "loss": "Mack 原本没把握她会来（接 EP02 场3 的承诺）"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I said I would.",
+     "label": "关系",
+     "loss": "把\"我答应过\"重新立起来，为\"五分钟\"失约蓄力"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Stop. Come here.",
+     "label": "功能性调度",
+     "loss": "叫 Mack 过来戴皇冠"
+    },
+    {
+     "speaker": "MACK",
+     "text": "No. Absolutely not. Not in my own kitchen.",
+     "label": "要/拒",
+     "loss": "拒戴；点出这是她家"
+    },
+    {
+     "speaker": "TESS",
+     "text": "It's not your kitchen tonight. It's a venue. Leave it on.",
+     "label": "笑点/性格",
+     "loss": "Tess 把生日当活动来办"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I went to the stand. It was dark.",
+     "label": "信息",
+     "loss": "原定摊位没开，地点变了"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Owner said no to after hours. So— my kitchen. Take a cup.",
+     "label": "信息",
+     "loss": "改地点的原因"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Three innings, no runs. Look at him. Look at his face.",
+     "label": "信息",
+     "loss": "Cole 队内赛 3 局 0 失分；Diego 当面起哄"
+    },
+    {
+     "speaker": "COLE",
+     "text": "It's her birthday, Diego. Nobody's talking about innings.",
+     "label": "要/拒",
+     "loss": "Cole 拒谈比赛"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I'm talking about innings.",
+     "label": "笑点/性格",
+     "loss": "Diego 偏要谈"
+    },
+    {
+     "speaker": "COLE",
+     "text": "Then talk to Beckett.",
+     "label": "关系",
+     "loss": "把 Beckett 推出来——他才是派对上还谈球的人"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Board's up. Tess posted it.",
+     "label": "信息",
+     "loss": "出赛板更新"
+    },
+    {
+     "speaker": "TESS",
+     "text": "I posted it an hour ago. You're slow.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Round two. Marsh.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "He gave up two runs and they still like him.",
+     "label": "关系",
+     "loss": "把话头对准 Lena 的稿子"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I wrote that he gave up two runs.",
+     "label": "信息",
+     "loss": "她的稿写了失分"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I read it. You also wrote that he shook me off twice.",
+     "label": "信息",
+     "loss": "稿里还写了两次摇头"
+    },
+    {
+     "speaker": "LENA",
+     "text": "He did shake you off twice.",
+     "label": "要/拒",
+     "loss": "她不收回，坚持属实"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I know. I was there.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "COLE",
+     "text": "It was accurate. That's all a piece has to be.",
+     "label": "关系",
+     "loss": "取用过她署名的人来评她的稿"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Anything on mine?",
+     "label": "要/拒",
+     "loss": "Diego 追问自己的补测"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Coaches see it Monday. I told you.",
+     "label": "要/拒",
+     "loss": "不耐烦地挡回（删掉则下两句无来由）"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Monday's Cut Day, Beck.",
+     "label": "要/拒",
+     "loss": "点出补测与裁人同一天，施压"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "I know what Monday is.",
+     "label": "关系",
+     "loss": "队长把话堵回去，他自己也悬着"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Also— scouting sheet came in. Their one through four can't hit lefties. Coaches have it.",
+     "label": "信息",
+     "loss": "对手前四棒打不了左投（利 Isa）"
+    },
+    {
+     "speaker": "COLE",
+     "text": "Beck. It's a party.",
+     "label": "要/拒",
+     "loss": "Cole 不肯听（场4\"Cole didn't want to read it\"的来源）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Hi. The birthday's over here.",
+     "label": "关系",
+     "loss": "Mack 把 Lena 从 Isa 身上拽回来"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I know where the birthday is.",
+     "label": "关系",
+     "loss": "嘴硬，给\"Then look at it\"递话"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Then look at it.",
+     "label": "要/拒",
+     "loss": "要她今晚看着自己"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Sorry. Sorry— pitching coach kept me. Happy birthday.",
+     "label": "信息",
+     "loss": "投手教练留了他"
+    },
+    {
+     "speaker": "MACK",
+     "text": "You're here. That's already more than I bet on.",
+     "label": "关系",
+     "loss": "回扣 EP02 场3\"when you're there\""
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "You're late.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "ISA",
+     "text": "I know.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Did they say anything?",
+     "label": "要/拒",
+     "loss": "私下打听教练看法"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "About the two runs? No. About the two shake-offs, yes.",
+     "label": "信息",
+     "loss": "教练在意的是摇头，不是失分"
+    },
+    {
+     "speaker": "ISA",
+     "text": "…Okay.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Okay. Candles at half past. Everybody out the door at ten. Who has a lighter?",
+     "label": "信息",
+     "loss": "点蜡烛的时间点（之后被错过）"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "I have one in the car. Two minutes.",
+     "label": "功能性调度",
+     "loss": "Beckett 离场取打火机"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Go. We're not lighting them off the stove.",
+     "label": "笑点/性格",
+     "loss": "Tess 的讲究"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Have you been across the street tonight? The tide's all the way out. You can walk out to the sandbar.",
+     "label": "要/拒",
+     "loss": "邀她出去；退潮、沙洲"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Now?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "ISA",
+     "text": "It's across the street. Two minutes.",
+     "label": "要/拒",
+     "loss": "把时间说小，加码劝"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Mack. Five minutes. We're gonna look at the water and I'll be right back.",
+     "label": "要/拒",
+     "loss": "对 Mack 的承诺"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Candles are at half past.",
+     "label": "要/拒",
+     "loss": "不说\"不行\"，用时间点拦"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I'll be back before half past.",
+     "label": "要/拒",
+     "loss": "把承诺钉在蜡烛时间上（场3兑现为失约）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Lena.",
+     "label": "要/拒",
+     "loss": "只叫名字的最后一次拦"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Five.",
+     "label": "要/拒",
+     "loss": "不退，压回五分钟"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Don't let her light them before we're back.",
+     "label": "要/拒",
+     "loss": "托 Diego 拦蜡烛"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "It's her cake.",
+     "label": "要/拒",
+     "loss": "Diego 不应、站 Mack（场3\"It's your cake\"回扣）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Diego.",
+     "label": "要/拒",
+     "loss": "只叫名字的央求"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "…Go.",
+     "label": "要/拒",
+     "loss": "勉强放行，但没答应拦蜡烛"
+    },
+    {
+     "speaker": "TESS",
+     "text": "She said five minutes.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "MACK",
+     "text": "I heard her.",
+     "label": "纯接话",
+     "loss": "无"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep03-s02.md",
+   "scene": "THE ORDER EP03 场2〈差一步〉",
+   "lines": [
+    {
+     "speaker": "ISA",
+     "text": "Okay. That's the sandbar. That's the whole thing.",
+     "label": "笑点/性格",
+     "loss": "自己先把卖点拆穿"
+    },
+    {
+     "speaker": "LENA",
+     "text": "That's it?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "ISA",
+     "text": "The tide's out, you can walk to it. That's what I said.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "LENA",
+     "text": "You made it sound bigger.",
+     "label": "关系",
+     "loss": "点破沙洲是个借口"
+    },
+    {
+     "speaker": "ISA",
+     "text": "I said \"you can walk out to it.\" I didn't say it was Portugal.",
+     "label": "笑点/性格",
+     "loss": "Portugal 包袱"
+    },
+    {
+     "speaker": "ISA",
+     "text": "The steps were back there.",
+     "label": "关系",
+     "loss": "点出是她走过了台阶、在延长这段路"
+    },
+    {
+     "speaker": "LENA",
+     "text": "There's a bench past the boat ramp. It's, like, forty feet.",
+     "label": "要/拒",
+     "loss": "她给继续走找理由"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Okay.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Can I ask you something about today?",
+     "label": "要/拒",
+     "loss": "切回记者口吻"
+    },
+    {
+     "speaker": "ISA",
+     "text": "You already wrote about today.",
+     "label": "关系",
+     "loss": "对她那篇稿的防备"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I wrote what I could see from the fence behind third. I couldn't see what he called.",
+     "label": "信息",
+     "loss": "她的视角盲区：不知道配的是什么球"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Curve. Both times. With a guy on second.",
+     "label": "信息",
+     "loss": "两次摇掉的都是曲球、二垒有人"
+    },
+    {
+     "speaker": "LENA",
+     "text": "And you don't throw a curve with a guy on second.",
+     "label": "信息",
+     "loss": "摇头的理由：他的规矩"
+    },
+    {
+     "speaker": "ISA",
+     "text": "I don't throw a curve with a guy on second.",
+     "label": "笑点/性格",
+     "loss": "把规矩认成自己的信条，给 #17 的反讽垫底"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Why not?",
+     "label": "信息",
+     "loss": "引出理由（删掉则\"Because\"无着落）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Because it bounces, and then the guy's on third. Which is what happened anyway— with the fastball. So.",
+     "label": "信息",
+     "loss": "理由，以及直球照样出事"
+    },
+    {
+     "speaker": "LENA",
+     "text": "So you should've thrown the curve.",
+     "label": "笑点/性格",
+     "loss": "一句拆掉他的规矩"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Don't put that in.",
+     "label": "关系",
+     "loss": "笑着防她写进稿"
+    },
+    {
+     "speaker": "LENA",
+     "text": "I'm not putting anything in. I'm asking.",
+     "label": "关系",
+     "loss": "她把此刻和写稿分开"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Okay, and the four batters thing— Beckett said their top four—",
+     "label": "笑点/性格",
+     "loss": "她用追问填满空气"
+    },
+    {
+     "speaker": "ISA",
+     "text": "You keep talking.",
+     "label": "关系",
+     "loss": "点破她在填话"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Do you want me to stop?",
+     "label": "关系",
+     "loss": "把球抛回给他"
+    },
+    {
+     "speaker": "ISA",
+     "text": "No.",
+     "label": "关系",
+     "loss": "要她继续——本场的\"差一步\""
+    },
+    {
+     "speaker": "LENA",
+     "text": "Where were we.",
+     "label": "关系",
+     "loss": "掐掉 Mack 来电后装作没事、主动接回"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Their top four.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "LENA",
+     "text": "Right.",
+     "label": "纯接话",
+     "loss": "无"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep03-s03.md",
+   "scene": "THE ORDER EP03 场3〈蜡烛没等他们〉",
+   "lines": [
+    {
+     "speaker": "MACK",
+     "text": "She's not picking up.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "TESS",
+     "text": "How far did they go?",
+     "label": "要/拒",
+     "loss": "把矛头转向放人的 Diego"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I don't know.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "I don't. He said five minutes. That was—",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "—that was a while ago.",
+     "label": "关系",
+     "loss": "Diego 自己承认早过了，从替 Isa 挡转到 Mack 这边"
+    },
+    {
+     "speaker": "DIEGO",
+     "text": "Mack. It's your cake. Do you want to cut it now?",
+     "label": "要/拒",
+     "loss": "把决定交给 Mack（反转 Isa 的托付）"
+    },
+    {
+     "speaker": "MACK",
+     "text": "…Yeah. Yeah, I do.",
+     "label": "要/拒",
+     "loss": "Mack 决定不等"
+    },
+    {
+     "speaker": "COLE",
+     "text": "Then we cut it.",
+     "label": "要/拒",
+     "loss": "Cole 替全桌表态不等"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Everybody. Kitchen. Now. Around her.",
+     "label": "功能性调度",
+     "loss": "把人聚到 Mack 身边"
+    },
+    {
+     "speaker": "TESS",
+     "text": "Photo. Everybody in.",
+     "label": "功能性调度",
+     "loss": "拍合照"
+    },
+    {
+     "speaker": "MACK",
+     "text": "Get in here.",
+     "label": "关系",
+     "loss": "Mack 招他们进合照：不追究"
+    }
+   ]
+  },
+  {
+   "file": "theorder-ep03-s04.md",
+   "scene": "THE ORDER EP03 场4〈周一之前〉",
+   "lines": [
+    {
+     "speaker": "BECKETT",
+     "text": "Two more. Nobody walks. Marsh— up front.",
+     "label": "关系",
+     "loss": "队长把 Isa 叫到前面，队友互看"
+    },
+    {
+     "speaker": "ISA",
+     "text": "You don't usually want me up front, Beck.",
+     "label": "关系",
+     "loss": "点出 Beckett 以前不这样待他"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Their one through four can't hit lefties. It's on the scouting sheet. The coaches have it.",
+     "label": "关系",
+     "loss": "同一份情报这次交给了 Isa（内容观众已知）"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Has Cole seen that sheet?",
+     "label": "关系",
+     "loss": "Isa 先问对手"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Cole didn't want to read it.",
+     "label": "关系",
+     "loss": "Beckett 在 Isa 面前交代 Cole 不看"
+    },
+    {
+     "speaker": "ISA",
+     "text": "So Game One's mine.",
+     "label": "要/拒",
+     "loss": "Isa 直接要 Game One"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Game One could be yours. They're not starting a guy who shakes off his catcher twice with a runner on second.",
+     "label": "要/拒",
+     "loss": "提条件：摇头是障碍"
+    },
+    {
+     "speaker": "ISA",
+     "text": "It bounces, Beck. One bounce, he's on third. One fly ball, he scores. Cole gives up a run, he's still a Prescott. I give up a run, I'm the scholarship kid who couldn't handle it.",
+     "label": "信息",
+     "loss": "首次说出阶级双标的赌注（前半是复述）"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Then throw the curve and let Diego block it. That's how you get Game One.",
+     "label": "要/拒",
+     "loss": "给出路"
+    },
+    {
+     "speaker": "ISA",
+     "text": "And if he doesn't block it?",
+     "label": "要/拒",
+     "loss": "追问谁担后果"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "Then it's on me. I'm the one telling them to start you.",
+     "label": "要/拒",
+     "loss": "Beckett 担责，并透露是他在推 Isa"
+    },
+    {
+     "speaker": "ISA",
+     "text": "Last one. To the line.",
+     "label": "要/拒",
+     "loss": "用比赛代替回答"
+    },
+    {
+     "speaker": "BECKETT",
+     "text": "You're on.",
+     "label": "功能性调度",
+     "loss": "起跑"
+    }
+   ]
+  },
+  {
+   "file": "reckless-ep02-s01.md",
+   "scene": "reckless EP02 场1〈Like You Hate Him〉",
+   "lines": [
+    {
+     "speaker": "摄影师",
+     "text": "Now turn. Look at him. Like you hate him.",
+     "label": "功能性调度",
+     "loss": "转身靠近的指令，也立起\"演出恨\"的反讽框"
+    },
+    {
+     "speaker": "摄影师",
+     "text": "Okay. Good.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "MASON",
+     "text": "You gonna keep staring?",
+     "label": "关系",
+     "loss": "回扣早上浴室的原话，只有 Noah 听得懂"
+    },
+    {
+     "speaker": "摄影师",
+     "text": "Talk to him. Anything.",
+     "label": "功能性调度",
+     "loss": "逼两人开口"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "He's better looking on TV.",
+     "label": "关系",
+     "loss": "Noah 把私密一刻转成对房间的公开损"
+    },
+    {
+     "speaker": "记者",
+     "text": "Mason, you want that one back?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "MASON",
+     "text": "He's better looking in person.",
+     "label": "关系",
+     "loss": "同一句式把损还成夸，\"in person\"指早上"
+    },
+    {
+     "speaker": "摄影师",
+     "text": "Kill the fill. Just the key.",
+     "label": "功能性调度",
+     "loss": "灭补光，房间消失"
+    }
+   ]
+  },
+  {
+   "file": "reckless-ep02-s02.md",
+   "scene": "reckless EP02 场2〈TOW〉",
+   "lines": [
+    {
+     "speaker": "代客泊车",
+     "text": "You want me to call roadside? They're about forty minutes out.",
+     "label": "信息",
+     "loss": "道路救援要 40 分钟（下场 Jace 引用）"
+    },
+    {
+     "speaker": "MASON",
+     "text": "It's fine. Give it a minute.",
+     "label": "要/拒",
+     "loss": "拒绝帮忙、硬撑"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "It's not going to give you a minute. Pop the hood.",
+     "label": "要/拒",
+     "loss": "Noah 接管"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "It's down on the left, under the wheel.",
+     "label": "关系",
+     "loss": "看穿他找不到拉手，权力翻转"
+    },
+    {
+     "speaker": "MASON",
+     "text": "I know where it is.",
+     "label": "笑点/性格",
+     "loss": "嘴硬"
+    },
+    {
+     "speaker": "MASON",
+     "text": "For a second I thought you were here to kill me.",
+     "label": "关系",
+     "loss": "拿宿敌身份调侃，Noah 被逗到"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "Hold your light right here for me.",
+     "label": "要/拒",
+     "loss": "让 Mason 从旁观者变成帮手"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "She's fine. She was just bored.",
+     "label": "笑点/性格",
+     "loss": "把车当人说"
+    },
+    {
+     "speaker": "MASON",
+     "text": "What do I owe you?",
+     "label": "要/拒",
+     "loss": "想用钱了结"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "For when it dies again. It will.",
+     "label": "关系",
+     "loss": "以修车名义留号码"
+    },
+    {
+     "speaker": "MASON",
+     "text": "I'll have it looked at.",
+     "label": "要/拒",
+     "loss": "嘴硬拒绝\"还会需要你\""
+    },
+    {
+     "speaker": "NOAH",
+     "text": "You just did.",
+     "label": "笑点/性格",
+     "loss": "双关收尾"
+    }
+   ]
+  },
+  {
+   "file": "reckless-ep02-s03.md",
+   "scene": "reckless EP02 场3〈Two Tables〉",
+   "lines": [
+    {
+     "speaker": "JACE",
+     "text": "You coming? They already ordered without us.",
+     "label": "功能性调度",
+     "loss": "叫 Mason 下楼"
+    },
+    {
+     "speaker": "MASON",
+     "text": "I said a minute.",
+     "label": "要/拒",
+     "loss": "拖延（回扣\"Give it a minute\"）"
+    },
+    {
+     "speaker": "JACE",
+     "text": "Minute's up. I'm not sitting down there with those two by myself, they're talking about the podcast again.",
+     "label": "要/拒",
+     "loss": "催，顺带引出播客话题"
+    },
+    {
+     "speaker": "队友 A",
+     "text": "—seven-thirty. Seven-thirty in the morning, for a podcast nobody's heard of.",
+     "label": "信息",
+     "loss": "早上 7:30 有播客"
+    },
+    {
+     "speaker": "队友 B",
+     "text": "It's the league's podcast.",
+     "label": "信息",
+     "loss": "是联盟官方播客"
+    },
+    {
+     "speaker": "队友 A",
+     "text": "That's what I said.",
+     "label": "笑点/性格",
+     "loss": "把\"联盟播客\"等同\"没人听过\"的包袱"
+    },
+    {
+     "speaker": "JACE",
+     "text": "Who's got seven-thirty?",
+     "label": "信息",
+     "loss": "引出\"你和他\"（删掉则下一句无着落）"
+    },
+    {
+     "speaker": "队友 A",
+     "text": "You do. You and him.",
+     "label": "信息",
+     "loss": "Mason 和 Noah 同上一档播客"
+    },
+    {
+     "speaker": "MASON",
+     "text": "I've got seven. Radio.",
+     "label": "信息",
+     "loss": "他 7 点另有电台（本场无后续）"
+    },
+    {
+     "speaker": "队友 B",
+     "text": "Speaking of him. This you?",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "MASON",
+     "text": "That's my car.",
+     "label": "笑点/性格",
+     "loss": "只认车、不认人的避重就轻"
+    },
+    {
+     "speaker": "队友 B",
+     "text": "That's Reyes under your hood, man. It's got like nine thousand likes.",
+     "label": "信息",
+     "loss": "照片已传开，9 千赞"
+    },
+    {
+     "speaker": "MASON",
+     "text": "It wouldn't start. He was walking past.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "JACE",
+     "text": "Roadside was forty minutes out, so you let Halston's QB pop your hood. In front of people.",
+     "label": "关系",
+     "loss": "队友用\"当众让宿敌修车\"挖苦"
+    },
+    {
+     "speaker": "MASON",
+     "text": "He was faster. It started.",
+     "label": "关系",
+     "loss": "不接\"丢脸\"的茬，反说对手\"更快\""
+    },
+    {
+     "speaker": "JACE",
+     "text": "Read the caption.",
+     "label": "纯接话",
+     "loss": "无"
+    },
+    {
+     "speaker": "队友 B",
+     "text": "\"Reckless Roadside.\"",
+     "label": "信息",
+     "loss": "舆论给这件事的标题"
+    },
+    {
+     "speaker": "NATE",
+     "text": "There's one right here by the door.",
+     "label": "功能性调度",
+     "loss": "给出近处的桌，Noah 挑对面那张才显得是选择"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "That one.",
+     "label": "要/拒",
+     "loss": "选正对 Mason 的桌"
+    },
+    {
+     "speaker": "NATE",
+     "text": "Nine thousand likes. Go say hi to your car guy, tell him the tip's on us.",
+     "label": "关系",
+     "loss": "队友拿\"修车小哥\"调侃 Noah"
+    },
+    {
+     "speaker": "NOAH",
+     "text": "He looks busy.",
+     "label": "关系",
+     "loss": "拒绝过去；眼睛还在对面（刚看见 Jace 搭肩）"
+    }
+   ]
+  }
+ ]
+}

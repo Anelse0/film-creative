@@ -65,3 +65,27 @@
 “还要短？”／“最好一眼看完。”／“那我不写了，你闭眼看。”
 
 末句有意夸张，不是写实沟通。可以保留为该语域试稿，但笑点是否成立尚待试读；不能因这例成立就让正剧每次都以机智反击结尾。
+
+## 7. 简单的事不要拆成几轮（旧样本摘录，3.8.0）
+
+THE ORDER EP03 场 2 开头。条件：场 1 里 Isa 已经说过 "The tide's out. You can walk out to the sandbar."；两人刚走到沙洲。
+
+> Isa：Okay. That's the sandbar. That's the whole thing.
+> Lena：That's it?
+> Isa：The tide's out, you can walk to it. That's what I said.
+> Lena：You made it sound bigger.
+> Isa：I said "you can walk out to it." I didn't say it was Portugal.
+
+压缩测试：这段要改变的一件事是"她点破沙洲只是个借口，他认了，还开了个玩笑"。"可以走过去"在场 1 和这里一共说了三遍；"That's it?"的答案下一句就给了，是递话问句。
+
+压缩示意（新编，未验证）：
+
+> Isa：Okay. That's the sandbar. That's the whole thing.
+> Lena：You made it sound bigger.
+> Isa：I said you could walk out to it. I didn't say it was Portugal.
+
+- **得到**：少两句，Portugal 包袱和"点破借口"都在。
+- **失去**：Lena 先失望一下的那一拍。如果表演需要它，用动作补（她停下来看了一眼），不用再多一句台词。
+
+对照：同一场后面的 "I don't throw a curve with a guy on second." 逐字重复了 Lena 的上一句，却不删。主语从 you 换成 I，他把规矩认成了自己的信条，下一拍 "So you should've thrown the curve" 才打在他本人身上。重复本身不是问题，问题是重复后什么都没变。
+

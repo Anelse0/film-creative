@@ -56,7 +56,7 @@ class RealSampleTests(unittest.TestCase):
         r1, r3 = rs.review_file(V1), rs.review_file(V3)
         self.assertEqual(r3['checks']['dialogue'], 'pass')
         self.assertEqual(r3['checks']['events'], 'missing')
-        self.assertEqual([i['key'] for i in r3['issues']], ['events'])  # 3.7.0：赌注卡与场面轨合为事件轨，旧样本缺
+        self.assertEqual([i['key'] for i in r3['issues']], ['events', 'economy'])  # 3.7.0 缺事件轨；3.8.0 旧样本也缺删除测试
         self.assertEqual(r3['stats']['offscreen_lines'], [])
         self.assertGreaterEqual(r3['stats']['longest_exchange'], 5)
         self.assertGreater(r3['stats']['conversation_share'], r1['stats']['conversation_share'] + 0.4)
@@ -225,9 +225,12 @@ ROW_JON = '| 2 | Jon → Maya | Maya：不知道他的期限 → 知道他家只
 ROW_END = '| 3 | Jon → Maya | Maya：要他别去 → 他还是去（没得到；代价：两人同去竞争） | — | 结果 | 更衣室 | 系鞋带 | 连续 | I\'m going. I\'m sorry. | 3 |\n'
 
 
+RECORD_NONE = '\n## 对白审阅\n\n### 删除测试\n- 删：无\n'  # 3.8.0：写作时做过删除测试、没有要删的
+
+
 def tryout(maya='"If you go, they only need one of us."', jon='"My dad gave me one year."', cast=TRYOUT_CAST, extra=''):
     return ('## 事件轨\n\n' + cast + EV_HEAD + ROW_MAYA.format(maya=maya) + ROW_JON.format(jon=jon) + ROW_END + '\n'
-            + extra + '总估时 ≈ 11 s\n\n' + scene(TRYOUT_BODY))
+            + extra + '总估时 ≈ 11 s\n\n' + scene(TRYOUT_BODY) + RECORD_NONE)
 
 
 POSITIVE = tryout()
@@ -264,13 +267,14 @@ class EventStakesTests(unittest.TestCase):
         self.assertNotIn('Diego 在"人物"里', it['evidence'])  # Diego 的那句逐字在正文里、由本人说
         self.assertEqual([v['who'] for v in r['events']['voiced']], ['Diego'])
         review = ' '.join(r['events']['review'])
-        self.assertIn('没人再说话', review)                 # Diego 说出口后无人接
+        self.assertIn('对方没有用台词接', review)            # Diego 说出口后无人用台词接
+        self.assertNotIn('是有意的不答吗', review)            # 3.8.0：不再推着补一句接话
         self.assertIn('这句说的是不是这件事', review)          # 语义交模型复核，脚本不判
         self.assertIn('Isa「推迟」没写代价', review)          # 被接住收掉的欲望
 
     def test_positive_scene_passes(self):
         r = review_text(POSITIVE)
-        self.assertEqual(r['checks'], {'dialogue': 'pass', 'events': 'pass'}, r['text'])
+        self.assertEqual(r['checks'], {'dialogue': 'pass', 'economy': 'pass', 'events': 'pass'}, r['text'])
         self.assertEqual(r['verdict'], 'pass')
         self.assertEqual({v['who'] for v in r['events']['voiced']}, {'Maya', 'Jon'})
         self.assertTrue(all(v.get('reply') for v in r['events']['voiced']))
@@ -502,6 +506,153 @@ class DocsWiringTests(unittest.TestCase):
         ledger = (ROOT / 'references' / 'preference-ledger.md').read_text(encoding='utf-8')
         self.assertIn('这 16 s 存在的意义是', ledger)
         self.assertIn('整个场 4 都是球场跑步', ledger)
+
+
+ECO = FIX.parent / 'economy'
+ECO_LABELS = json.loads((ECO / 'labels-2026-09-24.json').read_text(encoding='utf-8'))
+ORDER = ['theorder-ep02-s01', 'theorder-ep02-s02', 'theorder-ep02-s03', 'theorder-ep03-s01', 'theorder-ep03-s02',
+         'theorder-ep03-s03', 'theorder-ep03-s04']
+
+
+def eco_context(name):
+    """真实剧情：同一项目按播出顺序，前几场作 --context、后几场作 --later。"""
+    seq = ORDER if name in ORDER else ['reckless-ep02-s01', 'reckless-ep02-s02', 'reckless-ep02-s03']
+    i = seq.index(name)
+    return [ECO / f'{x}.md' for x in seq[:i]], [ECO / f'{x}.md' for x in seq[i + 1:]]
+
+
+def with_record(path, record):
+    return path.read_text(encoding='utf-8') + '\n## 对白审阅\n\n### 删除测试\n' + record + '\n'
+
+
+class EconomyTests(unittest.TestCase):
+    """3.8.0 台词经济：接住上一句之外还要带来东西。用户 2026-09-24："对白连通目前存在设计废话的问题"，
+    补充"要考虑真实剧情，核心是重复性描述 / 啰嗦（简单的事情复杂化）"。脚本只列候选与证据、核对删除测试记录，不判废话。"""
+
+    def test_blind_labels_align_and_candidates_are_only_leads(self):
+        tp = fp = fn = 0
+        for sc in ECO_LABELS['scenes']:
+            name = sc['file'][:-3]
+            ctx, later = eco_context(name)
+            r = rs.review_file(ECO / sc['file'], context=ctx, later=later)
+            self.assertEqual([ln['text'] for ln in r['lines']], [x['text'] for x in sc['lines']], name)
+            gold = {k for k, x in enumerate(sc['lines']) if x['label'] == '纯接话'}
+            cand = {c['line'] for c in r['economy']['candidates']}
+            tp, fp, fn = tp + len(gold & cand), fp + len(cand - gold), fn + len(gold - cand)
+        recall, precision = tp / (tp + fn), tp / (tp + fp)
+        self.assertGreaterEqual(recall, 0.6)          # 候选是给删除测试的线索，要尽量不漏
+        self.assertLess(precision, 0.5)               # 表面规则判不了废话——所以不按候选比例定问题（校准记录，改规则时重看）
+
+    def test_zero_filler_scene_passes_with_record_despite_candidates(self):
+        """EP03 场 4 盲评 0 句纯接话，脚本仍列出候选；有记录（删：无）时台词经济通过，候选只进复核。"""
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 's4.md'
+            p.write_text(with_record(ECO / 'theorder-ep03-s04.md', '- 删：无'), encoding='utf-8')
+            r = rs.review_file(p)
+        self.assertTrue(r['economy']['candidates'])
+        self.assertEqual(r['checks']['economy'], 'pass')
+        self.assertNotIn('economy', {i['key'] for i in r['issues']})
+        self.assertIn('台词经济：删除测试已做（删：无）', r['text'])
+
+    def test_missing_record_is_reported_once_with_an_example(self):
+        r = rs.review_file(ECO / 'theorder-ep03-s01.md')
+        self.assertEqual(r['checks']['economy'], 'missing')
+        it = next(i for i in r['issues'] if i['key'] == 'economy')
+        self.assertTrue(it['compact'])
+        self.assertRegex(it['evidence'], r'「.+」')
+        self.assertIn('S5', it['sources'])
+        self.assertIn('台词经济：缺删除测试', r['text'].splitlines()[0])
+        self.assertNotIn('缺删除测试', r['text'].split('问题：', 1)[-1].split('\n', 1)[0])  # 不占 ≤3 个问题的位置
+
+    def test_candidates_carry_real_story_evidence(self):
+        ctx, later = eco_context('theorder-ep03-s01')
+        r = rs.review_file(ECO / 'theorder-ep03-s01.md', context=ctx, later=later)
+        by = {c['quote']: c for c in r['economy']['candidates']}
+        five = by['Tess「She said five minutes.」']
+        self.assertTrue(any('"five" ←' in x and 'Five minutes' in x for x in five['said_before']))
+        self.assertTrue(any('scene-03' in x or 'theorder-ep03-s03' in x for x in five['later']))  # 场 3 "He said five minutes"
+        cake = by['Diego「It\'s her cake.」']
+        self.assertTrue(any("your cake" in x for x in cake['later']))                          # 场 3 回扣：先确认是不是铺垫
+        review = ' '.join(r['economy']['review'])
+        self.assertIn('后文有回扣时先确认它是不是铺垫', review)
+        runs = [(x['from'], x['to']) for x in r['economy']['runs']]
+        self.assertIn((40, 52), runs)                                     # "Now?" … "I heard her." 13 句只多 4 个新实词
+        self.assertIn('压缩测试：这段要改变的一件事', review)
+
+    def test_record_must_match_body(self):
+        rec = ('- 删：「I heard her.」——观众已知（她刚说过五分钟）\n'
+               '- 留：「She said five minutes.」\n'
+               '- 留：「Nobody asked for candles.」——性格\n')
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 's1.md'
+            p.write_text(with_record(ECO / 'theorder-ep03-s01.md', rec), encoding='utf-8')
+            r = rs.review_file(p)
+        probs = ' '.join(r['economy']['problems'])
+        self.assertEqual(r['checks']['economy'], 'issues')
+        self.assertIn('记为"删"的「I heard her.」还在正文里', probs)
+        self.assertIn('「She said five minutes.」记为"留"但没写它带来什么', probs)
+        self.assertIn('记为"留"的「Nobody asked for candles.」不在正文里', probs)
+        self.assertIn('删除测试记录与正文不符', r['text'])
+
+    def test_record_covers_candidates_and_runs(self):
+        """讨价还价、回扣、把规矩认成信条：删除测试判"留"并写出带来什么，就不再进复核。"""
+        rec = ('- 留：「I don\'t throw a curve with a guy on second.」——性格：把规矩认成自己的信条，给"So you should\'ve thrown the curve"垫底\n'
+               '- 压缩：「That\'s it?」…「You made it sound bigger.」3 句 → 1 句；这段要改变的一件事：她点破沙洲是借口\n')
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 's2.md'
+            p.write_text(with_record(ECO / 'theorder-ep03-s02.md', rec), encoding='utf-8')
+            r = rs.review_file(p)
+        self.assertEqual(r['checks']['economy'], 'pass', r['economy']['problems'])
+        review = ' '.join(r['economy']['review'])
+        self.assertNotIn("I don't throw a curve with a guy on second.」（", review)
+        self.assertNotIn("Lena「That's it?」（", review)
+
+    def test_nudges_toward_filler_are_gone(self):
+        ctx, later = eco_context('theorder-ep02-s01')
+        for f in (V3, ECO / 'theorder-ep02-s01.md', EP03_S4):
+            text = rs.review_file(f, full=True, context=ctx, later=later)['text']
+            for phrase in ('全场没有一个问句', '口头填充标记', '台词有人接', '（有人接）', '（没人接）', '是有意的不答吗'):
+                self.assertNotIn(phrase, text, (f.name, phrase))
+        third = rs.FIX_TEMPLATES[2]
+        self.assertNotIn('替观众问', third[0])
+        self.assertIn('带着自己的立场', third[1])
+
+    def test_old_connectivity_checks_still_work(self):
+        """只叠加不削弱：v1 标语化仍报来回与标语化，v3 对白连通仍通过；阈值不变。"""
+        r1, r3 = rs.review_file(V1), rs.review_file(V3)
+        self.assertTrue({'no_exchange', 'slogan'} <= {i['key'] for i in r1['issues']})
+        self.assertEqual(r3['checks']['dialogue'], 'pass')
+        for k, v in (('longest_exchange_min', 3), ('exchange_coverage_min', 0.5), ('mean_words_min', 4.0),
+                     ('short_unexcused_max', 0.45)):
+            self.assertEqual(rs.THRESHOLDS[k], v)
+
+    def test_cli_later_argument(self):
+        ctx, later = eco_context('theorder-ep03-s01')
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            rs.main([str(ECO / 'theorder-ep03-s01.md'), '--context', *map(str, ctx), '--later', *map(str, later), '--json'])
+        data = json.loads(buf.getvalue())[0]
+        self.assertEqual(len(data['later']), 3)
+        self.assertIn('economy', data['checks'])
+
+    def test_docs_make_deletion_test_a_writing_step(self):
+        skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
+        self.assertIn('接住上一句是必要条件，不是充分条件', skill)
+        s3c = (ROOT / 'references' / 'stage-3c-script.md').read_text(encoding='utf-8')
+        for phrase in ('删除测试', '压缩测试', '简单的事', '--later'):
+            self.assertIn(phrase, s3c)
+        tpl = (ROOT / 'templates' / 'script-scene.md').read_text(encoding='utf-8')
+        self.assertIn('### 删除测试', tpl)
+        self.assertLess(tpl.index('## 剧本页'), tpl.index('### 删除测试'))
+        src = (ROOT / 'references' / 'dialogue-review-sources.md').read_text(encoding='utf-8')
+        self.assertIn("don't make them hear it twice", src)
+        self.assertIn('you may not put every utterance', src)
+        ledger = (ROOT / 'references' / 'preference-ledger.md').read_text(encoding='utf-8')
+        self.assertIn('2026-09-24', ledger)
+        csd = (ROOT / 'references' / 'character-scene-development.md').read_text(encoding='utf-8')
+        self.assertIn('简单的事情复杂化', csd)
+        self.assertIn('因为字面有回应词，就判交流成立', csd)            # 旧误用信号仍在
+        self.assertIn('不写人设短句', csd)                            # 旧规则仍在
 
 
 if __name__ == '__main__':
