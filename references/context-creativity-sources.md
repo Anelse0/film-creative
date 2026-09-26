@@ -49,3 +49,24 @@
 未读到 / 未采用：Richard Curtis BAFTA 2013 讲座（bafta.org 返回 403，未读原文，不引用其观点）；BBC Writersroom 连续剧写作指南（未找到公开文本）；Harmon story circle、Truby、Yorke 等在已回滚的 1.3.x 中引用过的方法本次未重新核实，不写入正文。
 
 内部证据：一季故事 v1 → v2 的用户反馈表（空间单一、球员魅力不足、人设不讨喜、身份与生活薄、感情幼稚无事件推动、调研没转为创作）与 v2 分集框架文本中"没有……也没有……"密度，是 `story-engine.md` §七、硬规则 8 与 `episode-design.md` §二 的直接依据；项目正文不进公共仓库。
+
+## 4.0.0 新增来源（2026-09-26）
+
+触发：用户"台词重复、无意义对白多、剧本剧情设计能力弱、画面单调；非常严重"。对照 Offset EP01、THE ORDER EP04、reckless EP02 的实际剧本后，问题定位为流程：强制的是记账（事件轨、删除测试、review），造戏的方法全是可选项，而且由写稿的同一上下文自评。下列研究由调研子代理读 arXiv HTML 全文（PDF 抓取失败），主会话对关键句逐句 grep 核对；结论搬到剧本写作一律是 `[推论]`。编剧方法类来源登记在 `dialogue-review-sources.md` S14–S19。
+
+| 来源与已读范围 | 来源原意（近原话） | 本地采用 | 局限 / 不采用 |
+|---|---|---|---|
+| [Chakrabarty et al., "Art or Artifice? Large Language Models and the False Promise of Creativity", CHI 2024](https://arxiv.org/abs/2309.14556)（HTML 全文） | 专家设计的 TTCW 测试上，LLM 故事通过的项目比职业作家少 3–10 倍；专家评语：AI 对白缺潜台词，靠直接的、交代性的对白，人物过度解释处境与情绪；LLM 当评审时与专家评估的相关"close to zero" | `cold-read.md`：自评不能当验收；冷读只作线索；验收用双序配对（`scripts/blind_eval.py`） | 小说短篇、2023 年的模型；不是剧本 |
+| [Chakrabarty, Laban & Wu, "Can AI writing be salvaged?", CHI 2025](https://arxiv.org/abs/2409.14509)（HTML 全文） | LLM 写作七类毛病（陈词、不必要 / 冗余的交代、紫色文风、句式差、缺具体、措辞别扭、时态不一）；即使提示里明确要求避免陈词，每隔一篇仍满是陈词；检测问题片段不是瓶颈，重写才是；"不必要的交代"一类更大的问题是把潜台词说破，多句片段 LLM 改不到作家的水平；先检测再重写的独立一轮能把平均名次从 2.51 提到 1.99（作家改稿 1.5） | `scene-design.md` 开头：禁令写进提示挡不住，结构在写之前定；冷读后只定点改被标出的片段；潜台词问题回设计卡而不是逐句润色 | 段落级写作；排名由专家给出，样本为 GPT-4o 段落 |
+| [Mirowski et al., "Co-Writing Screenplays and Theatre Scripts with Language Models" (Dramatron), CHI 2023](https://arxiv.org/abs/2209.14958)（ar5iv 全文） | 分层生成 logline → 人物 → 情节节拍 → 地点 → 对白；业内评审：只是在"告诉"，像即兴里说的"do not mention the thing"；要找的是主角的目标和阻碍那股推动力；人物一上场就把想要的直说出来；各场对白并行生成，不知道上一场说过什么，出现对白循环 | 设计卡写推动者、阻力、转折，而不是"这场要交代什么"；观众账本与 `review_script.py --context` 复述检查：写本场前看前几场说过什么 | 2022 年的模型；评审是 15 位业内人士的访谈，不是盲测 |
+| [Huot et al., "Agents' Room: Narrative Generation through Multi-step Collaboration", ICLR 2025](https://arxiv.org/abs/2410.02603)（HTML 全文） | 冲突 / 人物 / 场景 / 情节四个规划代理写进共享草稿，再分段写作；人评在各维度都偏好这种写法；只做规划、最后由一个简单代理收尾的变体效果不好；单次调用里先规划或先反思的基线表现较差；LLM 评审用配对比较，交换顺序后 90.2% 仍选同一篇，与人评显著相关；人写的故事仍胜过所有系统 | 设计卡是规划，正文按设计写；验收用配对比较并交换顺序（`creative-eval.md` §八） | 规划与写作分给多个代理的结构本 skill 未照搬（一个会话写）——`[推论]`：至少让规划先写下来、约束后面的正文 |
+| [Huang et al., "Large Language Models Cannot Self-Correct Reasoning Yet", ICLR 2024](https://arxiv.org/abs/2310.01798)（HTML 全文） | 没有外部反馈时，LLM 很难自我纠正，纠正后有时更差；把反馈直接放进最初的指令，效果比事后纠正好 | 硬规则 10：写之前先设计（要求放进规划，而不是写完再改）；自检只是线索 | 研究的是推理任务；局限一节也提到自我纠正对改文风有效 |
+| [Panickssery, Bowman & Feng, "LLM Evaluators Recognize and Favor Their Own Generations", NeurIPS 2024](https://arxiv.org/abs/2404.13076)（HTML 全文） | LLM 评审给自己的输出打分更高，而人工标注认为质量相当；自我识别能力与自我偏好强度线性相关；交换选项顺序后，GPT-4 / GPT-3.5 / Llama 有 25% / 58% / 89% 会改判 | 冷读用新上下文、看不到作者理由；配对评审必须正反两序、两次一致才计胜负 | 摘要任务，不是小说或剧本 |
+| [Zhang et al., "Verbalized Sampling", 2025](https://arxiv.org/abs/2510.01171)（HTML 全文）；[Padmakumar & He, ICLR 2024](https://arxiv.org/abs/2309.05196)（仅摘要） | 传统单实例提示的众数回答趋向刻板；让模型先列出多个回答及其概率，创意写作多样性提高 1.6–2.1 倍、人评提高 25.7%；与指令微调模型合写会降低内容多样性 | 核心一步三选一：第一稿是最典型的写法（"主角收到消息"），先列三种再选 | 会议信息按子代理核对为 ICML 2026，本会话未另核；Padmakumar & He 只读了摘要 |
+| [Tian et al., "Are Large Language Models Capable of Generating Human-Level Narratives?", EMNLP 2024](https://arxiv.org/abs/2407.13248)（HTML 全文） | LLM 故事同质地偏正面、缺张力；转折点来得早，悬念与挫折少；把转折点与故事弧的特征明确写进提示，多样性、悬念与唤起度提高 40% 以上 | 设计卡"转折：预期 → 结果"；`story-engine.md` §一"剧情靠宣布推进"一行 | 叙事层面的分析，不是单场 |
+| [Chakrabarty, Laban & Wu, "AI-Slop to AI-Polish?", 2025](https://arxiv.org/abs/2504.07532)（HTML 全文） | 零样本 LLM 判断写作质量接近随机（50% 基线上下几个百分点）；推理模型不显著更好；从多个候选里用训练过的奖励模型选最好的一个，专家排名优于随机选与初稿 | 不把 LLM 打分当效果证据；双序配对只作辅助，用户在生产中终审（用户 2026-09-26 定） | 会议信息未核实（arXiv 标"Under Submission"） |
+| [Chen et al., "HoLLMwood", Findings of EMNLP 2024](https://aclanthology.org/2024.findings-emnlp.474/)（HTML 全文） | 基线对白"robotic and boring"；让不同 LLM 分别扮演各个人物对趣味性贡献最大 | 只作旁证：对手不配合（每个人带自己的算盘） | 评估只有 GPT-4 配对比较，没有人评——证据弱 |
+| [EQ-Bench Creative Writing v3 方法页](https://eqbench.com/about.html) `[基准方法说明，非同行评审]` | LLM 评审在配对判断里强烈偏好更长的输出；容易被词汇炫技和表面的精致打动；按评分表打分偏差少但区分度低 | 双序配对评审指令里写明"长度不是优点"，并要求引原句为证 | 实践者说明 |
+
+未读 / 未核实：Pan et al. 关于迭代自我修订中奖励投机的论文（只见引用）；Padmakumar & He 全文；AI-Slop 的会议信息。
+

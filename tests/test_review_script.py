@@ -274,7 +274,9 @@ class EventStakesTests(unittest.TestCase):
 
     def test_positive_scene_passes(self):
         r = review_text(POSITIVE)
-        self.assertEqual(r['checks'], {'dialogue': 'pass', 'economy': 'pass', 'events': 'pass'}, r['text'])
+        # 4.0.0：另报复述（没给 --context → n/a）与设计卡（没有"## 设计" → missing，只在总判断里报，不改变结论）
+        self.assertEqual(r['checks'], {'dialogue': 'pass', 'economy': 'pass', 'repeat': 'n/a', 'events': 'pass',
+                                       'design': 'missing'}, r['text'])
         self.assertEqual(r['verdict'], 'pass')
         self.assertEqual({v['who'] for v in r['events']['voiced']}, {'Maya', 'Jon'})
         self.assertTrue(all(v.get('reply') for v in r['events']['voiced']))
@@ -491,7 +493,9 @@ class DocsWiringTests(unittest.TestCase):
     def test_docs_route_monotony_to_diagnosis_before_scene_change(self):
         s3c = (ROOT / 'references' / 'stage-3c-script.md').read_text(encoding='utf-8')
         self.assertIn('事件轨', s3c)
-        self.assertLess(s3c.index('3c.0b'), s3c.index('3c.1 '))
+        # 4.0.0 重新编号：设计（3c.1）→ 事件轨（3c.2）→ 画面单调诊断（3c.3）→ 写正文（3c.4）；事件轨仍在写台词之前
+        self.assertLess(s3c.index('## 3c.1 场景设计'), s3c.index('## 3c.2 事件轨'))
+        self.assertLess(s3c.index('## 3c.2 事件轨'), s3c.index('## 3c.4 写正文'))
         self.assertNotIn('Diego 在牛棚里蹲着等他）', s3c)        # 3.6 把 v4.1 当正样本的示例已撤
         self.assertIn('先诊断', s3c)
         contract = (ROOT / 'references' / 'execution-contract.md').read_text(encoding='utf-8')

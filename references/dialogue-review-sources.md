@@ -17,8 +17,14 @@
 | S9 | Tim J. Smith, "The Attentional Theory of Cinematic Continuity", *Projections* 6(1), 2012, doi:10.3167/proj.2012.060102；本次读的是作者预印本（[UAL 开放 PDF](https://ualresearchonline.arts.ac.uk/id/eprint/21187/2/6679.pdf)，页码与期刊版不同）`[一手 / 眼动实验 + 理论]` | 无剪辑长镜头里，"Shifts in conversation are followed by clustering gaze on the speaker's face then gradual shifts back to the listener"；正反打序列先用建立镜头交代所有人位置，再"alternates between shots favoring each character in turn, typically while they are speaking"；视线不匹配时观众要反向搜索说话人。 | **(c) 画外句配在别人脸上**：观众的注意力默认落在说话人的脸上，画外句叠在第三人脸上与这一默认相反——`offscreen_lines` 判为问题的依据；同框 / 收件人不明的句子列为需模型复核。 |
 | S10 | Clark & Brennan, "Grounding in Communication", in Resnick, Levine & Teasley (eds.), *Perspectives on Socially Shared Cognition*, APA, 1991, pp. 127–149。[Stanford 开放 PDF](https://web.stanford.edu/~clark/1990s/Clark,%20H.H.%20_%20Brennan,%20S.E.%20_Grounding%20in%20communication_%201991.pdf) `[一手 / 心理语言学]` | p. 127：协作者"cannot even begin to coordinate on content without assuming a vast amount of shared information or common ground—that is, mutual knowledge, mutual beliefs, and mutual assumptions"；共同基础逐句累积更新。 | **(d) 潜台词支点**：一句话省略得掉的部分，是说者假定在双方共同基础里的；观众的共同基础只来自已播出的文本，所以省略句依赖的设定必须在前文建立过 `[推论：把"共同基础"从对话双方移到观众]`。脚本用"前文（本场 + `--context` 前几场）出现过"近似"在观众的共同基础里"。 |
 | S12 | Craig Mazin, *Scriptnotes* Episode 403 "How to Write a Movie" 官方文字稿，2019。[johnaugust.com](https://johnaugust.com/2019/scriptnotes-ep-403-how-to-write-a-movie-transcript) `[一手 / 职业编剧方法；2026-09-23 已读]` | "Fear is our connection to a character."；"I feel for characters when I fear with them. It is vulnerability."；人物要自己做选择——"They have to make the choices or you're making it for them." 讲的是整部电影的人物弧，不是单场对白规则。 | **(e) 人物赌注**：卡上"怕失去什么"一栏的依据——观众与人物的连接来自他怕什么；从整片人物弧移到单场一栏是 `[推论]`。 |
-| S13 | John August, "How to write a scene", johnaugust.com, 2007。[johnaugust.com/2007/write-scene](https://johnaugust.com/2007/write-scene) `[一手 / 职业编剧方法；2026-09-23 重读]` | 十一步清单：第 1 步本场必须发生什么、第 3 步谁该在场、**第 4 步 "Where could the scene take place?"——"The most obvious setting for a scene is generally the least interesting."**，同一段父子对白放在屠宰场和放在草地滚球赛上演出来不一样；**第 6 步 "Is this a long scene or a short scene?"**；第 8 步在脑子里放映这场戏。是写作方法，不是检查标准；没有给出任何时长或换景的数字。 | **(f) 画面推进**（3.6.0，3.7.0 并入事件轨）："先问地点、再问长短"的依据；地点与活动改变这场戏怎么演——August 的例子是同一段对白放在不同地点**演出来不一样**，不是换一个地点就多了一段戏，所以 3.7.0 起地点只作变化的属性。"≥30 s 至少两次变化""观众等一次变化 ≥40 s 复核"、按文本估时的系数都是本 skill 的 `[推论]`。skill 早在 `screenwriting-traditions.md` §五引过这篇，但只取了进入方式与脑内排演，第 4、6 步没接进流程——这是本次核查找到的原因之一。 |
+| S13 | John August, "How to write a scene", johnaugust.com, 2007。[johnaugust.com/2007/write-scene](https://johnaugust.com/2007/write-scene) `[一手 / 职业编剧方法；2026-09-23 重读]` | 十一步清单：第 1 步本场必须发生什么、第 3 步谁该在场、第 5 步这场戏里最出人意料的事是什么（2026-09-26 补读：还写到"如果让人物自己掌控场面，多数人会选择回避冲突"）、**第 4 步 "Where could the scene take place?"——"The most obvious setting for a scene is generally the least interesting."**，同一段父子对白放在屠宰场和放在草地滚球赛上演出来不一样；**第 6 步 "Is this a long scene or a short scene?"**；第 8 步在脑子里放映这场戏。是写作方法，不是检查标准；没有给出任何时长或换景的数字。 | **(f) 画面推进**（3.6.0，3.7.0 并入事件轨）："先问地点、再问长短"的依据；地点与活动改变这场戏怎么演——August 的例子是同一段对白放在不同地点**演出来不一样**，不是换一个地点就多了一段戏，所以 3.7.0 起地点只作变化的属性。"≥30 s 至少两次变化""观众等一次变化 ≥40 s 复核"、按文本估时的系数都是本 skill 的 `[推论]`。skill 早在 `screenwriting-traditions.md` §五引过这篇，但只取了进入方式与脑内排演，第 4、6 步没接进流程——这是本次核查找到的原因之一。 |
 | S11 | John August & Craig Mazin, *Scriptnotes* Episode 693 "Setups That Don't Feel Like Setups" 官方文字稿，2025。[johnaugust.com](https://johnaugust.com/2025/scriptnotes-episode-693-setups-that-dont-feel-like-setups-transcript) `[一手 / 职业编剧方法]` | 设定"just out of the blue … is going to feel weird and forced"；铺垫的做法是找"the present-tense need of the scene that brings up this idea"，让信息"is the point of a moment"（Mazin：像魔术师手里真的握着一枚硬币）；另一种"not objectionable"的做法是让人物当场问一句（"What happened to that church?"）。 | **(d)** 三种改法的来源：用当场需要 / 动作引出（Mazin 首选）、让第三人替观众问（"not objectionable"）、直说来历（本 skill 补的第三项，`[推论]`）。改法只作选项，按 SKILL.md"批评已有稿、改法未定"契约交付，不改稿。 |
+| S14 | Robert McKee 官网：[《Do Your Scenes Turn?》](https://mckeestory.com/do-your-scenes-turn/)（《Story》节选）、[《Mary Queen of Scots》评析](https://mckeestory.com/mary-queen-of-scots-2018/)、[《Four Traps New Screenwriters Fall Into》](https://mckeestory.com/four-traps-new-screenwriters-fall-into/)、[*Dialogue* 书页](https://mckeestory.com/dialogue/) `[一手 / 作者官网；2026-09-26 子代理取全文，主会话抽查引文]`；《Story》的节拍与缺口定义只读到 [Goodreads 读者标注](https://www.goodreads.com/notes/40389794-story/29634010-william-c-woodard) `[二手]` | 人物处境的价值从头到尾没变，这场 "has activity … but nothing changes in value. It is a nonevent"；只为交代信息存在的场应删掉、把信息织进别处；两个人互相说彼此都知道的事，警报应一直响到这场被重新发明；理想的做法是先想这场能不能不用台词写出来，台词是 "the regretful second choice"；*Dialogue* 书页：说话就是在做事。二手：节拍是一次动作 / 反应的交换，转折点是预期与结果之间的缺口；"Convert exposition to ammunition"。 | **(h) 复述**（4.0.0）："互相说都知道的事"是复述检查的依据，修法是重建场而不是改句子。**设计卡**：转折（预期 → 结果、非事件）、弹药、静音测试（先想无台词怎么写）。二手的节拍定义只作写法说明，不作检查依据。 |
+| S15 | Alexander Mackendrick《On Film-Making》（Faber 2004）：[Criterion 官方节选《Mackendrick and Odets》](https://www.criterion.com/current/posts/1762-mackendrick-and-odets)；编者 Paul Cronin 网站的 [《Slogans for the Screenwriter's Wall》](https://www.thestickingplace.com/alexander-mackendrick/slogans-for-the-screenwriters-wall/) 与 [《Step Outlines》](https://www.thestickingplace.com/alexander-mackendrick/step-outlines/) `[一手节选；2026-09-26 子代理取全文，主会话抽查引文]` | Odets：每个走进对峙的人物都带着弹药，一方缺的信息到了另一方手里就是王牌；改台词的检查是"他说不出这句，因为她不会让他轻易过关"；台词不变、换个好看的背景（"opening it out"）不会让戏更像电影；"Play the situations, not the words"；叮嘱演员别让人物舒服地坐下。Slogans："PASSIVITY is a capital crime in drama."；聪明的人物会预判并备好反招；说明性的内容除非处在当下的戏剧张力里否则无聊；好电影把对白换成外语仍能看懂六到八成。Step Outlines：每一场读起来是因果链上的一步，"所以结果是……"。 | **设计卡**：推动者与战术（被动是死罪）、阻力（对手不让他轻易过关）、弹药、静音测试（外语测试）、演处境不演台词。**`story-engine.md` §一**：剧情靠宣布推进、步进大纲的"所以结果是"。Criterion 节选也说 Odets 常写三到五人互动——与 THE ORDER"一条 clip 三个角色"的生产约束不同，那是生产层的事，本 skill 不改。 |
+| S16 | John August & Craig Mazin, *Scriptnotes* Episode 728 "Beats to Scenes"（嘉宾 Drew Goddard）官方文字稿，2026。[johnaugust.com](https://johnaugust.com/2026/scriptnotes-episode-728-beats-to-scenes-with-drew-goddard) `[一手；2026-09-26 子代理取全文，主会话抽查引文]` | August 转述 Sorkin："when there's an obstacle that forces a new tactic, that's a beat"；场景是人物在做的事、遇到的障碍、怎样越过、做出的选择。 | **写法第 1 条**：一个节拍 = 一次出招 + 一次回应，障碍逼出新战术才进下一拍；同一战术换句话再说不是新节拍（据此把"复述、确认"判为不推进是 `[推论]`）。 |
+| S17 | *Scriptnotes* Episode 357（讲 exposition）官方文字稿，2018。[johnaugust.com](https://johnaugust.com/2018/scriptnotes-ep-357-this-title-is-an-example-of-exposition-transcript) `[一手；2026-09-26 子代理取全文，主会话抽查引文]` | Mazin："As you and I both know"——那为什么还要说；让人物突然装糊涂好把事实讲出来，是在削弱人物；要想清楚为什么这个人此刻把信息告诉那个人、它让双方有什么感受；被演出来的说明不只是信息，是人物的证据。 | **(h) 复述**与**写法第 2、3 条**：信息当弹药、对手不配合、不为观众递话。把递话问句（"And Rhett?"）判为削弱人物是 `[推论]`。 |
+| S18 | *Scriptnotes* Episode 735 "The Flashforward Fallback" 官方文字稿，2026。[johnaugust.com](https://johnaugust.com/2026/scriptnotes-episode-735-the-flashforward-fallback-transcript) `[一手；2026-09-26 子代理取全文，主会话抽查引文]` | August 把 agency 定义为人物采取行动、朝自己想去的方向推进的能力；Mazin：人物不能只被推着走、没有目标地反应；用人物走出去收场是 "shoe leather"。 | **设计卡推动者**、**写法第 4、6 条**（人物主动；晚进早出）。 |
+| S19 | Variety《Global microdrama boom》，2025-11-13。[variety.com](https://variety.com/2025/tv/news/global-microdrama-boom-1236560947/) `[行业报道中的写作者原话；2026-09-26 子代理已读]` | 受访写作团队：写竖屏就是一门识别不必要的东西并删掉它的速成课。同期 THR（2025-12-23）转述课程要求"一个地点、每场多个角色" `[二手转述]`；Deadline（2025-09）受访经理说现行竖屏对白 "very two-dimensional"——描述现状，不是目标。 | 竖屏短剧对台词经济的要求与 S5 一致；不采用平台公式（`episode-design.md` §四）。 |
 
 ## 二、哪些检查有来源、哪些是本 skill 的推论
 
@@ -34,6 +40,8 @@
 | 潜台词支点 | `presupposed`、`anchoring.candidates / planted / declared` | S10（共同基础）、S1 p.727（收件人设计）、S11（凭空出现 / 当场需要 / 当场问） | "省略句 + 当作已知的新指称（你的 X / 那个 X / 你有 X / 还 X）+ 接下来没人问"作为"看不懂"的代理量是 `[推论]`；指称抽取是英文启发式；中文动作行无法与英文指称对齐，只能引用交模型复核；`this / these`、"right here"视为指画面里的东西；账本（模板头部与"上下文承接"）里声明过的指称降为复核项。三种改法的措辞是模板，具体改什么由模型按本场填 |
 | 事件轨（3.7.0，合并 3.5.0 人物赌注与 3.6.0 画面推进） | `checks.events`、`events.voiced / changes / places / jumps / linger_s / longest_gap / ends / estimate / declared` | S6（三问；不推进剧情的场是多余的）、S12（fear）、S13（先问地点、再问长短）、S1 / S2（说出口后有没有人接） | 脚本**不判**一句话有没有欲望、一个画面有没有意义（那需要关键词表，会误报）；只核对作者写正文前填的事件轨：人物清单齐不齐（说 ≥3 句的人 `stake_min_lines = 3`，以及每行变化的主体，含不说话的人）；锚句与说出口的句子逐字在正文、顺序一致、本人说、下一句有没有接；不说的有没有"理由""代价"；每行"谁：进 → 出"——进出相同、同一人的"出"重演判问题；**换了地点或跳了时间的行标为余韵或没有变化判问题**；删掉损失空判问题；≥30 s 少于 `min_changes = 2` 次变化且未登记"本场静止：理由"（3.6 的"本场单一画面：理由"仍认）判问题；全场无人说出口且未登记"本场不说出口：理由"判问题。**推进只数变化，不数地点**：全场一个地点只列复核（先诊断缺什么）。换地点 / 跳时间 / 无台词且覆盖 ≥`silent_review_s = 8` s / 只改变观众所知的行，列出变化、删掉损失、同一人上一次的状态、同一对象上一行，交模型做删除测试；余韵合计 ≥`linger_review_s = 10` s、观众等一次变化 ≥`gap_review_s = 40` s、自报总估时 < 文本估时 × 0.85（`estimate_under`）列复核；`--production-total` 比剧本估时多 20% 以上（`production_over`）在总判断里提醒（不退回）。文本估时：台词按语速（`wps` 4 词/秒；中文 4.5 字/秒），无台词段每句 `action_s` 1.5 秒，台词之间 ≤2 句的反应插入不另计。人物清单声明过的赌注词不再报"潜台词无支点"。全部阈值 `[推论]`，校准见 §三 |
 | 台词经济（3.8.0） | `checks.economy`、`economy.candidates / runs / record` | S5 后半（听过一次不再听第二次；重复要删；接话很少；不是每句该说的都写进对白） | 脚本**不判**一句是不是废话——10 场盲评标注上，表面规则（全是已出现过的实词 / 回应词起句且新词 ≤1 / ≤5 词无新词 / 答案下一句就给的短问句 / 被截断的半句）精确率 0.32、召回 0.68，讨价还价、回扣、嘴硬、调情都长得像接话。所以候选只附证据列复核：前文哪里说过（本场、`--context` 前几场，按具体词、不按 know / look 这类常用词）、后文哪里回扣（`--later`，可能是铺垫）。判为问题的只有两种：缺删除测试记录（只在总判断里报一句）、记录与正文不符（记为删 / 并的还在正文、记为留的不在正文或没写带来什么）。低信息段（≥4 句、平均每句新实词 ≤0.75）交压缩测试。总判断不再报"有人接的台词占比""最长来回""平均词数"，不再输出"全场没有一个问句""口头填充 N 句"，说出口的行不再标"（没人接）"——它们推着作者补接话和问句；数值仍在 JSON。潜台词无支点的第三种改法从"让第三人替观众问"改为"让在场的人带着自己的立场问" |
+| 复述（4.0.0） | `checks.repeat`、`repeat.lines / facts` | S5（听过一次不再听第二次）、S14（互相说都知道的事要重新发明这场）、S17（As you and I both know） | 与 `--context` 前几场（台词 + 英文画面文字）重合的三词短语（至少含一个实词，词干比较）、钟点与"明天 / 今晚"（只和紧挨着的上一场比）算复述；只重合一个星期几不算（反复提到的期限是在施压）；同一事实在本场 ≥3 句台词里出现算反复（连着几句的一轮来回——施压、讨价还价——只列复核）；≥2 句复述或一次事实反复判问题，1 句列复核；删除测试写明"回扣 / 铺垫 / 锁定"的"留"不计入但列复核——全部是 `[推论]`，校准见 §三 4.0.0 表 |
+| 设计卡（4.0.0） | `checks.design`、`design.card / missing` | S14（转折、非事件、先想无台词怎么写）、S15（弹药、被动是死罪、外语测试）、S16（障碍逼出新战术） | 只查"## 设计"在不在、五格与观众已知、三种发生方式齐不齐；只在总判断里报，不改变结论（写作步骤不靠脚本判）；第一种或选中的一种是传话、转折没写成"预期 → 结果"列复核 |
 | 安静戏保护 | `min_lines` | S1（轮次长短不固定）；S7 只作旁证（本次未重读） | `min_lines = 4` 以下不做统计判断；是否"有理由的短句"最终由模型按上下文判（SKILL.md 取向 6） |
 
 ## 三、阈值校准（全部 `[推论]`，请用户调）
@@ -104,6 +112,20 @@
 
 合计 219 句、纯接话 34 句（15.5%，占台词词数 9.2%）；候选 71 句，命中 23：精确率 0.32、召回 0.68。漏掉的多是"复述画面刚演过的事"（"She's not picking up." / "Round two. Marsh." / "You're late."），动作行是中文，脚本对不上，只能靠模型的删除测试。标注者同时列出"看似废话其实有作用"的句子（讨价还价 "Candles are at half past." / "Lena." / "Five."，回扣 "It's her cake."，信条 "I don't throw a curve with a guy on second."，嘴硬 "I know where it is."）——这些都会进候选，由"留：带来什么"放行。场 4 与 reckless 场 2 为 0，说明问题不在"对话多"，而在没有一项要求每句带来东西；阈值 `run_min` 4、`run_new_max` 0.75 是 `[推论]`。
 
+### 4.0.0 复述校准（非盲，维护者对照删除测试标注与剧情；样本小，只作复核线索）
+
+| 样本（--context 前几场） | 脚本结果 | 对照 |
+|---|---|---|
+| Offset EP01 s06（s04、s05） | 问题：2 句——"the rest of the press tour"←s05 Hollis、"tomorrow"←s05 Hollis | s05 刚让观众知道打包宣传与明天碰面；s06 的删除测试 9 句全"留"，3.8.0 判"删除测试已做（留 9）"放行 |
+| THE ORDER EP04 场 2（场 1） | 问题："wednesday" ×3 | 教练、Cole 在一场里三次报周三；场 3 Cole 又报一次（场 3 列 1 句复核） |
+| reckless EP02 场 3（场 1、2） | 1 句复核："forty minutes out"←场 2 代客泊车 | 队友复述观众一分钟前看过的修车；其余复述是改写的说法（"It wouldn't start. He was walking past."），三词短语对不上——语义复述交冷读 |
+| THE ORDER EP02 场 2–3、reckless 场 2（前几场） | 未见 | 这几场的纯接话是场内确认（"Monday. Okay."），不是跨场复述，归台词经济候选 |
+| THE ORDER EP03 场 1（EP02 场 1–3） | 1 句复核："coaches see it monday"←EP02 场 2 Beckett | 标注为"要 / 拒"：Beckett 被追问时重复自己的话——列复核不判问题。修正前"monday""tonight"单独重合报了 5 句，改为星期几单独重合不算、"明天 / 今晚"只比上一场后降到 1 句；场内三句连着的"Monday"（Beckett / Diego 的施压来回）按"一轮来回"只列复核 |
+| THE ORDER EP03 场 2（EP02 场 1–3、EP03 场 1） | 问题：2 句——Isa 两次引用自己场 1 的"you can walk out to it" | 标注一句"纯接话"、一句"笑点"：有意的自我引用，作者可在删除测试写"留：……——回扣"豁免 |
+| THE ORDER EP03 场 3、场 4 | 各 1 句复核 | 场 3"He said five minutes"标注纯接话；场 4 Beckett 重提侦察表，标注"关系" |
+
+已知边界：改写过的复述（换了说法）脚本对不上；中文动作行里的画面与英文台词对不上；有意的回扣与复述字面相同，只能靠作者写明或冷读判断。
+
 ## 四、复核记录（2026-09-21 第二次）
 
 逐条复核结论——按"可回访 / 一手 / 本次已读 / 支持的检查是否直接"四项：
@@ -125,14 +147,22 @@
 | S6（2026-09-23 重读） | 第三方转载 | 一手备忘录 | 是（转载页，三问、"information"句与"SUPERFLUOUS"句核对） | 直接：三问 → 人物清单三栏；"不推进剧情的场是多余的"→ 删除测试；**间接**：从整场挪到每一行、与正文逐字核对（`[推论]`） | 由复核框架升为事件轨结构依据 |
 | S12 | 官方文字稿 | 一手创作方法 | 是（2026-09-23） | 间接：整片人物弧 → 单场"怕失去什么"栏（`[推论]`） | 新增 |
 | S13 | 作者本人网站 | 一手创作方法 | 是（2026-09-23 重读，第 4、6、8 步核对） | 直接：写一场戏要先问地点与长短；**间接**：→ 地点作为变化的属性、"≥30 s 至少两次变化"（`[推论]`；3.6 的"全场一个画面须登记理由"已撤） | 新增 |
+| S14–S19（2026-09-26） | 官网 / 官方文字稿 / 官方节选；《Story》节拍定义为 Goodreads 标注 | 一手（《Story》标注为二手） | 是：子代理取全文（WebFetch 失败处用 curl 取 HTML），主会话对 Criterion 节选、Slogans、McKee 三页、Scriptnotes 357 / 609 / 728 / 735 的关键句逐句 grep 核对 | 直接：非事件、互相说都知道的事、弹药、被动、外语测试、障碍逼出新战术、shoe leather；**间接**：→ 设计卡五格与复述阈值（`[推论]`） | 新增 |
+
 
 脚本输出（终端与 `--json` 的 `basis` 字段）对每个问题同步标注：判断依据哪几条来源、阈值与代理量属于 `[推论]`。
 
 ## 五、未采用 / 未读到
 
-- Robert McKee, *Dialogue* (2016)：只找到第三方转载页且访问被拒，未读原文，不引用。
+- Robert McKee, *Dialogue* (2016)：3.3.0 时只找到第三方转载页且访问被拒；2026-09-26 读到官方书页（见 S14 与下文），书中正文仍未读。
 - Grice, "Logic and Conversation" (1975)：公开 PDF 访问失败，本次未读；"下一句与上一句相关"已由 S1 §4.8 覆盖。
 - Clark & Marshall 1981（定语指称与共有知识）、Levinson 1983 *Pragmatics* 第 4 章（预设触发语）：未读原文；"你的 X / 那个 X / 还"这组触发语只按 S10 的共同基础原理列为 `[推论]`，不引用这两本。
 - BBC Writersroom 格式指南：未取得官方 PDF；O.S. / 画外标注按剧本页模板的括号约定识别，不引用格式规范。
 - S2–S4 是真实会话语料（电话闲聊、日常问答）：只用来防"一人一句人设短句"这一头，不作屏幕对白的目标——真实会话满是接话与复述，屏幕对白要压缩（S5 后半）。
 - 没有中文会话语料的句长数据；中文台词只做来回 / 收件人 / 画外统计，句长与主谓宾指标不计算（脚本会在信号里说明）。
+- Mackendrick《On Film-making》的"Activity versus Action"一章与"dialogue as action"原文：只找到盗版 PDF，未打开；"活动与行动"的区分在 `scene-design.md` 里用 McKee"有活动但没有价值变化"（S14）与 Odets"演处境"（S15）表达，不引用该章。
+- McKee *Dialogue* (2016)：官方书页已读（S14），书中样章嵌在页面里取不到；该书编者之外，Mackendrick 的编者 Paul Cronin 建议学生远离此书——只引书页一句，不引书中方法。
+- UCB《Comedy Improvisation Manual》："game of the scene / heightening"只读到课程页与第三方访谈，未读原书，不引用。
+- Hitchcock / Truffaut"photographs of people talking"：只见 Goodreads 引语页，书页扫描不可取，不引用。
+- BBC Writersroom、Vulture、NYT、Guardian：本次检索工具无法访问，未读。
+- Scriptnotes 753（Aaron Sorkin，2026-09-22，"写冲突"专题）：文字稿尚未发布，只读到节目页，不引用。

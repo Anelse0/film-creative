@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""出稿后的剧本 review：对白连通、台词经济（接住之外带来了什么）、事件轨（谁要什么、每一行变了什么）（film-creative 3.8.0）。
+"""出稿后的剧本 review：对白连通、台词经济（接住之外带来了什么）、复述、事件轨（谁要什么、每一行变了什么）、设计卡（film-creative 4.0.0）。
 
 用法:
   review_script.py 03_script/scene-03.md [scene-04.md ...] [--context scene-01.md scene-02.md] [--later scene-04.md] [--json] [--full]
@@ -22,9 +22,14 @@
 只列候选（重复 / 接话 / 递话问句 / 截断）与低信息段，附"前文哪里说过 / 后文哪里回扣"交删除测试与压缩测试；
 判为问题的只有：缺剧本页"### 删除测试"记录、记录与正文不符。总判断不再报"有人接的台词占比""最长来回"，
 不再输出"全场没有一个问句"——它们推着作者补接话。
-对白、台词经济与事件轨分开给结论（checks.dialogue / checks.economy / checks.events），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
+4.0.0 起另报"复述"与"设计卡"。复述：本场台词与 --context 前几场（台词 + 英文画面文字）重合的三词短语（至少含一个实词）、
+同一事实（星期、钟点、明天 / 今晚）在本场 ≥3 句台词里反复出现——前者 ≥2 句、后者一次即判问题，删除测试里写明"回扣 / 铺垫 / 锁定"
+的"留"不计入但列复核。设计卡：读正文前的"## 设计"（观众已知 / 核心一步三种发生方式 / 推动者 / 阻力 / 转折 / 弹药 / 静音测试），
+只在总判断里报齐不齐，不改变结论——写作步骤不靠脚本判；选中的一步是传话、转折没写成"预期 → 结果"列复核。
+事件轨里"（信息·观众已知；后果：…）"写不出后果的行不计为变化。
+对白、台词经济、复述、事件轨与设计卡分开给结论（checks.dialogue / checks.economy / checks.repeat / checks.events / checks.design），"对白连通通过"不代表人物有戏。语义判断不冒充已判定，
 列为"需模型复核"的证据清单。阈值全部是 `[推论]`（按 THE ORDER EP02 场 1 v1/v3、EP03 场 4 v3/v4/v4.1 校准），
-在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S13）。
+在 THRESHOLDS 里改。每条判断引用的一手来源见 references/dialogue-review-sources.md（S1–S19）。
 
 不改稿，不替用户采用；零外部依赖。退出码：0 = 通过或只有信号，1 = 有问题，2 = 输入无法解析。
 """
@@ -65,6 +70,11 @@ THRESHOLDS = {
     'run_new_max': 0.75,       # 低信息段：平均每句新实词不超过此数
     'estimate_under': 0.85,    # 作者自报总估时 < 按文本估时 × 此比例 → 需模型复核（文本估时误差约 ±15%）
     'production_over': 1.2,    # 分镜实排 > 剧本估时 × 此比例 → 提醒用户（场面轨是告知不是锁定；回不回剧本层由用户定）
+    # 复述与设计卡（4.0.0；按 Offset EP01 s04–s06、THE ORDER EP04 场 1–3、reckless EP02 场 1–3 非盲校准，见 dialogue-review-sources.md §三）
+    'restate_ngram': 3,        # 与前几场重合的短语长度（词，至少含一个实词）
+    'restate_problem_min': 2,  # 本场 ≥ 此句数复述前几场 → 判问题；1 句列复核
+    'fact_repeat_min': 3,      # 同一事实（星期 / 钟点 / 明天今晚）在本场 ≥ 此句数台词里出现 → 判问题
+    'design_min_s': 20,        # 按文本估时 ≥ 此秒数或有对话的场，写正文前要有设计卡（只在总判断里报）
 }
 
 START_ACTION_RESET = re.compile(r'^场\s*\d+')
@@ -508,7 +518,7 @@ CATEGORIES = ('没得到', '得到', '推迟', '失去', '信息', '关系', '�
 LINGER = re.compile(r'^\s*(无|余韵)')
 AUDIENCE = {'观众'}
 EMPTY_CELL = {'', '—', '-', '无', '没有', '空', '未写', '__'}
-CONTINUOUS = {'连续', '接上', '同上', '紧接'}
+CONTINUOUS = {'连续', '接上', '同上', '同前', '紧接'}
 ACTION_SENT = re.compile(r'[。！？；!?]|(?<=[a-z])\.\s')
 PARENS = re.compile(r'[（(][^)）]*[)）]')
 TAIL_PAREN = re.compile(r'[（(]([^()（）]*)[)）]\s*$')
@@ -575,7 +585,8 @@ def parse_change(cell):
         meta = tail.group(1) if tail else ''
         state = to[:tail.start()].strip() if tail else to.strip()
         cat = next((c for c in CATEGORIES if meta.strip().startswith(c)), None)
-        items.append({'who': who, 'from': frm.strip(), 'to': state, 'cat': cat, 'cost': _field(meta, '代价')})
+        items.append({'who': who, 'from': frm.strip(), 'to': state, 'cat': cat, 'cost': _field(meta, '代价'),
+                      'known': '观众已知' in meta, 'after': _field(meta, '后果')})
     return {'linger': False, 'reason': None, 'items': items, 'bad': bad}
 
 
@@ -766,11 +777,13 @@ def check_events(text, card, lines, actions, names, production_total=None):
     # 地点与时间：只是属性；记录换地点 / 跳时间，供"换了地点却没有变化"与删除测试复核
     prev_loc = None
     for k, row in enumerate(rows):
-        loc = _combo_key(row['loc']) if row['loc'].strip() not in EMPTY_CELL else prev_loc
+        raw_loc = row['loc'].strip()
+        same = raw_loc in EMPTY_CELL or any(raw_loc.startswith(c) for c in CONTINUOUS)  # "同上，沿通道往出口" 是同一处
+        loc = prev_loc if same else _combo_key(raw_loc)
         t = _combo_key(row['time'])
         row['jump'] = bool(k and t and row['time'].strip() not in EMPTY_CELL and not any(t.startswith(c) for c in CONTINUOUS))
         row['moved'] = bool(k and loc and prev_loc and loc != prev_loc)
-        if loc and loc not in [_combo_key(p) for p in res['places']]:
+        if loc and not same and loc not in [_combo_key(p) for p in res['places']]:
             res['places'].append(PARENS.sub('', row['loc']).strip())
         res['jumps'] += row['jump']
         prev_loc = loc or prev_loc
@@ -804,6 +817,10 @@ def check_events(text, card, lines, actions, names, production_total=None):
             if who in last_state and _plain(it['to']) in [_plain(x['to']) for x in history.get(who, [])]:
                 j = next(x['row'] for x in history[who] if _plain(x['to']) == _plain(it['to']))
                 res['problems'].append(f'第 {k} 行 {who} 的"出"「{_short(it["to"], 24)}」与第 {j} 行相同：同一状态再演一遍')
+                continue
+            if it['cat'] == '信息' and it.get('known') and who not in AUDIENCE and not it.get('after'):
+                res['review'].append(f'第 {k} 行 {who}「{_short(it["to"], 24)}」是观众已知的事，没写后果：不计为变化——'
+                                     f'晚进（从他知道之后开始）、写出他因此做的新事，或删（scene-design §一）')
                 continue
             if not it['cat']:
                 res['review'].append(f'第 {k} 行 {who} 的变化没标类别（{"/".join(CATEGORIES)}）')
@@ -1106,12 +1123,245 @@ def ECONOMY_ISSUE(eco):
     }
 
 
+# ---- 复述：观众听过一次的不再听第二次（4.0.0） ---------------------------------------
+# 依据：S5 Scriptnotes 609（"if the audience hears it once, don't make them hear it twice"）；S14 McKee（两个人互相说
+# 都知道的事，要重新发明这场）；S17 Scriptnotes 357（"As you and I both know… then why are we saying it?"）。
+# 3.8.0 的"重复"候选按单个实词比，一句里只要有一个新词就放行（Offset EP01 s06 把 s05 的打包宣传、"考虑一下"、
+# 明天碰面又说了一遍，仍判"删除测试已做（留 9）"）。这里改按短语与事实比：与前几场重合的三词短语（至少含一个实词）、
+# 同一事实在本场反复出现。回扣与铺垫在字面上长得一样，所以作者在删除测试里写明"回扣 / 铺垫 / 锁定"的"留"不计入，
+# 但列出来交复核——豁免只看这几个词，其余"留"的理由不豁免（自填的理由正是 3.8.0 放过复述的原因）。
+FUNC = STOP | SUBJECTS | AUX | CONNECTIVES | {
+    'about', 'into', 'from', 'with', 'them', 'him', 'her', 'his', 'our', 'their', 'us', 'been', 'being', 'will', 'if',
+    'than', 'as', 'by', 'very', 'too', 'much', 'more', 'some', 'any', 'each', 'every', 'again', 'back', 'off', 'over',
+    'down', 'one', "i'm", "it's", "don't", "that's", "i'll", "you're", "he's", "she's", "we're", "they're", "can't",
+    "won't", "didn't", "isn't", "wasn't", 'gonna', 'let', "let's", 'got', 'get', 'going'}
+GENERIC_STEMS = {_stem(w) for w in ECO_GENERIC}
+WEEKDAY = {'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'}
+WEEKDAY_ABBR = re.compile(r'\b(MON|TUE|TUES|WED|THU|THUR|THURS|FRI|SAT|SUN)\b')
+ABBR_FULL = {'MON': 'monday', 'TUE': 'tuesday', 'TUES': 'tuesday', 'WED': 'wednesday', 'THU': 'thursday',
+             'THUR': 'thursday', 'THURS': 'thursday', 'FRI': 'friday', 'SAT': 'saturday', 'SUN': 'sunday'}
+HOURS = {w: i for i, w in enumerate(('one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+                                      'eleven', 'twelve'), 1)}
+MINUTES = {'fifteen': '15', 'thirty': '30', 'forty-five': '45', "o'clock": '00'}
+CLOCK_WORDS = re.compile(r"\b(" + '|'.join(HOURS) + r")[- ](fifteen|thirty|forty-five|o'clock)\b", re.I)
+CLOCK_DIGITS = re.compile(r'\b(\d{1,2}):(\d{2})\b')
+DAY_WORDS = {'tomorrow', 'tonight', 'yesterday'}
+RETAIN_OK = re.compile(r'回扣|铺垫|锁定|弹药|callback', re.I)
+
+
+def facts(text):
+    """一句里的事实记号：星期、钟点（three-thirty = 3:30）、明天 / 今晚 / 昨天。"""
+    out = set()
+    low = text.lower()
+    out |= {w for w in WEEKDAY if re.search(r'\b' + w + r'\b', low)}
+    out |= {ABBR_FULL[m] for m in WEEKDAY_ABBR.findall(text)}
+    out |= {f'{HOURS[h.lower()]}:{MINUTES[m.lower()]}' for h, m in CLOCK_WORDS.findall(text)}
+    out |= {f'{int(h)}:{m}' for h, m in CLOCK_DIGITS.findall(text)}
+    out |= {w for w in DAY_WORDS if re.search(r'\b' + w + r'\b', low)}
+    return out
+
+
+def _grams(text, n):
+    toks = [_stem(w) for w in tokens(text)]
+    out = set()
+    for i in range(len(toks) - n + 1):
+        g = tuple(toks[i:i + n])
+        if any(len(w) >= 3 and w not in FUNC and w not in GENERIC_STEMS for w in g):
+            out.add(g)
+    return out
+
+
+def _surface(text, grams):
+    """把重合的词组还原成原句里的写法（相邻的三词组连成一段）；事实记号原样。"""
+    toks = tokens(text)
+    stems = [_stem(w) for w in toks]
+    hit = set()
+    for g in grams:
+        if g[0] == '#fact':
+            continue
+        for i in range(len(stems) - len(g) + 1):
+            if tuple(stems[i:i + len(g)]) == g:
+                hit.update(range(i, i + len(g)))
+    runs, cur = [], []
+    for i in sorted(hit):
+        if cur and i != cur[-1] + 1:
+            runs.append(cur)
+            cur = []
+        cur.append(i)
+    if cur:
+        runs.append(cur)
+    words_ = [' '.join(toks[i] for i in r) for r in sorted(runs, key=len, reverse=True)[:2]]
+    words_ += [g[1] for g in grams if g[0] == '#fact' and not words_]
+    return ' / '.join(words_)
+
+
+def _context_units(paths):
+    """前几场的台词与含英文的动作段（画面上的字）：[(标签, 引文, 文本)]。"""
+    units = []
+    for p in paths or ():
+        p = Path(p)
+        try:
+            lines, actions = parse(p.read_text(encoding='utf-8'))
+        except (ValueError, OSError):
+            continue
+        label = p.stem
+        units += [(label, quote(ln), ln['text']) for ln in lines if not is_cjk(ln['text'])]
+        units += [(label, f'画面「{_short(a, 30)}」', ' '.join(words(a))) for a in actions if len(words(a)) >= 2]
+    return units
+
+
+def restatement(lines, context=(), text=''):
+    """与前几场重合的短语、同一事实反复出现。status：n/a / pass / issues；复述行附出处。"""
+    T = THRESHOLDS
+    n = T['restate_ngram']
+    res = {'status': 'n/a', 'problems': [], 'review': [], 'lines': [], 'facts': []}
+    rec = deletion_record(text) if text else None
+    retained = {}
+    for item in (rec or {}).get('留', []):
+        if RETAIN_OK.search(item['reason'] or ''):
+            for q in item['quotes']:
+                retained[_norm_quote(q)] = item['reason']
+    units = _context_units(context)
+    last = Path(list(context)[-1]).stem if context else None
+    index = {}
+    for label, q, txt in units:
+        for g in _grams(txt, n):
+            index.setdefault(g, (label, q))
+        for f in facts(txt):
+            if f in DAY_WORDS and label != last:
+                continue  # "明天 / 今晚"只和紧挨着的上一场比：隔了几场的"tonight"多半是另一晚
+            index.setdefault(('#fact', f), (label, q))
+    if units:
+        res['status'] = 'pass'
+        for k, ln in enumerate(lines):
+            if is_cjk(ln['text']) or ln.get('is_group'):
+                continue
+            shared = {}
+            for g in _grams(ln['text'], n):
+                if g in index:
+                    shared.setdefault(index[g], []).append(g)
+            for f in facts(ln['text']):
+                if ('#fact', f) in index:
+                    shared.setdefault(index[('#fact', f)], []).append(('#fact', f))
+            # 只重合一个星期几不算复述（反复提到的期限，如"Monday = Cut Day"，是在施压）；钟点、明天 / 今晚、短语才算
+            shared = {s: gs for s, gs in shared.items() if any(g[0] != '#fact' or g[1] not in WEEKDAY for g in gs)}
+            if not shared:
+                continue
+            (label, src), gs = max(shared.items(), key=lambda kv: len(kv[1]))
+            nq = _norm_quote(ln['text'])
+            why = next((r for q, r in retained.items() if q and q in nq), None)
+            res['lines'].append({'line': k, 'quote': quote(ln), 'phrase': _surface(ln['text'], gs),
+                                 'source': f'{label} {src}', 'exempt': why})
+    per_fact = {}
+    for k, ln in enumerate(lines):
+        if is_cjk(ln['text']) or ln.get('is_group'):
+            continue
+        for f in facts(ln['text']):
+            per_fact.setdefault(f, []).append(k)
+    for f, ks in sorted(per_fact.items()):
+        if len(ks) < T['fact_repeat_min']:
+            continue
+        item = {'fact': f, 'lines': ks, 'quotes': [quote(lines[k]) for k in ks]}
+        if ks[-1] - ks[0] == len(ks) - 1:
+            # 连着几句都在说它（"Coaches see it Monday." / "Monday's Cut Day." / "I know what Monday is."）是一轮
+            # 围着这件事的来回——施压、讨价还价——不算复述，只列复核
+            res['review'].append(f"同一事实「{f}」在一轮来回里连说 {len(ks)} 次（" + ' / '.join(item['quotes'][:3])
+                                 + '）：每一句有没有人的立场在变——施压、讨价还价可以，复述不行')
+            continue
+        res['facts'].append(item)
+    if res['facts'] and res['status'] == 'n/a':
+        res['status'] = 'pass'
+    counted = [x for x in res['lines'] if not x['exempt']]
+    if len(counted) >= T['restate_problem_min']:
+        ev = '；'.join(f"{x['quote']}（\"{x['phrase']}\" ← {x['source'][:60]}）" for x in counted[:3])
+        res['problems'].append(f'{len(counted)} 句复述前几场观众已经听过或看过的内容：{ev}')
+    elif counted:
+        x = counted[0]
+        res['review'].append(f"{x['quote']} 与前场重合（\"{x['phrase']}\" ← {x['source'][:60]}）：观众已知——"
+                             f"这句要么是在拿它换东西（弹药），要么删；有意回扣就在删除测试里写明")
+    for f in res['facts']:
+        res['problems'].append(f"同一事实「{f['fact']}」在本场 {len(f['lines'])} 句台词里出现：" + ' / '.join(f['quotes'][:3]))
+    for x in res['lines']:
+        if x['exempt']:
+            res['review'].append(f"{x['quote']} 与前场重合（← {x['source'][:50]}），删除测试写明留：{_short(x['exempt'], 30)}"
+                                 f"——确认它是回扣 / 铺垫（产生新意思），不是复述")
+    if res['problems']:
+        res['status'] = 'issues'
+    return res
+
+
+def RESTATE_ISSUE(rep):
+    return {
+        'key': 'repeat',
+        'title': '复述观众已知 / 同一事实反复',
+        'evidence': '；'.join(rep['problems']),
+        'why': '观众听过一次的不需要听第二次；把同一条消息再告诉另一个人、把同一个时间再报一遍，是在替观众做笔记。'
+               '要么晚进（从人物已经知道之后开始），要么让它成为弹药（有人拿它换东西），要么交给画面。',
+        'sources': ['S5', 'S14', 'S17'],
+        'basis': '"听过一次不再听第二次"（S5）、"两个人互相说都知道的事要重新发明这场"（S14）有来源；三词短语、≥2 句、≥3 次是[推论]阈值',
+    }
+
+
+# ---- 设计卡：写正文前定这场怎么转（4.0.0；写作步骤，只在总判断里报） ----------------------
+DESIGN_HEAD = re.compile(r'^##\s*设计[^\n]*$', re.M)
+DESIGN_CELLS = ('推动者', '阻力', '转折', '弹药', '静音测试')
+MESSENGER = re.compile(r'告诉|转达|通知|宣布|汇报|传话|报信|\btells?\b|\binforms?\b|\bannounces?\b', re.I)
+
+
+def design_card(text):
+    m = DESIGN_HEAD.search(text)
+    if not m:
+        return None
+    sec = re.split(r'\n## ', text[m.end():], maxsplit=1)[0]
+    cells = {}
+    for key in DESIGN_CELLS:
+        mm = re.search(key + r'[^：:\n]{0,8}[：:]\s*([^\n]*)', sec)
+        v = (mm.group(1) if mm else '').strip()
+        cells[key] = '' if (not v or set(v) <= set('_ ') or v in EMPTY_CELL) else v
+    options = [o for _, o in re.findall(r'^\s*(\d)\s*[.、)）]\s*(\S[^\n]*)$', sec, re.M)]
+    chosen = re.search(r'选\s*(\d)\s*[：:]\s*([^\n]*)', sec)
+    noturn = re.search(r'本场不转\s*[:：]\s*(\S[^\n]*)', sec)
+    return {'cells': cells, 'options': options, 'chosen': int(chosen.group(1)) if chosen else None,
+            'chosen_reason': chosen.group(2).strip() if chosen else '', 'ledger': bool(re.search(r'观众(已知|账本)', sec)),
+            'noturn': noturn.group(1).strip() if noturn else None}
+
+
+def check_design(card, lines, total):
+    T = THRESHOLDS
+    res = {'status': 'n/a', 'missing': [], 'review': [], 'card': card}
+    if len(lines) < T['min_lines'] and total < T['design_min_s']:
+        return res
+    if card is None:
+        res['status'] = 'missing'
+        return res
+    if card['noturn']:
+        res['status'] = 'pass'
+        res['review'].append(f"设计卡登记本场不转：{_short(card['noturn'], 40)}——观众这段在看什么")
+        return res
+    res['missing'] = [k for k in DESIGN_CELLS if not card['cells'][k]]
+    if not card['ledger']:
+        res['missing'].append('观众已知')
+    if len(card['options']) < 3:
+        res['missing'].append('三种发生方式')
+    turn = card['cells']['转折']
+    if turn and not re.search(r'→|->', turn):
+        res['review'].append(f'设计卡的转折「{_short(turn, 30)}」没写成"预期 → 结果"')
+    if card['options'] and MESSENGER.search(card['options'][0]):
+        res['review'].append(f"核心一步第 1 种「{_short(card['options'][0], 30)}」是传话：第一种应是别的发生方式（scene-design §二）")
+    k = card['chosen']
+    if k and 1 <= k <= len(card['options']) and MESSENGER.search(card['options'][k - 1]):
+        res['review'].append(f"选中的一步「{_short(card['options'][k - 1], 30)}」是传话：带消息的人要换什么、"
+                             f"消息遇到什么抵抗——理由「{_short(card['chosen_reason'], 30)}」说清了吗")
+    res['status'] = 'incomplete' if res['missing'] else 'pass'
+    return res
+
+
 # ---- 判断 --------------------------------------------------------------------
 def quote(ln):
     return f"{ln['speaker']}「{ln['text']}」"
 
 
-def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=None, econ=None):
+def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=None, econ=None, rep=None, design=None):
     """返回 issues（问题）、signals（信号，不判定）、review_needed（需模型复核）。"""
     T = THRESHOLDS
     issues, signals, review = [], [], []
@@ -1119,8 +1369,14 @@ def judge(lines, actions, stats, candidates=(), planted=(), declared=(), events=
     if events and events['status'] in ('missing', 'issues'):
         # 事件轨排第一：连通只说明有人接话，事件轨说明这场谁要什么、每一段变了什么（3.5.0 / 3.7.0）
         issues.append(EVENTS_ISSUE(events))
+    if rep and rep['status'] == 'issues':
+        issues.append(RESTATE_ISSUE(rep))  # 4.0.0：复述排在事件轨之后、对白连通之前
     if events:
         review.extend(events['review'])
+    if rep:
+        review.extend(rep['review'])
+    if design:
+        review.extend(design['review'])
     if econ:
         review.extend(econ['review'])
     if n < T['min_lines']:
@@ -1245,7 +1501,7 @@ def EVENTS_ISSUE(events):
     }
 
 
-SOURCE_LEGEND = '来源编号 S1–S13 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题；说出口的是不是那件事、变化是不是新的由模型复核'
+SOURCE_LEGEND = '来源编号 S1–S19 与[推论]阈值见 references/dialogue-review-sources.md；判为通过只表示没触发已知问题；说出口的是不是那件事、变化是不是新的由模型复核'
 
 
 def _count(text):
@@ -1292,12 +1548,40 @@ def economy_phrase(econ):
     return f"；台词经济：{head}" + (f"，待复核 {left} 处" if left and st != 'n/a' else '')
 
 
-def render(path, stats, issues, signals, review, full=False, limit=800, events=None, econ=None):
+REPEAT_TXT = {'n/a': '不适用（没给 --context）'}
+
+
+def repeat_phrase(rep):
+    if not rep or rep['status'] == 'n/a':
+        return ''
+    if rep['status'] == 'pass':
+        n = len([x for x in rep['lines'] if not x['exempt']])
+        m = len([x for x in rep['lines'] if x['exempt']])
+        if not n and not m:
+            return '；复述：未见'
+        return '；复述：' + '、'.join(x for x in (f'{n} 句重合前场（列复核）' if n else '', f'{m} 句写明回扣' if m else '') if x)
+    n = len([x for x in rep['lines'] if not x['exempt']])
+    parts = ([f'{n} 句重合前场'] if n else []) + [f"「{f['fact']}」×{len(f['lines'])}" for f in rep['facts']]
+    return '；复述：' + '、'.join(parts)
+
+
+DESIGN_TXT = {'missing': '缺', 'pass': '齐'}
+
+
+def design_phrase(design):
+    if not design or design['status'] == 'n/a':
+        return ''
+    if design['status'] == 'incomplete':
+        return '；设计卡：缺 ' + '、'.join(design['missing'])
+    return '；设计卡：' + DESIGN_TXT[design['status']]
+
+
+def render(path, stats, issues, signals, review, full=False, limit=800, events=None, econ=None, rep=None, design=None):
     """一句总判断（对白连通 / 事件轨分开）+ ≤3 个问题 + 信号 + 需模型复核 + 交接提示。
     默认 ≤ limit 字（不计空白）：超出先减复核条目，再减信号。"""
     n = stats['lines']
-    dialogue_issues = [i for i in issues if i['key'] not in ('events', 'economy')]
-    ev = economy_phrase(econ) + events_phrase(events)
+    dialogue_issues = [i for i in issues if i['key'] not in ('events', 'economy', 'repeat')]
+    ev = economy_phrase(econ) + repeat_phrase(rep) + events_phrase(events) + design_phrase(design)
     if n < THRESHOLDS['min_lines']:
         verdict = f'{path.name}：台词 {n} 句，材料太少，不做对白统计{ev}。'
     elif not dialogue_issues:
@@ -1346,7 +1630,8 @@ def ledger_text(text):
     """模板里作者声明决定的位置：'## 剧本页' 之前的版本 / 修订账本行，以及 '## 上下文承接' 一节。对白审阅等分析栏目不算声明。"""
     head = text.split('## 剧本页', 1)[0] if '## 剧本页' in text else ''
     m = re.search(r'## 上下文承接.*?(?=\n## |\Z)', text, re.S)
-    return head + ('\n' + m.group(0) if m else '')
+    bullet = re.search(r'^\s*[-*]\s*上下文承接[：:][^\n]*', text, re.M)  # 4.0.0 模板：按需附注里的一行
+    return head + ('\n' + m.group(0) if m else '') + ('\n' + bullet.group(0) if bullet else '')
 
 
 def context_text(paths):
@@ -1369,24 +1654,29 @@ def review_file(path, full=False, context=None, production_total=None, later=Non
     ledger = ledger_text(text)
     events = check_events(text, events_card(text), lines, actions, names, production_total)
     econ = check_economy(text, economy(lines, names, scene_lines(context), scene_lines(later)), lines)
+    rep = restatement(lines, context, text)
+    design = check_design(design_card(text), lines, events['estimate'])
     candidates, planted, declared = anchoring(lines, actions, context_text(context), ledger, events['terms'])
     stats['unanchored'] = [e['line'] for e in candidates]
     stats['planted'] = [e['line'] for e in planted]
     stats['declared'] = [e['line'] for e in declared]
-    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, events, econ)
-    dialogue_ok = not [i for i in issues if i['key'] not in ('events', 'economy')]
+    issues, signals, review = judge(lines, actions, stats, candidates, planted, declared, events, econ, rep, design)
+    dialogue_ok = not [i for i in issues if i['key'] not in ('events', 'economy', 'repeat')]
     return {
         'file': str(path), 'context': [str(c) for c in (context or [])], 'later': [str(c) for c in (later or [])],
         'stats': stats, 'issues': issues, 'signals': signals, 'review_needed': review,
         'anchoring': {'candidates': candidates, 'planted': planted, 'declared': declared},
         'verdict': 'issues' if issues else ('insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else 'pass'),
         'checks': {'dialogue': 'insufficient' if stats['lines'] < THRESHOLDS['min_lines'] else ('pass' if dialogue_ok else 'issues'),
-                   'economy': econ['status'], 'events': events['status']},
+                   'economy': econ['status'], 'repeat': rep['status'], 'events': events['status'],
+                   'design': design['status']},
         'economy': econ,
+        'repeat': rep,
+        'design': {k: v for k, v in design.items()},
         'events': {k: v for k, v in events.items() if k != 'terms'},
         'lines': [{k: v for k, v in ln.items() if k in ('speaker', 'text', 'words', 'clause', 'addressee', 'link_prev', 'offscreen', 'orphan', 'in_conversation', 'presupposed')} for ln in lines],
         'thresholds': THRESHOLDS,
-        'text': render(Path(path), stats, issues, signals, review, full=full, events=events, econ=econ),
+        'text': render(Path(path), stats, issues, signals, review, full=full, events=events, econ=econ, rep=rep, design=design),
     }
 
 

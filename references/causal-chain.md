@@ -67,6 +67,6 @@
 - `scene-parameters.md` §二 的表是取值与允许；本文件规定怎么用它。
 - `concept-generation.md` 第 4 步"候选发展"做因果自检。
 - `stage-3b-story.md` 场景清单加"因果"列。
-- `stage-3c-script.md` §3c.4a 支持多种开发入口；`character-scene-development.md` 维护交流诊断。
+- `stage-3c-script.md` §3c.4 支持多种开发入口；`character-scene-development.md` 维护交流诊断。
 - 生产层风险由 film-director 的 QA 流程人工审阅。
 - Prompt 层校验（含估时检查）由 film-director 的校验脚本承担；程序不能从句号数量推断意图，语境与质量需要文本证据审阅。
