@@ -1057,6 +1057,21 @@ def deletion_record(text):
     return rec
 
 
+def _still_there(q, texts):
+    """删 / 并记录里的原句还在不在正文：与某句台词的整句（或连续几句）相同才算；四词以上的片段在词边界上出现也算。
+    只按子串比，会把正文 "you and Rhett at the same table" 认成已删的 "And Rhett?"（4.0.0 验收时写作代理报的误报）。"""
+    nq = _norm_quote(q)
+    if not nq:
+        return False
+    for t in texts:
+        sents = [s for s in re.split(r'(?<=[.!?…])\s+|\s+[—–]+\s+|\s*--\s*', t.strip()) if s.strip()]
+        if any(_norm_quote(' '.join(sents[i:j + 1])) == nq for i in range(len(sents)) for j in range(i, len(sents))):
+            return True
+        if len(nq.split()) >= 4 and re.search(r"(?<![\w'])" + re.escape(nq) + r"(?![\w'])", _norm_quote(t)):
+            return True
+    return False
+
+
 def check_economy(text, eco, lines):
     """核对删除测试记录与正文；候选与低信息段没被记录覆盖的列为复核。status：n/a / missing / issues / pass。"""
     T = THRESHOLDS
@@ -1082,7 +1097,7 @@ def check_economy(text, eco, lines):
     else:
         for kind in ('删', '并'):
             for item in rec[kind]:
-                if item['quotes'] and in_body(item['quotes'][0]):
+                if item['quotes'] and _still_there(item['quotes'][0], [ln['text'] for ln in lines]):
                     res['problems'].append(f'删除测试记为"{kind}"的「{_short(item["quotes"][0], 30)}」还在正文里')
         for item in rec['留']:
             for q in item['quotes'][:1]:
@@ -1090,9 +1105,10 @@ def check_economy(text, eco, lines):
                     res['problems'].append(f'删除测试记为"留"的「{_short(q, 30)}」不在正文里')
             if not item['reason']:
                 res['problems'].append(f'「{_short((item["quotes"] or ["?"])[0], 30)}」记为"留"但没写它带来什么')
-        quoted = [_norm_quote(q) for kind in ('删', '并', '留', '压缩') for it in rec[kind] for q in it['quotes']]
+        quoted = [_norm_quote(q) for kind in ('留', '压缩') for it in rec[kind] for q in it['quotes']]
+        gone = [q for kind in ('删', '并') for it in rec[kind] for q in it['quotes']]
         for i, b in enumerate(body_q):
-            if any(q and q in b for q in quoted):
+            if any(q and q in b for q in quoted) or any(_still_there(q, [lines[i]['text']]) for q in gone):
                 covered.add(i)
         res['status'] = 'issues' if res['problems'] else 'pass'
     for c in eco['candidates']:

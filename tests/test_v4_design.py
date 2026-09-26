@@ -252,6 +252,28 @@ class BlindEvalOrderTests(unittest.TestCase):
                 run_be(['record', str(ev), '--pair', '01', '--order', '1', '--verdict', 'X', '--evidence', '顺序评审只认 A / B'])
 
 
+class DeletionRecordMatchTests(unittest.TestCase):
+    """4.0.0 验收时写作代理报的误报：记为"删"的短问句被当成还在正文里，只因另一句台词含同样的两个词。"""
+    BODY = ('后台通道。\n\n**JO**\nThe studio wants you and Rhett at the same table. Ten a.m.\n\n**THEO**\nThen you go.\n\n'
+            '**JO**\nI said yes before you could say no.\n\n**THEO**\nOkay.\n\n**JO**\nHe is making them wait.\n')
+
+    def record(self, *items):
+        return '\n## 对白审阅\n\n### 删除测试\n' + ''.join(f'- {x}\n' for x in items)
+
+    def test_short_deleted_line_inside_a_longer_sentence_is_gone(self):
+        r = review_text(page(self.BODY, record=self.record('删：「And Rhett?」——递话问句，答案下一句就给')))
+        self.assertNotIn('还在正文里', ' '.join(r['economy']['problems']))
+        self.assertEqual(r['checks']['economy'], 'pass')
+
+    def test_deleted_sentence_left_in_a_line_is_still_flagged(self):
+        r = review_text(page(self.BODY, record=self.record('删：「Ten a.m.」——观众已知')))
+        self.assertIn('记为"删"的「Ten a.m.」还在正文里', ' '.join(r['economy']['problems']))
+
+    def test_long_deleted_fragment_is_still_flagged(self):
+        r = review_text(page(self.BODY, record=self.record('并：「you and Rhett at the same table」——并进下一句')))
+        self.assertIn('还在正文里', ' '.join(r['economy']['problems']))
+
+
 class V4DocsWiringTests(unittest.TestCase):
     def read(self, name):
         return (ROOT / name).read_text(encoding='utf-8')

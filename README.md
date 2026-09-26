@@ -1,6 +1,6 @@
 # film-creative
 
-版本 **3.8.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
+版本 **4.0.0**（3.0.0 直接基于 1.1.0；1.2.0–2.1.2 为已回滚的存档线，见 CHANGELOG）。影视创意与剧本开发 Skill：概念构思、故事发展、完整剧本与台词、人物与场景发展、局部改写与创意评估。调用：`/film-creative` 或在对话中描述任务（想故事、发展想法、写剧本、改台词）。
 
 生产后端（表演外化、分镜、参考资产、Seedance 2.5 Prompt 编译与质量检查）由独立的 [film-director](https://github.com/Anelse0/film-director) Skill 承担。本 Skill 派生自 [Film-Seedance-Director](https://github.com/Anelse0/Film-Seedance-Director) 2.6.0-alpha.3（commit 0436abd）的创作前端。
 
@@ -15,6 +15,14 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 ```
 
 创作允许迭代（概念 ↔ 故事 ↔ 剧本，允许关键场景先行）。入口由创作意图与材料成熟度决定（`SKILL.md` §需求识别）。范围、自主、确认与保存统一见 `references/execution-contract.md`。默认对话交付；明确保存要求或已有项目约定才写文件。用户要故事就交故事，要剧本就交剧本；分镜与 Prompt 由 film-director 承接，不按关键词扩大范围。
+
+## 4.0.0 更新
+
+- **先设计，再写，再查**：S3c 写正文前在剧本页 `## 设计` 一节做三样——观众账本（观众进场已经知道什么）、核心一步三选一（本场要改变的那件事写三种真正不同的发生方式，第一种不能是"X 告诉 Y"）、设计卡（推动者与战术 / 阻力 / 转折：预期 → 结果 / 弹药 / 静音测试）。方法与六条写法（节拍是出招与回应、信息当弹药、对手不配合、人物主动、演处境不演台词、晚进早出）在 `references/scene-design.md`。
+- **规则正文减负**：`SKILL.md` 与 `references/stage-3c-script.md` 重写为正向写法为主，历史案例移到 `tests/cases/README.md`；写一场必读的规则约 2.1 万字符（3.8.0 读取集约 3.9 万）。十条创作取向恢复用户 2026-09-19 确认时的原文。
+- **复述检查**：`scripts/review_script.py` 另报"复述"——与前几场重合的短语、同一事实在一场里反复出现；"设计卡"在不在、齐不齐只在总判断里报。事件轨"（信息·观众已知）"写不出后果的行不计为变化；修正"同上"被当成新地点。
+- **可选冷读**：`references/cold-read.md` + `scripts/cold_read_packet.py`——新上下文只看正文、逐句标观众已知的复述并做静音测试；跑不跑由用户决定，agent 在每场交付时提醒（用户 2026-09-26 定）。
+- **验收**：`scripts/blind_eval.py` 支持 LLM 正反两序配对（`present`、`record --order`），两次一致才计胜负（`tests/creative-eval.md` §八）；结果与局限见 `tests/acceptance-4.0.0/`。效果由用户在实际生产中验收。
 
 ## 3.8.0 更新
 
@@ -87,7 +95,9 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/concept-generation.md` | S3a 概念模式契约：创作判断 / 默认地图 / 入口 / 研究服务缺口 / 候选比较维度 / 关键场景先行 |
 | `references/stage-3a-concept.md` | S3a 概念长什么样：素材入口 / 候选弱点 / 可选的主控句、三问与默认画面地图 / 交付格式 |
 | `references/stage-3b-story.md` | S3b 故事开发：故事正文优先 / 叙事组织四判断 / 世界观与人物按需 / 温度表与场景清单按需 |
-| `references/stage-3c-script.md` | S3c：多种试写入口 / 连续交流诊断 / 节拍估时 / 物件状态 / 定点重写 |
+| `references/stage-3c-script.md` | S3c：写前依据 → 场景设计 → 事件轨 → 画面单调先诊断 → 写正文 → 删除测试与脚本 → 交付与连读 → 重写 |
+| `references/scene-design.md` | S3c 必读：观众账本、核心一步三选一、设计卡五格、六条写法、误用信号 |
+| `references/cold-read.md` + `scripts/cold_read_packet.py` | 可选的独立冷读：什么时候提醒、怎么跑、报告格式；材料包只含正文 |
 | `references/story-engine.md` | 多集 / 高概念 / 关系主线：机制能否持续产生事件、两线互改、吸引与代价、触发链、配角、观看欲望、正面写法 |
 | `references/episode-design.md` | 短剧 / 多集：一集的承接 · 进入 · 兑现 · 牵引；分集框架不像摘要；优化单集 |
 | `references/story-context.md` | 续写/改写开写前：整体/本场/远处依据、人物知识、后续边界、变化量与恢复 |
@@ -110,9 +120,10 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 | `references/project-state.md` + `scripts/project_check.py` | 已保存项目：版本、恢复、依赖失效、正典 |
 | `templates/*.md` | 概念 / 故事 / 剧本页 / ip 骨架 |
 | `scripts/validate_concept.py` | 概念选定落盘后跑；只查格式与完整性，不判断创意 |
-| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：事件轨（人物清单、每行变化、说出口、删掉损失）与正文的逐字核对、按文本估时 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项（含删除测试）列需模型复核；来源与阈值登记 |
+| `scripts/review_script.py` + `references/dialogue-review-sources.md` | S3c 剧本页落盘后跑：事件轨（人物清单、每行变化、说出口、删掉损失）与正文的逐字核对、按文本估时 + 对白来回 / 句长 / 画外 / 收件人的可量化 review，语义项（含删除测试）列需模型复核；来源与阈值登记；4.0.0 起另报复述（与前几场重合的短语、同一事实反复）与设计卡（在不在、齐不齐） |
 | `scripts/route_check.py` | S2 结构化决策校验：仅执行 S3a–S3c/save_only；不解释自然语言，旧自由文本 CLI 返回 2 |
-| `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓 |
+| `scripts/blind_eval.py` + `tests/creative-eval.md` | 旧版 / 新版盲选评测：打包、记录判定、揭晓；4.0.0 起支持 LLM 正反两序配对 |
+| `tests/cases/README.md` | 历史案例与校准记录（规则正文不再夹带案例） |
 | `scripts/baseline_snapshot.py` | Git / 非 Git 版本目录的归档与完整性检查 |
 | `examples/concept-worked-examples.md` | 概念协议跑出来长什么样（概念模式默认不读，禁止复用候选） |
 
