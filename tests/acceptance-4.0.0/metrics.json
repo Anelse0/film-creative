@@ -1,0 +1,124 @@
+[
+ {
+  "task": "T1",
+  "version": "v380",
+  "page_chars": 9407,
+  "body_chars": 737,
+  "body_share": 0.08,
+  "dialogue_lines": 6,
+  "dialogue_words": 45,
+  "est_s": 30.8,
+  "restated_lines": 1,
+  "fact_repeats": [],
+  "economy_candidates": 2,
+  "checks": {
+   "dialogue": "pass",
+   "economy": "pass",
+   "repeat": "pass",
+   "events": "pass",
+   "design": "missing"
+  }
+ },
+ {
+  "task": "T1",
+  "version": "v400",
+  "page_chars": 9231,
+  "body_chars": 674,
+  "body_share": 0.07,
+  "dialogue_lines": 5,
+  "dialogue_words": 45,
+  "est_s": 26.2,
+  "restated_lines": 1,
+  "fact_repeats": [],
+  "economy_candidates": 1,
+  "checks": {
+   "dialogue": "pass",
+   "economy": "pass",
+   "repeat": "pass",
+   "events": "pass",
+   "design": "pass"
+  }
+ },
+ {
+  "task": "T3",
+  "version": "v380",
+  "page_chars": 13623,
+  "body_chars": 1701,
+  "body_share": 0.12,
+  "dialogue_lines": 6,
+  "dialogue_words": 40,
+  "est_s": 82.0,
+  "restated_lines": 0,
+  "fact_repeats": [],
+  "economy_candidates": 0,
+  "checks": {
+   "dialogue": "issues",
+   "economy": "pass",
+   "repeat": "pass",
+   "events": "pass",
+   "design": "missing"
+  }
+ },
+ {
+  "task": "T3",
+  "version": "v400",
+  "page_chars": 12937,
+  "body_chars": 1411,
+  "body_share": 0.11,
+  "dialogue_lines": 5,
+  "dialogue_words": 30,
+  "est_s": 75.0,
+  "restated_lines": 0,
+  "fact_repeats": [],
+  "economy_candidates": 0,
+  "checks": {
+   "dialogue": "pass",
+   "economy": "pass",
+   "repeat": "pass",
+   "events": "pass",
+   "design": "pass"
+  }
+ },
+ {
+  "task": "T5",
+  "version": "v380",
+  "page_chars": 13246,
+  "body_chars": 1479,
+  "body_share": 0.11,
+  "dialogue_lines": 12,
+  "dialogue_words": 138,
+  "est_s": 54.0,
+  "restated_lines": 1,
+  "fact_repeats": [
+   "friday×3"
+  ],
+  "economy_candidates": 4,
+  "checks": {
+   "dialogue": "pass",
+   "economy": "pass",
+   "repeat": "issues",
+   "events": "pass",
+   "design": "missing"
+  }
+ },
+ {
+  "task": "T5",
+  "version": "v400",
+  "page_chars": 13720,
+  "body_chars": 1516,
+  "body_share": 0.11,
+  "dialogue_lines": 13,
+  "dialogue_words": 146,
+  "est_s": 56.0,
+  "restated_lines": 0,
+  "fact_repeats": [],
+  "economy_candidates": 4,
+  "checks": {
+   "dialogue": "pass",
+   "economy": "pass",
+   "repeat": "pass",
+   "events": "pass",
+   "design": "pass"
+  }
+ }
+]

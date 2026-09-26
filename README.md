@@ -22,7 +22,7 @@ S1 资源读取 → S2 需求识别 → 故事开发（S3a 概念 ↔ S3b 故事
 - **规则正文减负**：`SKILL.md` 与 `references/stage-3c-script.md` 重写为正向写法为主，历史案例移到 `tests/cases/README.md`；写一场必读的规则约 2.1 万字符（3.8.0 读取集约 3.9 万）。十条创作取向恢复用户 2026-09-19 确认时的原文。
 - **复述检查**：`scripts/review_script.py` 另报"复述"——与前几场重合的短语、同一事实在一场里反复出现；"设计卡"在不在、齐不齐只在总判断里报。事件轨"（信息·观众已知）"写不出后果的行不计为变化；修正"同上"被当成新地点。
 - **可选冷读**：`references/cold-read.md` + `scripts/cold_read_packet.py`——新上下文只看正文、逐句标观众已知的复述并做静音测试；跑不跑由用户决定，agent 在每场交付时提醒（用户 2026-09-26 定）。
-- **验收**：`scripts/blind_eval.py` 支持 LLM 正反两序配对（`present`、`record --order`），两次一致才计胜负（`tests/creative-eval.md` §八）；结果与局限见 `tests/acceptance-4.0.0/`。效果由用户在实际生产中验收。
+- **验收**：`scripts/blind_eval.py` 支持 LLM 正反两序配对（`present`、`record --order`），两次一致才计胜负（`tests/creative-eval.md` §八）。发布前的 3 组对照：4.0.0-rc1 3 胜 0 负 0 不一致（小样本，LLM 评审）；结果、评审点出的新版弱点与已知偏差见 `tests/acceptance-4.0.0/`。效果由用户在实际生产中验收。
 
 ## 3.8.0 更新
 
